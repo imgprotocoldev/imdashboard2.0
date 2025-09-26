@@ -300,39 +300,39 @@ const AppSidebar: React.FC = () => {
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div
-        className={`py-8 flex ${
-          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
-        }`}
-      >
-        <Link to="/">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <>
+      {!isMobileOpen && (
+        <div
+          className={`py-8 flex ${
+            !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+          }`}
+        >
+          <Link to="/">
+            {isExpanded || isHovered ? (
+              <>
+                <img
+                  className="dark:hidden max-h-8"
+                  src="/images/imgtextlogo.webp"
+                  alt="IMG Protocol"
+                  style={{ maxWidth: '120px', height: '32px' }}
+                />
+                <img
+                  className="hidden dark:block max-h-8"
+                  src="/images/imgtextlogo.webp"
+                  alt="IMG Protocol"
+                  style={{ maxWidth: '120px', height: '32px' }}
+                />
+              </>
+            ) : (
               <img
-                className="dark:hidden"
-                src="images/logo/logo.svg"
-                alt="Logo"
-                width={150}
-                height={40}
+                src="/images/logo/logo-icon.svg"
+                alt="IMG"
+                width={32}
+                height={32}
               />
-              <img
-                className="hidden dark:block"
-                src="./images/logo/logo-dark.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-            </>
-          ) : (
-            <img
-              src="./images/logo/logo-icon.svg"
-              alt="Logo"
-              width={32}
-              height={32}
-            />
-          )}
-        </Link>
-      </div>
+            )}
+          </Link>
+        </div>
+      )}
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
