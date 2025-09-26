@@ -1,14 +1,240 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
+import { createClient } from "@supabase/supabase-js";
+
+// Supabase configuration
+const supabaseUrl = 'https://bxnkvezalchegmulbkwo.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4bmt2ZXphbGNoZWdtdWxia3dvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODcxOTUsImV4cCI6MjA3NDQ2MzE5NX0.tT3h83AKp_wsWDEahYTfYPot0fxFpgk_4fKOaonq5Qo';
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+
+  // Create user profile function
+  const createUserProfile = async (user: any) => {
+    try {
+      // Check if profile already exists
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      if (!existingProfile) {
+        // Create new profile
+        const { error } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            full_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+            created_at: new Date().toISOString(),
+          });
+
+        if (error) {
+          console.error('Error creating profile:', error);
+        }
+      }
+    } catch (err) {
+      console.error('Profile creation error:', err);
+    }
+  };
+
+  // Handle OAuth redirects and session detection
+  useEffect(() => {
+    const handleAuthCallback = async () => {
+      // Check for OAuth redirect parameters
+      const hash = window.location.hash;
+      if (hash.includes('access_token')) {
+        const urlParams = new URLSearchParams(hash.substring(1));
+        const accessToken = urlParams.get('access_token');
+        const refreshToken = urlParams.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+
+          if (error) {
+            setError('Authentication failed: ' + error.message);
+          } else if (data.user) {
+            await createUserProfile(data.user);
+            window.location.href = 'https://app.imgsolana.com';
+          }
+        }
+      }
+    };
+
+    handleAuthCallback();
+  }, []);
+
+  // Handle email/password login
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          setError('Invalid email or password. Please check your credentials and try again.');
+        } else if (error.message.includes('Email not confirmed')) {
+          setError('Please check your email and confirm your account before signing in.');
+        } else if (error.message.includes('User not found')) {
+          setError('No account found with this email address. Please check your email or sign up.');
+        } else if (error.message.includes('Too many requests')) {
+          setError('Too many login attempts. Please wait a few minutes before trying again.');
+        } else if (error.message.includes('password')) {
+          setError('Incorrect password. Please try again or use "Forgot password?" to reset.');
+        } else {
+          setError('Login failed. Please try again.');
+        }
+        return;
+      }
+
+      if (data.user) {
+        // Handle "Keep me logged in" preference
+        if (isChecked) {
+          localStorage.setItem('keepLoggedIn', 'true');
+          localStorage.setItem('sessionDuration', 'persistent');
+        } else {
+          localStorage.setItem('sessionDuration', 'session');
+        }
+        
+        // Create user profile if first time login
+        await createUserProfile(data.user);
+        
+        // Redirect to dashboard
+        window.location.href = 'https://app.imgsolana.com';
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle Google OAuth
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'https://app.imgsolana.com',
+        },
+      });
+
+      if (error) {
+        if (error.message.includes('popup_closed_by_user')) {
+          setError('Google login was cancelled. Please try again.');
+        } else if (error.message.includes('access_denied')) {
+          setError('Google login access denied. Please try again.');
+        } else {
+          setError('Google login failed: ' + error.message);
+        }
+      }
+    } catch (err) {
+      setError('Google login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle Twitter OAuth
+  const handleTwitterLogin = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'twitter',
+        options: {
+          redirectTo: 'https://app.imgsolana.com',
+        },
+      });
+
+      if (error) {
+        if (error.message.includes('popup_closed_by_user')) {
+          setError('Twitter login was cancelled. Please try again.');
+        } else if (error.message.includes('access_denied')) {
+          setError('Twitter login access denied. Please try again.');
+        } else {
+          setError('Twitter login failed: ' + error.message);
+        }
+      }
+    } catch (err) {
+      setError('Twitter login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle forgot password
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Please enter your email address first.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSuccessMessage('');
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://app.imgsolana.com/reset-password',
+      });
+
+      if (error) {
+        if (error.message.includes('Invalid email')) {
+          setError('Please enter a valid email address.');
+        } else if (error.message.includes('rate limit')) {
+          setError('Too many requests. Please wait a moment before trying again.');
+        } else {
+          setError('Failed to send reset email. Please try again.');
+        }
+      } else {
+        setResetEmailSent(true);
+        setSuccessMessage('Password reset email sent! Please check your inbox and follow the link to reset your password.');
+        setTimeout(() => {
+          setResetEmailSent(false);
+          setSuccessMessage('');
+        }, 5000);
+      }
+    } catch (err) {
+      setError('Failed to send reset email. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle reset email mode
+  const handleSendForgotEmail = async () => {
+    await handleForgotPassword();
+  };
+
   return (
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">
@@ -32,7 +258,11 @@ export default function SignInForm() {
           </div>
           <div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
-              <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+              <button 
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <svg
                   width="20"
                   height="20"
@@ -59,7 +289,11 @@ export default function SignInForm() {
                 </svg>
                 Sign in with Google
               </button>
-              <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+              <button 
+                onClick={handleTwitterLogin}
+                disabled={loading}
+                className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <svg
                   width="21"
                   className="fill-current"
@@ -83,13 +317,51 @@ export default function SignInForm() {
                 </span>
               </div>
             </div>
-            <form>
+            {error && (
+              <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-lg shadow-sm">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                      {error}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {successMessage && (
+              <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-lg shadow-sm">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.236 4.53L8.22 10.38a.75.75 0 111.06-1.06l1.719 1.719 3.178-4.53z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                      {successMessage}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            <form onSubmit={handleLogin}>
               <div className="space-y-6">
                 <div>
                   <Label>
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" />
+                  <Input 
+                    placeholder="info@gmail.com" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
+                    required
+                  />
                 </div>
                 <div>
                   <Label>
@@ -99,6 +371,10 @@ export default function SignInForm() {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={loading}
+                      required
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -119,16 +395,23 @@ export default function SignInForm() {
                       Keep me logged in
                     </span>
                   </div>
-                  <Link
-                    to="#!"
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
                     className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                    disabled={loading}
                   >
                     Forgot password?
-                  </Link>
+                  </button>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm">
-                    Sign in
+                  <Button 
+                    className="w-full" 
+                    size="sm"
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? 'Signing in...' : 'Sign in'}
                   </Button>
                 </div>
               </div>
