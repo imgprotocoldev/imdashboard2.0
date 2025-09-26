@@ -29,37 +29,36 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
-    name: "Terminal",
-    path: "#!",
+    name: "Dashboard",
+    subItems: [{ name: "Ecommerce", path: "#!", pro: false }],
   },
   {
     icon: <CalenderIcon />,
-    name: "Events",
-    path: "events",
+    name: "Calendar",
+    path: "calendar",
   },
   {
-    icon: <PieChartIcon />,
-    name: "Harvesting",
-    path: "harvesting",
-    pro: true,
-  },
-  {
-    icon: <ListIcon />,
-    name: "Distribution",
-    path: "distribution",
-    pro: true,
-  },
-  {
-    name: "Pools",
-    icon: <TableIcon />,
-    path: "pools",
-    pro: true,
-  },
-  {
-    name: "Rewards",
     icon: <UserCircleIcon />,
-    path: "rewards",
-    pro: true,
+    name: "User Profile",
+    path: "profile",
+  },
+  {
+    name: "Forms",
+    icon: <ListIcon />,
+    subItems: [{ name: "Form Elements", path: "form-elements", pro: false }],
+  },
+  {
+    name: "Tables",
+    icon: <TableIcon />,
+    subItems: [{ name: "Basic Tables", path: "basic-tables", pro: false }],
+  },
+  {
+    name: "Pages",
+    icon: <PageIcon />,
+    subItems: [
+      { name: "Blank Page", path: "blank", pro: false },
+      { name: "404 Error", path: "error-404", pro: false },
+    ],
   },
 ];
 
@@ -98,14 +97,6 @@ const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
 
-  // Premium status check (simplified)
-  const [isPremium, setIsPremium] = useState(false);
-
-  useEffect(() => {
-    // Check wallet status from localStorage
-    const walletPremium = localStorage.getItem('walletPremium') === 'true';
-    setIsPremium(walletPremium);
-  }, []);
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
@@ -213,54 +204,25 @@ const AppSidebar: React.FC = () => {
             </button>
           ) : (
             nav.path && (
-              // Check if item is premium and if user has premium access
-              (!nav.pro || isPremium) ? (
-                <Link
-                  to={nav.path}
-                  className={`menu-item group ${
-                    isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                  } ${!nav.pro || isPremium ? '' : 'opacity-50 cursor-not-allowed'}`}
-                >
-                  <span
-                    className={`menu-item-icon-size ${
-                      isActive(nav.path)
-                        ? "menu-item-icon-active"
-                        : "menu-item-icon-inactive"
-                    }`}
-                  >
-                    {nav.icon}
-                  </span>
-                  {(isExpanded || isHovered || isMobileOpen) && (
-                    <span className="menu-item-text">{nav.name}</span>
-                  )}
-                  {nav.pro && (isExpanded || isHovered || isMobileOpen) && isPremium && (
-                    <span className="ml-auto bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Premium</span>
-                  )}
-                </Link>
-              ) : (
-                // Show locked state for premium features without access
-                <div className={`menu-item group opacity-50 cursor-not-allowed ${
+              <Link
+                to={nav.path}
+                className={`menu-item group ${
                   isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                }`}>
-                  <span
-                    className={`menu-item-icon-size ${
-                      isActive(nav.path)
-                        ? "menu-item-icon-active"
-                        : "menu-item-icon-inactive"
-                    }`}
-                  >
-                    {nav.icon}
-                  </span>
-                  {(isExpanded || isHovered || isMobileOpen) && (
-                    <span className="menu-item-text">{nav.name}</span>
-                  )}
-                  {nav.pro && (isExpanded || isHovered || isMobileOpen) && (
-                    <span className="ml-auto bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded flex items-center">
-                      🔒 Premium
-                    </span>
-                  )}
-                </div>
-              )
+                }`}
+              >
+                <span
+                  className={`menu-item-icon-size ${
+                    isActive(nav.path)
+                      ? "menu-item-icon-active"
+                      : "menu-item-icon-inactive"
+                  }`}
+                >
+                  {nav.icon}
+                </span>
+                {(isExpanded || isHovered || isMobileOpen) && (
+                  <span className="menu-item-text">{nav.name}</span>
+                )}
+              </Link>
             )
           )}
           {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
@@ -345,26 +307,26 @@ const AppSidebar: React.FC = () => {
       >
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
-            <div className="flex items-center">
+            <>
               <img
-                src="/images/imgtextlogo.webp"
-                alt="IMG Protocol"
-                width={150}
-                height={40}
                 className="dark:hidden"
-              />
-              <img
-                src="/images/imgtextlogo.webp" 
-                alt="IMG Protocol"
+                src="images/logo/logo.svg"
+                alt="Logo"
                 width={150}
                 height={40}
-                className="hidden dark:block"
               />
-            </div>
+              <img
+                className="hidden dark:block"
+                src="./images/logo/logo-dark.svg"
+                alt="Logo"
+                width={150}
+                height={40}
+              />
+            </>
           ) : (
             <img
-              src="/images/logo-icon.svg"
-              alt="IMG"
+              src="./images/logo/logo-icon.svg"
+              alt="Logo"
               width={32}
               height={32}
             />

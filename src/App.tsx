@@ -29,14 +29,6 @@ export default function App() {
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Home />} />
 
-            {/* IMG Protocol Dashboard Routes */}
-            <Route path="terminal" element={<Home />} />
-            <Route path="events" element={<Calendar />} />
-            <Route path="harvesting" element={<Blank />} />
-            <Route path="distribution" element={<FormElements />} />
-            <Route path="pools" element={<BasicTables />} />
-            <Route path="rewards" element={<Alerts />} />
-
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />
             <Route path="calendar" element={<Calendar />} />
@@ -62,8 +54,11 @@ export default function App() {
           </Route>
 
           {/* Auth Layout */}
-          <Route path="/TailAdmin/signin" element={<SignIn />} />
-          <Route path="/TailAdmin/signup" element={<SignUp />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+
+          {/* Error Routes */}
+          <Route path="error-404" element={<NotFound />} />
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
