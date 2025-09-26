@@ -1,7 +1,22 @@
 # IMG Protocol Dashboard
+[![GitHub](https://img.shields.io/badge/GitHub-IMG%20Protocol-blue?style=for-the-badge&logo=github)](https://github.com/imgprotocoldev/imdashboard2.0)
 
-This is an integrated dashboard that merges the IMG Protocol financial services platform with the TailAdmin template repository. The new dashboard combines:
+Professional IMG Protocol Dashboard built with modern React, Tailwind CSS, and integrated Solana wallet connectivity.
 
+## 🔧 Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+### Key Features
 - **IMG Protocol Dashboard functionality** - Financial terminals, wallet integration, premium features
 - **TailAdmin Template framework** - Modern React dashboard UI and foundation
 - **Solana Wallet Integration** - Secure crypto wallet connections
