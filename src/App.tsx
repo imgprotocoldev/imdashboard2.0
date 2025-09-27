@@ -20,6 +20,7 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
+import Terminal from "./pages/Dashboard/Terminal";
 
 export default function App() {
   return (
@@ -30,6 +31,8 @@ export default function App() {
           {/* Dashboard Layout */}
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Home />} />
+            <Route path="terminal" element={<Terminal />} />
+            <Route path="mainscreen" element={<Home />} />
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />
