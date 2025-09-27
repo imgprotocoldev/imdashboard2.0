@@ -106,15 +106,20 @@ export default function PriceUSD() {
   const badgeColor = isPositive ? "success" : "error";
   const ArrowIcon = isPositive ? ArrowUpIcon : ArrowDownIcon;
 
-  return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-      <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-        <img 
-          src="/images/Terminal Icons/priceusd.png" 
-          alt="Price USD" 
-          className="w-6 h-6"
-        />
-      </div>
+        return (
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+            <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
+              <img
+                src="/images/Terminal Icons/priceusddark.svg"
+                alt="Price USD"
+                className="w-6 h-6 dark:hidden"
+              />
+              <img
+                src="/images/Terminal Icons/priceusd.svg"
+                alt="Price USD"
+                className="w-6 h-6 hidden dark:block"
+              />
+            </div>
 
       <div className="flex items-end justify-between mt-5">
         <div>

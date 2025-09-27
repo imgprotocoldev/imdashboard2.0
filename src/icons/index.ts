@@ -12,6 +12,10 @@ import { ReactComponent as FolderIcon } from "./folder.svg?react";
 import { ReactComponent as VideoIcon } from "./videos.svg?react";
 import { ReactComponent as AudioIcon } from "./audio.svg?react";
 import { ReactComponent as GridIcon } from "./grid.svg?react";
+import { ReactComponent as PriceUSDIcon } from "./priceusd.svg?react";
+import { ReactComponent as PriceUSDDarkIcon } from "./priceusddark.svg?react";
+import { ReactComponent as VolumeBarIcon } from "./volumebar.svg?react";
+import { ReactComponent as VolumeBarDarkIcon } from "./volumebardark.svg?react";
 import { ReactComponent as FileIcon } from "./file.svg?react";
 import { ReactComponent as DownloadIcon } from "./download.svg?react";
 import { ReactComponent as ArrowRightIcon } from "./arrow-right.svg?react";
@@ -60,6 +64,10 @@ export {
   DownloadIcon,
   FileIcon,
   GridIcon,
+  PriceUSDIcon,
+  PriceUSDDarkIcon,
+  VolumeBarIcon,
+  VolumeBarDarkIcon,
   AudioIcon,
   VideoIcon,
   BoltIcon,

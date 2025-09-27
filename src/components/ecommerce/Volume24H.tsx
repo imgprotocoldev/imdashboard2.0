@@ -87,15 +87,20 @@ export default function Volume24H() {
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-      <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-        <img 
-          src="/images/Terminal Icons/volumebar.png" 
-          alt="24H Volume" 
-          className="w-6 h-6"
-        />
-      </div>
+        return (
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+            <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
+              <img
+                src="/images/Terminal Icons/volumebardark.svg"
+                alt="24H Volume"
+                className="w-6 h-6 dark:hidden"
+              />
+              <img
+                src="/images/Terminal Icons/volumebar.svg"
+                alt="24H Volume"
+                className="w-6 h-6 hidden dark:block"
+              />
+            </div>
 
       <div className="flex items-end justify-between mt-5">
         <div>
@@ -106,10 +111,10 @@ export default function Volume24H() {
             {loading ? "Loading..." : volume}
           </h4>
         </div>
-        <div className="flex items-center text-blue-500 text-sm">
-          <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-          Live
-        </div>
+              <div className="flex items-center text-blue-500 text-sm">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                CoinGecko Data
+              </div>
       </div>
     </div>
   );
