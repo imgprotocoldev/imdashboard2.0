@@ -21,12 +21,12 @@ export default function AuthLayout({
                 <img
                   width={231}
                   height={48}
-                  src="images/logo/auth-logo.svg"
-                  alt="Logo"
+                  src="images/imgtextlogo.webp"
+                  alt="IMG Protocol"
                 />
               </Link>
               <p className="text-center text-gray-400 dark:text-white/60">
-                Free and Open-Source Tailwind CSS Admin Dashboard Template
+                Free and Open-Source IMG Reward Audit Dashboard
               </p>
             </div>
           </div>
