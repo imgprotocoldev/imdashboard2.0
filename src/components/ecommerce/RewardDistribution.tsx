@@ -26,20 +26,19 @@ export default function RewardDistribution() {
             show: true,
             total: {
               show: true,
-              label: "Total SOL",
-              fontSize: "16px",
-              fontWeight: "600",
-              color: "#1D2939",
+              label: "Payment to Holders",
+              fontSize: "13px",
+              fontWeight: "500",
+              color: "#6B7280",
               formatter: function (w: any) {
-                const total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
-                return total.toFixed(2);
+                return "210.95 SOL";
               },
             },
             value: {
               show: true,
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "#6B7280",
+              fontSize: "15px",
+              fontWeight: "600",
+              color: "#1D2939",
               formatter: function (val) {
                 return val + " SOL";
               },
@@ -64,7 +63,11 @@ export default function RewardDistribution() {
       show: false,
     },
     tooltip: {
-      enabled: false,
+      enabled: true,
+      custom: function({ series, seriesIndex, dataPointIndex, w }) {
+        // Return empty string to hide tooltip but keep hover functionality
+        return '';
+      },
     },
   };
 
