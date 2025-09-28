@@ -19,22 +19,34 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor, onCountryHover }) => 
   };
 
   const handleRegionHover = (event: any, code: string) => {
-    if (onCountryHover && countryData[code as keyof typeof countryData]) {
-      const data = countryData[code as keyof typeof countryData];
-      if (data.users > 0) {
-        onCountryHover(data);
+    if (onCountryHover) {
+      // Check if we have specific data for this country
+      const specificData = countryData[code as keyof typeof countryData];
+      
+      if (specificData) {
+        // Use specific data if available
+        onCountryHover(specificData);
+      } else {
+        // For countries not in our data, create a generic entry
+        const genericData = {
+          name: code.toUpperCase(), // Use country code as name
+          flag: code.toLowerCase(), // Use country code as flag
+          users: 0,
+          percentage: 0
+        };
+        onCountryHover(genericData);
       }
     }
   };
 
   const handleRegionOut = () => {
-    // Reset to Global when mouse leaves country
+    // Clear hovered country when mouse leaves country
     if (onCountryHover) {
       onCountryHover({
-        name: "Global",
-        flag: "globalusers.webp",
-        users: 1559,
-        percentage: 100
+        name: "",
+        flag: "",
+        users: 0,
+        percentage: 0
       });
     }
   };
@@ -87,16 +99,19 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor, onCountryHover }) => 
       zoomAnimate={true}
       zoomStep={1.5}
       onRegionTipShow={(event: any, tip: any, code: string) => {
-        // Show tooltip with user count
-        const data = countryData[code as keyof typeof countryData];
-        if (data && data.users > 0) {
-          tip.html(`<div style="padding: 8px; background: #465FFF; color: white; border-radius: 4px; font-family: Outfit, sans-serif;">
-            <strong>${data.name}</strong><br/>
-            ${data.users} Terminal User${data.users !== 1 ? 's' : ''}
-          </div>`);
-        } else {
-          tip.hide();
-        }
+        // Show tooltip for all countries
+        const specificData = countryData[code as keyof typeof countryData];
+        const data = specificData || {
+          name: code.toUpperCase(),
+          flag: code.toLowerCase(),
+          users: 0,
+          percentage: 0
+        };
+        
+        tip.html(`<div style="padding: 8px; background: #465FFF; color: white; border-radius: 4px; font-family: Outfit, sans-serif;">
+          <strong>${data.name}</strong><br/>
+          ${data.users > 0 ? `${data.users} Terminal User${data.users !== 1 ? 's' : ''}` : 'No users'}
+        </div>`);
       }}
       onRegionOver={(event: any, code: string) => {
         handleRegionHover(event, code);

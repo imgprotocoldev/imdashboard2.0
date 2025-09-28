@@ -14,6 +14,13 @@ export default function TerminalDemographicCard() {
     percentage: 100
   });
 
+  const [hoveredCountry, setHoveredCountry] = useState({
+    name: "",
+    flag: "",
+    users: 0,
+    percentage: 0
+  });
+
   function toggleDropdown() {
     setIsOpen(!isOpen);
   }
@@ -24,12 +31,19 @@ export default function TerminalDemographicCard() {
 
   // This function will be called when user hovers over a country on the map
   function handleCountryHover(countryData: any) {
-    if (countryData && countryData.users > 0) {
-      setSelectedCountry({
+    if (countryData && countryData.name) {
+      setHoveredCountry({
         name: countryData.name,
         flag: countryData.flag,
         users: countryData.users,
         percentage: countryData.percentage
+      });
+    } else {
+      setHoveredCountry({
+        name: "",
+        flag: "",
+        users: 0,
+        percentage: 0
       });
     }
   }
@@ -113,24 +127,31 @@ export default function TerminalDemographicCard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="items-center w-full rounded-full max-w-8">
-              {/* Empty initially - will be populated on hover */}
+              {hoveredCountry.flag === "globalusers.webp" ? (
+                <img src="./images/globalusers.webp" alt="global" className="w-8 h-8 rounded-full" />
+              ) : hoveredCountry.flag ? (
+                <span className={`fi fi-${hoveredCountry.flag.toLowerCase()} text-2xl`}></span>
+              ) : null}
             </div>
             <div>
               <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
-                {/* Empty initially - will be populated on hover */}
+                {hoveredCountry.name || "Country"}
               </p>
               <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                {/* Empty initially - will be populated on hover */}
+                {hoveredCountry.name ? (hoveredCountry.users > 0 ? `${hoveredCountry.users.toLocaleString()} Terminal Users` : "No users") : "Hover over a country!"}
               </span>
             </div>
           </div>
 
           <div className="flex w-full max-w-[140px] items-center gap-3">
             <div className="relative block h-2 w-full max-w-[100px] rounded bg-gray-200 dark:bg-gray-800">
-              <div className="absolute left-0 top-0 flex h-full w-0 items-center justify-center rounded bg-brand-500 text-xs font-medium text-white"></div>
+              <div 
+                className="absolute left-0 top-0 flex h-full items-center justify-center rounded bg-brand-500 text-xs font-medium text-white"
+                style={{ width: `${hoveredCountry.percentage}%` }}
+              ></div>
             </div>
             <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-              {/* Empty initially - will be populated on hover */}
+              {hoveredCountry.percentage > 0 ? `${hoveredCountry.percentage}%` : ""}
             </p>
           </div>
         </div>
