@@ -1,5 +1,5 @@
 import React from "react";
-import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
+import DistributionBatchChart from "../../components/ecommerce/DistributionBatchChart";
 import StatisticsChart from "../../components/ecommerce/StatisticsChart";
 import RewardDistribution from "../../components/ecommerce/RewardDistribution";
 import RecentOrders from "../../components/ecommerce/RecentOrders";
@@ -24,7 +24,7 @@ export default function Terminal() {
             <Volume24H />
           </div>
 
-          <MonthlySalesChart />
+          <DistributionBatchChart />
         </div>
 
                 <div className="col-span-12 xl:col-span-5">
