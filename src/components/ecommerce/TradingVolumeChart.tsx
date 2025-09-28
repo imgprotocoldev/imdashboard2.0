@@ -35,7 +35,20 @@ export default function TradingVolumeChart() {
         enabled: false,
       },
       toolbar: {
-        show: false,
+        show: true,
+        tools: {
+          zoomin: true,
+          zoomout: true,
+          reset: false,
+          pan: false,
+          download: false,
+          selection: false,
+        },
+      },
+      zoom: {
+        enabled: true,
+        type: 'x',
+        autoScaleYaxis: true,
       },
     },
     dataLabels: {
@@ -108,7 +121,23 @@ export default function TradingVolumeChart() {
   };
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+    <>
+      <style>
+        {`
+          .apexcharts-toolbar {
+            display: flex !important;
+            justify-content: flex-end !important;
+          }
+          .apexcharts-toolbar .apexcharts-toolbar-icon {
+            display: none !important;
+          }
+          .apexcharts-toolbar .apexcharts-zoomin-icon,
+          .apexcharts-toolbar .apexcharts-zoomout-icon {
+            display: inline-block !important;
+          }
+        `}
+      </style>
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -174,5 +203,6 @@ export default function TradingVolumeChart() {
         </div>
       </div>
     </div>
+    </>
   );
 }
