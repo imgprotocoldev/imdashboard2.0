@@ -20,10 +20,10 @@ export default function TerminalDemographicCard() {
       <div className="flex justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Terminal Users Demographic
+            Network Demographics
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Number of terminal users based on country
+            Active terminal users by country
           </p>
         </div>
         <div className="relative inline-block">

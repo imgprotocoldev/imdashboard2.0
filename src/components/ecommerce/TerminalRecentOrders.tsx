@@ -22,43 +22,43 @@ interface Transaction {
 const tableData: Transaction[] = [
   {
     id: 1,
-    type: "Reward Distribution",
-    amount: "210.95 SOL",
+    type: "Signature",
+    amount: "210.95",
     status: "Completed",
     timestamp: "2 hours ago",
-    hash: "3jRUd3QNwtxVSszqjMcxFYNZf7nh4fBCtrcRzR8UHD3NFf65yZyAvQFQfr1dPDDvszQAdL5CXLj7X3EL27CmnrLs",
+    hash: "Snapshot 00001",
   },
   {
     id: 2,
-    type: "Infrastructure Payment",
-    amount: "23.53 SOL",
+    type: "Signature",
+    amount: "23.53",
     status: "Completed",
     timestamp: "4 hours ago",
-    hash: "2kRUd3QNwtxVSszqjMcxFYNZf7nh4fBCtrcRzR8UHD3NFf65yZyAvQFQfr1dPDDvszQAdL5CXLj7X3EL27CmnrLs",
+    hash: "Snapshot 00002",
   },
   {
     id: 3,
-    type: "Pending Rewards",
-    amount: "0.87 SOL",
+    type: "Signature",
+    amount: "0.87",
     status: "Pending",
     timestamp: "6 hours ago",
-    hash: "1jRUd3QNwtxVSszqjMcxFYNZf7nh4fBCtrcRzR8UHD3NFf65yZyAvQFQfr1dPDDvszQAdL5CXLj7X3EL27CmnrLs",
+    hash: "Snapshot 00003",
   },
   {
     id: 4,
-    type: "Net Adjustment",
-    amount: "-1.95 SOL",
+    type: "Signature",
+    amount: "-1.95",
     status: "Completed",
     timestamp: "8 hours ago",
-    hash: "4jRUd3QNwtxVSszqjMcxFYNZf7nh4fBCtrcRzR8UHD3NFf65yZyAvQFQfr1dPDDvszQAdL5CXLj7X3EL27CmnrLs",
+    hash: "Snapshot 00004",
   },
   {
     id: 5,
-    type: "Reward Distribution",
-    amount: "198.42 SOL",
+    type: "Signature",
+    amount: "198.42",
     status: "Failed",
     timestamp: "12 hours ago",
-    hash: "5jRUd3QNwtxVSszqjMcxFYNZf7nh4fBCtrcRzR8UHD3NFf65yZyAvQFQfr1dPDDvszQAdL5CXLj7X3EL27CmnrLs",
+    hash: "Snapshot 00005",
   },
 ];
 
@@ -68,7 +68,7 @@ export default function TerminalRecentOrders() {
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Recent Transactions
+            Recent Distribution
           </h3>
         </div>
 
@@ -125,13 +125,13 @@ export default function TerminalRecentOrders() {
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Transaction Type
+                Transaction Batch
               </TableCell>
               <TableCell
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Amount
+                Amount (SOL)
               </TableCell>
               <TableCell
                 isHeader
@@ -154,17 +154,19 @@ export default function TerminalRecentOrders() {
               <TableRow key={transaction.id} className="">
                 <TableCell className="py-3">
                   <div className="flex items-center gap-3">
-                    <div className="h-[40px] w-[40px] overflow-hidden rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
-                      </svg>
+                    <div className="h-[40px] w-[40px] overflow-hidden rounded-md flex items-center justify-center">
+                      <img 
+                        src="./images/solanacoin.webp" 
+                        alt="Solana Coin" 
+                        className="h-[40px] w-[40px] object-cover"
+                      />
                     </div>
                     <div>
                       <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
                         {transaction.type}
                       </p>
                       <span className="text-gray-500 text-theme-xs dark:text-gray-400 font-mono">
-                        {transaction.hash.substring(0, 8)}...
+                        {transaction.hash}
                       </span>
                     </div>
                   </div>
