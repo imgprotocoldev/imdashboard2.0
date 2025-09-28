@@ -6,6 +6,7 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { MoreDotIcon } from "../../icons";
 
 export default function RewardDistribution() {
+  // Updated: Tooltip removed
   const series = [210.95, 23.53, 0.87, 1.95]; // SOL amounts
   const options: ApexOptions = {
     colors: ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"], // Blue, Green, Yellow, Red
@@ -62,15 +63,6 @@ export default function RewardDistribution() {
     stroke: {
       show: false,
     },
-    tooltip: {
-      y: {
-        formatter: function (val: number, { w }: any) {
-          const total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
-          const percentage = ((val / total) * 100).toFixed(1);
-          return `${val} SOL (${percentage}%)`;
-        },
-      },
-    },
   };
 
   const [isOpen, setIsOpen] = useState(false);
@@ -92,12 +84,12 @@ export default function RewardDistribution() {
               Reward Distribution
             </h3>
             <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-              Lifetime Allocation in Solana
+              Lifetime Allocation in Solana (Updated v2)
             </p>
           </div>
           <div className="relative inline-block">
             <button className="dropdown-toggle" onClick={toggleDropdown}>
-              <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
+              <MoreDotIcon />
             </button>
             <Dropdown
               isOpen={isOpen}

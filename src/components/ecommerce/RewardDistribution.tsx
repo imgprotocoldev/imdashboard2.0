@@ -1,3 +1,4 @@
+import React from "react";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { useState } from "react";
@@ -63,13 +64,7 @@ export default function RewardDistribution() {
       show: false,
     },
     tooltip: {
-      y: {
-        formatter: function (val: number, { w }: any) {
-          const total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
-          const percentage = ((val / total) * 100).toFixed(1);
-          return `${val} SOL (${percentage}%)`;
-        },
-      },
+      enabled: false,
     },
   };
 

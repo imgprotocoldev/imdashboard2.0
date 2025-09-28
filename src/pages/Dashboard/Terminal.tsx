@@ -1,3 +1,4 @@
+import React from "react";
 import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import StatisticsChart from "../../components/ecommerce/StatisticsChart";
 import RewardDistribution from "../../components/ecommerce/RewardDistribution";
@@ -5,6 +6,7 @@ import RecentOrders from "../../components/ecommerce/RecentOrders";
 import DemographicCard from "../../components/ecommerce/DemographicCard";
 import PriceUSD from "../../components/ecommerce/PriceUSD";
 import Volume24H from "../../components/ecommerce/Volume24H";
+import TradingVolumeChart from "../../components/ecommerce/TradingVolumeChart";
 import PageMeta from "../../components/common/PageMeta";
 
 export default function Terminal() {
@@ -39,6 +41,10 @@ export default function Terminal() {
 
         <div className="col-span-12 xl:col-span-7">
           <RecentOrders />
+        </div>
+
+        <div className="col-span-12">
+          <TradingVolumeChart />
         </div>
       </div>
     </>
