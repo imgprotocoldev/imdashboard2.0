@@ -12,7 +12,7 @@ export default function RewardDistribution() {
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "donut",
-      height: 330,
+      height: 280,
       sparkline: {
         enabled: false,
       },
@@ -29,8 +29,8 @@ export default function RewardDistribution() {
               fontSize: "16px",
               fontWeight: "600",
               color: "#1D2939",
-              formatter: function (w) {
-                const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+              formatter: function (w: any) {
+                const total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
                 return total.toFixed(2);
               },
             },
@@ -54,20 +54,7 @@ export default function RewardDistribution() {
       "Net Adjustments"
     ],
     legend: {
-      show: true,
-      position: "bottom",
-      horizontalAlign: "center",
-      fontSize: "12px",
-      fontWeight: "500",
-      markers: {
-        width: 8,
-        height: 8,
-        radius: 4,
-      },
-      itemMargin: {
-        horizontal: 8,
-        vertical: 4,
-      },
+      show: false,
     },
     dataLabels: {
       enabled: false,
@@ -77,8 +64,8 @@ export default function RewardDistribution() {
     },
     tooltip: {
       y: {
-        formatter: function (val, { seriesIndex, w }) {
-          const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+        formatter: function (val: number, { w }: any) {
+          const total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
           const percentage = ((val / total) * 100).toFixed(1);
           return `${val} SOL (${percentage}%)`;
         },
@@ -105,7 +92,7 @@ export default function RewardDistribution() {
               Reward Distribution
             </h3>
             <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-              Lifetime Allocation of SOL
+              Lifetime Allocation in Solana
             </p>
           </div>
           <div className="relative inline-block">
@@ -133,135 +120,70 @@ export default function RewardDistribution() {
           </div>
         </div>
         <div className="relative">
-          <div className="max-h-[330px]" id="chartDarkStyle">
+          <div className="max-h-[280px]" id="chartDarkStyle">
             <Chart
               options={options}
               series={series}
               type="donut"
-              height={330}
+              height={280}
             />
           </div>
         </div>
         
-        {/* Detailed breakdown */}
-        <div className="mt-6 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-blue-500 mr-3"></div>
-              <span className="text-sm text-gray-600 dark:text-gray-300">Payment to Holders</span>
-            </div>
-            <div className="text-right">
-              <div className="text-sm font-semibold text-gray-800 dark:text-white">210.95 SOL</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">~90.4%</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-green-500 mr-3"></div>
-              <span className="text-sm text-gray-600 dark:text-gray-300">Payment to Infra</span>
-            </div>
-            <div className="text-right">
-              <div className="text-sm font-semibold text-gray-800 dark:text-white">23.53 SOL</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">~10.1%</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-yellow-500 mr-3"></div>
-              <span className="text-sm text-gray-600 dark:text-gray-300">Pending Rewards</span>
-            </div>
-            <div className="text-right">
-              <div className="text-sm font-semibold text-gray-800 dark:text-white">0.87 SOL</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">~0.4%</div>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-red-500 mr-3"></div>
-              <span className="text-sm text-gray-600 dark:text-gray-300">Net Adjustments</span>
-            </div>
-            <div className="text-right">
-              <div className="text-sm font-semibold text-gray-800 dark:text-white">-1.95 SOL</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">~-0.8%</div>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <div className="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5">
-        <div>
-          <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Target
-          </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            $20K
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M7.26816 13.6632C7.4056 13.8192 7.60686 13.9176 7.8311 13.9176C7.83148 13.9176 7.83187 13.9176 7.83226 13.9176C8.02445 13.9178 8.21671 13.8447 8.36339 13.6981L12.3635 9.70076C12.6565 9.40797 12.6567 8.9331 12.3639 8.6401C12.0711 8.34711 11.5962 8.34694 11.3032 8.63973L8.5811 11.36L8.5811 2.5C8.5811 2.08579 8.24531 1.75 7.8311 1.75C7.41688 1.75 7.0811 2.08579 7.0811 2.5L7.0811 11.3556L4.36354 8.63975C4.07055 8.34695 3.59568 8.3471 3.30288 8.64009C3.01008 8.93307 3.01023 9.40794 3.30321 9.70075L7.26816 13.6632Z"
-                fill="#D92D20"
-              />
-            </svg>
+      <div className="flex items-center justify-center gap-3 px-6 py-2 sm:gap-4 sm:py-3">
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Payment to Holders
+            </p>
+          </div>
+          <p className="text-xs font-semibold text-gray-800 dark:text-white/90">
+            210.95 SOL
           </p>
         </div>
 
-        <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
+        <div className="w-px bg-gray-200 h-5 dark:bg-gray-800"></div>
 
-        <div>
-          <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Revenue
-          </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            $20K
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
-                fill="#039855"
-              />
-            </svg>
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Payment to Infra
+            </p>
+          </div>
+          <p className="text-xs font-semibold text-gray-800 dark:text-white/90">
+            23.53 SOL
           </p>
         </div>
 
-        <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
+        <div className="w-px bg-gray-200 h-5 dark:bg-gray-800"></div>
 
-        <div>
-          <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Today
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Pending Rewards
+            </p>
+          </div>
+          <p className="text-xs font-semibold text-gray-800 dark:text-white/90">
+            0.87 SOL
           </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            $20K
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
-                fill="#039855"
-              />
-            </svg>
+        </div>
+
+        <div className="w-px bg-gray-200 h-5 dark:bg-gray-800"></div>
+
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Net Adjustments
+            </p>
+          </div>
+          <p className="text-xs font-semibold text-gray-800 dark:text-white/90">
+            -1.95 SOL
           </p>
         </div>
       </div>
