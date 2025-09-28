@@ -1,6 +1,6 @@
 import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import StatisticsChart from "../../components/ecommerce/StatisticsChart";
-import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
+import RewardDistribution from "../../components/ecommerce/RewardDistribution";
 import RecentOrders from "../../components/ecommerce/RecentOrders";
 import DemographicCard from "../../components/ecommerce/DemographicCard";
 import PriceUSD from "../../components/ecommerce/PriceUSD";
@@ -25,9 +25,9 @@ export default function Terminal() {
           <MonthlySalesChart />
         </div>
 
-        <div className="col-span-12 xl:col-span-5">
-          <MonthlyTarget />
-        </div>
+                <div className="col-span-12 xl:col-span-5">
+                  <RewardDistribution />
+                </div>
 
         <div className="col-span-12">
           <StatisticsChart />
