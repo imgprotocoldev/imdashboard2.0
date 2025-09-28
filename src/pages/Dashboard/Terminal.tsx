@@ -1,9 +1,9 @@
 import React from "react";
 import DistributionBatchChart from "../../components/ecommerce/DistributionBatchChart";
-import StatisticsChart from "../../components/ecommerce/StatisticsChart";
+import TerminalStatisticsChart from "../../components/ecommerce/TerminalStatisticsChart";
 import RewardDistribution from "../../components/ecommerce/RewardDistribution";
-import RecentOrders from "../../components/ecommerce/RecentOrders";
-import DemographicCard from "../../components/ecommerce/DemographicCard";
+import TerminalRecentOrders from "../../components/ecommerce/TerminalRecentOrders";
+import TerminalDemographicCard from "../../components/ecommerce/TerminalDemographicCard";
 import PriceUSD from "../../components/ecommerce/PriceUSD";
 import Volume24H from "../../components/ecommerce/Volume24H";
 import TradingVolumeChart from "../../components/ecommerce/TradingVolumeChart";
@@ -32,15 +32,15 @@ export default function Terminal() {
                 </div>
 
         <div className="col-span-12">
-          <StatisticsChart />
+          <TerminalStatisticsChart />
         </div>
 
         <div className="col-span-12 xl:col-span-5">
-          <DemographicCard />
+          <TerminalDemographicCard />
         </div>
 
         <div className="col-span-12 xl:col-span-7">
-          <RecentOrders />
+          <TerminalRecentOrders />
         </div>
 
         <div className="col-span-12">
