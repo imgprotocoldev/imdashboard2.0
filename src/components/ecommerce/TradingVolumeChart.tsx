@@ -112,10 +112,10 @@ export default function TradingVolumeChart() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Trading Volume
+            Reward Conversion Flow
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            IMG Token Volume (Last 7 Days)
+            IMG / SOL sales per transaction
           </p>
         </div>
         <div className="relative inline-block">
@@ -155,21 +155,21 @@ export default function TradingVolumeChart() {
       {/* Summary Stats */}
       <div className="mt-6 grid grid-cols-3 gap-4">
         <div className="text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Avg Volume</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">IMG Sold</p>
           <p className="text-lg font-semibold text-gray-800 dark:text-white/90">
             $145.2K
           </p>
         </div>
         <div className="text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Peak Volume</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">SOL Earned</p>
           <p className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            $234K
+            1.30 SOL
           </p>
         </div>
         <div className="text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">Total Volume</p>
           <p className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            $1.02M
+            $10K
           </p>
         </div>
       </div>
