@@ -5,9 +5,39 @@ import { worldMill } from "@react-jvectormap/world";
 // Define the component props
 interface CountryMapProps {
   mapColor?: string;
+  onCountryHover?: (countryData: any) => void;
 }
 
-const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
+const CountryMap: React.FC<CountryMapProps> = ({ mapColor, onCountryHover }) => {
+  // Test data for countries with users
+  const countryData = {
+    'US': { name: 'USA', flag: 'us', users: 1, percentage: 0.06 },
+    'FR': { name: 'France', flag: 'fr', users: 0, percentage: 0 },
+    'GB': { name: 'United Kingdom', flag: 'gb', users: 0, percentage: 0 },
+    'IN': { name: 'India', flag: 'in', users: 0, percentage: 0 },
+    'SE': { name: 'Sweden', flag: 'se', users: 0, percentage: 0 },
+  };
+
+  const handleRegionHover = (event: any, code: string) => {
+    if (onCountryHover && countryData[code as keyof typeof countryData]) {
+      const data = countryData[code as keyof typeof countryData];
+      if (data.users > 0) {
+        onCountryHover(data);
+      }
+    }
+  };
+
+  const handleRegionOut = () => {
+    // Reset to Global when mouse leaves country
+    if (onCountryHover) {
+      onCountryHover({
+        name: "Global",
+        flag: "globalusers.webp",
+        users: 1559,
+        percentage: 100
+      });
+    }
+  };
   return (
     <VectorMap
       map={worldMill}
@@ -56,6 +86,24 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
       zoomMin={1}
       zoomAnimate={true}
       zoomStep={1.5}
+      onRegionTipShow={(event: any, tip: any, code: string) => {
+        // Show tooltip with user count
+        const data = countryData[code as keyof typeof countryData];
+        if (data && data.users > 0) {
+          tip.html(`<div style="padding: 8px; background: #465FFF; color: white; border-radius: 4px; font-family: Outfit, sans-serif;">
+            <strong>${data.name}</strong><br/>
+            ${data.users} Terminal User${data.users !== 1 ? 's' : ''}
+          </div>`);
+        } else {
+          tip.hide();
+        }
+      }}
+      onRegionOver={(event: any, code: string) => {
+        handleRegionHover(event, code);
+      }}
+      onRegionOut={() => {
+        handleRegionOut();
+      }}
       regionStyle={{
         initial: {
           fill: mapColor || "#D0D5DD",
