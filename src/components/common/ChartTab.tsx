@@ -1,9 +1,24 @@
 import { useState } from "react";
 
-const ChartTab: React.FC = () => {
+interface ChartTabProps {
+  selectedPeriod: "monthly" | "quarterly" | "annually";
+  onPeriodChange: (period: "monthly" | "quarterly" | "annually") => void;
+}
+
+const ChartTab: React.FC<ChartTabProps> = ({ selectedPeriod, onPeriodChange }) => {
   const [selected, setSelected] = useState<
     "optionOne" | "optionTwo" | "optionThree"
   >("optionOne");
+
+  const handleOptionClick = (option: "optionOne" | "optionTwo" | "optionThree") => {
+    setSelected(option);
+    const periodMap = {
+      optionOne: "monthly" as const,
+      optionTwo: "quarterly" as const,
+      optionThree: "annually" as const,
+    };
+    onPeriodChange(periodMap[option]);
+  };
 
   const getButtonClass = (option: "optionOne" | "optionTwo" | "optionThree") =>
     selected === option
@@ -13,7 +28,7 @@ const ChartTab: React.FC = () => {
   return (
     <div className="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5 dark:bg-gray-900">
       <button
-        onClick={() => setSelected("optionOne")}
+        onClick={() => handleOptionClick("optionOne")}
         className={`px-3 py-2 font-medium w-full rounded-md text-theme-sm hover:text-gray-900   dark:hover:text-white ${getButtonClass(
           "optionOne"
         )}`}
@@ -22,7 +37,7 @@ const ChartTab: React.FC = () => {
       </button>
 
       <button
-        onClick={() => setSelected("optionTwo")}
+        onClick={() => handleOptionClick("optionTwo")}
         className={`px-3 py-2 font-medium w-full rounded-md text-theme-sm hover:text-gray-900   dark:hover:text-white ${getButtonClass(
           "optionTwo"
         )}`}
@@ -31,7 +46,7 @@ const ChartTab: React.FC = () => {
       </button>
 
       <button
-        onClick={() => setSelected("optionThree")}
+        onClick={() => handleOptionClick("optionThree")}
         className={`px-3 py-2 font-medium w-full rounded-md text-theme-sm hover:text-gray-900   dark:hover:text-white ${getButtonClass(
           "optionThree"
         )}`}

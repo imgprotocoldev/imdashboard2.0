@@ -1,8 +1,32 @@
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import ChartTab from "../common/ChartTab";
+import { useState } from "react";
 
 export default function StatisticsChart() {
+  const [selectedPeriod, setSelectedPeriod] = useState<"monthly" | "quarterly" | "annually">("monthly");
+
+  // Data for different time periods
+  const dataSets = {
+    monthly: {
+      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      harvesting: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
+      distribution: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
+    },
+    quarterly: {
+      categories: ["Q1", "Q2", "Q3", "Q4"],
+      harvesting: [540, 500, 605, 685],
+      distribution: [120, 155, 280, 420],
+    },
+    annually: {
+      categories: ["2021", "2022", "2023", "2024"],
+      harvesting: [2000, 2300, 2500, 2100],
+      distribution: [500, 800, 1200, 950],
+    },
+  };
+
+  const currentData = dataSets[selectedPeriod];
+
   const options: ApexOptions = {
     legend: {
       show: false, // Hide legend
@@ -54,27 +78,26 @@ export default function StatisticsChart() {
       enabled: false, // Disable data labels
     },
     tooltip: {
-      enabled: true, // Enable tooltip
+      enabled: true,
+      shared: true, // Show all series in one tooltip
+      intersect: false, // Show tooltip when hovering anywhere on the chart
       x: {
-        format: "dd MMM yyyy", // Format for x-axis tooltip
+        show: true,
+        format: "dd MMM yyyy",
+      },
+      y: {
+        formatter: function (val: number) {
+          return val.toString();
+        },
+      },
+      style: {
+        fontSize: "12px",
+        fontFamily: "Outfit, sans-serif",
       },
     },
     xaxis: {
       type: "category", // Category-based x-axis
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      categories: currentData.categories,
       axisBorder: {
         show: false, // Hide x-axis border
       },
@@ -87,6 +110,9 @@ export default function StatisticsChart() {
     },
     yaxis: {
       labels: {
+        formatter: function (val: number) {
+          return val + " SOL"; // Add SOL unit to y-axis labels
+        },
         style: {
           fontSize: "12px", // Adjust font size for y-axis labels
           colors: ["#6B7280"], // Color of the labels
@@ -103,27 +129,53 @@ export default function StatisticsChart() {
 
   const series = [
     {
-      name: "Sales",
-      data: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
+      name: "Harvesting",
+      data: currentData.harvesting,
     },
     {
-      name: "Revenue",
-      data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
+      name: "Distribution",
+      data: currentData.distribution,
     },
   ];
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
+    <>
+      <style>
+        {`
+          .apexcharts-tooltip {
+            min-width: 120px !important;
+          }
+          .apexcharts-tooltip-series-group {
+            display: flex !important;
+            align-items: center !important;
+            margin-bottom: 2px !important;
+            flex-direction: row-reverse !important;
+          }
+          .apexcharts-tooltip-marker {
+            vertical-align: middle !important;
+            margin-top: 0 !important;
+            margin-left: 6px !important;
+            margin-right: 0 !important;
+          }
+          .apexcharts-tooltip-text {
+            line-height: 1.2 !important;
+          }
+        `}
+      </style>
+      <div className="rounded-2xl border border-gray-200 bg-white px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
         <div className="w-full">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Statistics
+            Cumulative Reward Flow (SOL)
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Target you’ve set for each month
+            Harvest vs. Distribution correlation
           </p>
         </div>
         <div className="flex items-start w-full gap-3 sm:justify-end">
-          <ChartTab />
+          <ChartTab 
+            selectedPeriod={selectedPeriod}
+            onPeriodChange={setSelectedPeriod}
+          />
         </div>
       </div>
 
@@ -133,5 +185,6 @@ export default function StatisticsChart() {
         </div>
       </div>
     </div>
+    </>
   );
 }
