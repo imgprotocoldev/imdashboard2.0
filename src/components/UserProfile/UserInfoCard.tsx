@@ -3,13 +3,343 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import { useSupabaseAuth } from "../../hooks/useSupabaseAuth";
+import { useState, useEffect } from "react";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
+  const { user, supabase } = useSupabaseAuth();
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [userCountry, setUserCountry] = useState("");
+  const [userProfile, setUserProfile] = useState({
+    username: "",
+    email: "",
+    bio: "",
+    avatar: ""
+  });
+  const [loading, setLoading] = useState(true);
+
+  // Avatar options
+  const avatarOptions = [
+    { id: "user1", name: "User 1", image: "/images/user/user1.webp" },
+    { id: "user2", name: "User 2", image: "/images/user/user2.webp" },
+    { id: "user3", name: "User 3", image: "/images/user/user3.webp" },
+    { id: "user4", name: "User 4", image: "/images/user/user4.webp" }
+  ];
+
+  // Country options with ISO codes
+  const countries = [
+    { code: "us", name: "United States" },
+    { code: "ca", name: "Canada" },
+    { code: "mx", name: "Mexico" },
+    { code: "gb", name: "United Kingdom" },
+    { code: "de", name: "Germany" },
+    { code: "fr", name: "France" },
+    { code: "it", name: "Italy" },
+    { code: "es", name: "Spain" },
+    { code: "nl", name: "Netherlands" },
+    { code: "be", name: "Belgium" },
+    { code: "ch", name: "Switzerland" },
+    { code: "at", name: "Austria" },
+    { code: "dk", name: "Denmark" },
+    { code: "no", name: "Norway" },
+    { code: "fi", name: "Finland" },
+    { code: "se", name: "Sweden" },
+    { code: "pl", name: "Poland" },
+    { code: "cz", name: "Czech Republic" },
+    { code: "hu", name: "Hungary" },
+    { code: "ro", name: "Romania" },
+    { code: "bg", name: "Bulgaria" },
+    { code: "gr", name: "Greece" },
+    { code: "pt", name: "Portugal" },
+    { code: "ie", name: "Ireland" },
+    { code: "lu", name: "Luxembourg" },
+    { code: "mt", name: "Malta" },
+    { code: "cy", name: "Cyprus" },
+    { code: "ee", name: "Estonia" },
+    { code: "lv", name: "Latvia" },
+    { code: "lt", name: "Lithuania" },
+    { code: "si", name: "Slovenia" },
+    { code: "sk", name: "Slovakia" },
+    { code: "hr", name: "Croatia" },
+    { code: "br", name: "Brazil" },
+    { code: "ar", name: "Argentina" },
+    { code: "cl", name: "Chile" },
+    { code: "co", name: "Colombia" },
+    { code: "pe", name: "Peru" },
+    { code: "ve", name: "Venezuela" },
+    { code: "uy", name: "Uruguay" },
+    { code: "py", name: "Paraguay" },
+    { code: "bo", name: "Bolivia" },
+    { code: "ec", name: "Ecuador" },
+    { code: "za", name: "South Africa" },
+    { code: "ng", name: "Nigeria" },
+    { code: "eg", name: "Egypt" },
+    { code: "ke", name: "Kenya" },
+    { code: "gh", name: "Ghana" },
+    { code: "ma", name: "Morocco" },
+    { code: "tn", name: "Tunisia" },
+    { code: "dz", name: "Algeria" },
+    { code: "ly", name: "Libya" },
+    { code: "sd", name: "Sudan" },
+    { code: "et", name: "Ethiopia" },
+    { code: "ug", name: "Uganda" },
+    { code: "tz", name: "Tanzania" },
+    { code: "zw", name: "Zimbabwe" },
+    { code: "bw", name: "Botswana" },
+    { code: "na", name: "Namibia" },
+    { code: "zm", name: "Zambia" },
+    { code: "mw", name: "Malawi" },
+    { code: "mz", name: "Mozambique" },
+    { code: "mg", name: "Madagascar" },
+    { code: "mu", name: "Mauritius" },
+    { code: "sc", name: "Seychelles" },
+    { code: "km", name: "Comoros" },
+    { code: "dj", name: "Djibouti" },
+    { code: "so", name: "Somalia" },
+    { code: "er", name: "Eritrea" },
+    { code: "ss", name: "South Sudan" },
+    { code: "cf", name: "Central African Republic" },
+    { code: "td", name: "Chad" },
+    { code: "ne", name: "Niger" },
+    { code: "ml", name: "Mali" },
+    { code: "bf", name: "Burkina Faso" },
+    { code: "ci", name: "Ivory Coast" },
+    { code: "lr", name: "Liberia" },
+    { code: "sl", name: "Sierra Leone" },
+    { code: "gn", name: "Guinea" },
+    { code: "gw", name: "Guinea-Bissau" },
+    { code: "gm", name: "Gambia" },
+    { code: "sn", name: "Senegal" },
+    { code: "mr", name: "Mauritania" },
+    { code: "cv", name: "Cape Verde" },
+    { code: "st", name: "São Tomé and Príncipe" },
+    { code: "gq", name: "Equatorial Guinea" },
+    { code: "ga", name: "Gabon" },
+    { code: "cg", name: "Republic of the Congo" },
+    { code: "cd", name: "Democratic Republic of the Congo" },
+    { code: "ao", name: "Angola" },
+    { code: "cm", name: "Cameroon" },
+    { code: "cn", name: "China" },
+    { code: "jp", name: "Japan" },
+    { code: "kr", name: "South Korea" },
+    { code: "th", name: "Thailand" },
+    { code: "vn", name: "Vietnam" },
+    { code: "my", name: "Malaysia" },
+    { code: "sg", name: "Singapore" },
+    { code: "id", name: "Indonesia" },
+    { code: "ph", name: "Philippines" },
+    { code: "bd", name: "Bangladesh" },
+    { code: "pk", name: "Pakistan" },
+    { code: "lk", name: "Sri Lanka" },
+    { code: "np", name: "Nepal" },
+    { code: "bt", name: "Bhutan" },
+    { code: "mv", name: "Maldives" },
+    { code: "af", name: "Afghanistan" },
+    { code: "ir", name: "Iran" },
+    { code: "iq", name: "Iraq" },
+    { code: "sy", name: "Syria" },
+    { code: "lb", name: "Lebanon" },
+    { code: "jo", name: "Jordan" },
+    { code: "il", name: "Israel" },
+    { code: "ps", name: "Palestine" },
+    { code: "sa", name: "Saudi Arabia" },
+    { code: "ae", name: "United Arab Emirates" },
+    { code: "qa", name: "Qatar" },
+    { code: "bh", name: "Bahrain" },
+    { code: "kw", name: "Kuwait" },
+    { code: "om", name: "Oman" },
+    { code: "ye", name: "Yemen" },
+    { code: "kz", name: "Kazakhstan" },
+    { code: "uz", name: "Uzbekistan" },
+    { code: "tm", name: "Turkmenistan" },
+    { code: "tj", name: "Tajikistan" },
+    { code: "kg", name: "Kyrgyzstan" },
+    { code: "mn", name: "Mongolia" },
+    { code: "kp", name: "North Korea" },
+    { code: "tw", name: "Taiwan" },
+    { code: "hk", name: "Hong Kong" },
+    { code: "mo", name: "Macau" },
+    { code: "la", name: "Laos" },
+    { code: "kh", name: "Cambodia" },
+    { code: "mm", name: "Myanmar" },
+    { code: "bn", name: "Brunei" },
+    { code: "tl", name: "East Timor" },
+    { code: "au", name: "Australia" },
+    { code: "nz", name: "New Zealand" },
+    { code: "fj", name: "Fiji" },
+    { code: "pg", name: "Papua New Guinea" },
+    { code: "sb", name: "Solomon Islands" },
+    { code: "vu", name: "Vanuatu" },
+    { code: "nc", name: "New Caledonia" },
+    { code: "pf", name: "French Polynesia" },
+    { code: "ws", name: "Samoa" },
+    { code: "to", name: "Tonga" },
+    { code: "ki", name: "Kiribati" },
+    { code: "tv", name: "Tuvalu" },
+    { code: "nr", name: "Nauru" },
+    { code: "pw", name: "Palau" },
+    { code: "fm", name: "Micronesia" },
+    { code: "mh", name: "Marshall Islands" },
+    { code: "ru", name: "Russia" },
+    { code: "ua", name: "Ukraine" },
+    { code: "tr", name: "Turkey" },
+    { code: "is", name: "Iceland" },
+    { code: "li", name: "Liechtenstein" },
+    { code: "mc", name: "Monaco" },
+    { code: "sm", name: "San Marino" },
+    { code: "va", name: "Vatican City" },
+    { code: "ad", name: "Andorra" },
+    { code: "by", name: "Belarus" },
+    { code: "md", name: "Moldova" },
+    { code: "al", name: "Albania" },
+    { code: "ba", name: "Bosnia and Herzegovina" },
+    { code: "me", name: "Montenegro" },
+    { code: "mk", name: "North Macedonia" },
+    { code: "rs", name: "Serbia" },
+    { code: "xk", name: "Kosovo" },
+    { code: "ge", name: "Georgia" },
+    { code: "am", name: "Armenia" },
+    { code: "az", name: "Azerbaijan" },
+    { code: "gl", name: "Greenland" },
+    { code: "cu", name: "Cuba" },
+    { code: "jm", name: "Jamaica" },
+    { code: "ht", name: "Haiti" },
+    { code: "do", name: "Dominican Republic" },
+    { code: "bs", name: "Bahamas" },
+    { code: "bb", name: "Barbados" },
+    { code: "ag", name: "Antigua and Barbuda" },
+    { code: "dm", name: "Dominica" },
+    { code: "gd", name: "Grenada" },
+    { code: "kn", name: "Saint Kitts and Nevis" },
+    { code: "lc", name: "Saint Lucia" },
+    { code: "vc", name: "Saint Vincent and the Grenadines" },
+    { code: "tt", name: "Trinidad and Tobago" },
+    { code: "bz", name: "Belize" },
+    { code: "gt", name: "Guatemala" },
+    { code: "hn", name: "Honduras" },
+    { code: "ni", name: "Nicaragua" },
+    { code: "cr", name: "Costa Rica" },
+    { code: "pa", name: "Panama" },
+    { code: "gf", name: "French Guiana" },
+    { code: "fk", name: "Falkland Islands" },
+  ];
+
+  // Load user's profile data
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (user) {
+        try {
+          setLoading(true);
+          console.log('Loading profile for user:', user.id);
+          
+          // Try to load profile data
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+          
+          console.log('Profile query result:', { data, error });
+          
+          if (data && !error) {
+            setUserProfile({
+              username: data.username || user.user_metadata?.full_name || user.email?.split('@')[0] || "",
+              email: user.email || "",
+              bio: data.bio || "",
+              avatar: data.avatar_name || "user1"
+            });
+            setUserCountry(data.country || "");
+            setSelectedCountry(data.country || "");
+          } else {
+            console.log('No profile found, using default values...');
+            // Use default values if no profile exists
+            setUserProfile({
+              username: user.user_metadata?.full_name || user.email?.split('@')[0] || "",
+              email: user.email || "",
+              bio: "",
+              avatar: "user1"
+            });
+            setUserCountry("");
+            setSelectedCountry("");
+          }
+        } catch (error) {
+          console.error('Error loading user profile:', error);
+          // Use default values on error
+          setUserProfile({
+            username: user.user_metadata?.full_name || user.email?.split('@')[0] || "",
+            email: user.email || "",
+            bio: "",
+            avatar: "user1"
+          });
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    loadUserProfile();
+  }, [user, supabase]);
+
+  const handleSave = async () => {
+    if (user) {
+      try {
+        console.log('Updating profile for user:', user.id);
+        console.log('Selected country:', selectedCountry);
+        console.log('Profile data:', userProfile);
+        
+        // Try to update the profile
+        const { data, error } = await supabase
+          .from('profiles')
+          .update({ 
+            country: selectedCountry,
+            username: userProfile.username,
+            bio: userProfile.bio,
+            avatar_name: userProfile.avatar
+          })
+          .eq('id', user.id)
+          .select();
+        
+        if (error) {
+          console.error('Supabase error:', error);
+          console.error('Error details:', error.message, error.details, error.hint);
+          
+          // If table doesn't exist, try to create the profile
+          if (error.message.includes('relation "profiles" does not exist') || error.message.includes('Failed to fetch')) {
+            console.log('Table does not exist, creating profile...');
+            const { data: insertData, error: insertError } = await supabase
+              .from('profiles')
+              .insert({
+                id: user.id,
+                username: userProfile.username,
+                email: user.email,
+                country: selectedCountry,
+                bio: userProfile.bio,
+                avatar_name: userProfile.avatar
+              })
+              .select();
+            
+            if (insertError) {
+              console.error('Insert error:', insertError);
+              alert(`Error creating profile: ${insertError.message}`);
+            } else {
+              console.log('Profile created successfully:', insertData);
+              setUserCountry(selectedCountry);
+              closeModal();
+            }
+          } else {
+            alert(`Error updating profile: ${error.message}`);
+          }
+        } else {
+          console.log('Profile updated successfully:', data);
+          setUserCountry(selectedCountry);
     closeModal();
+        }
+      } catch (error) {
+        console.error('JavaScript error:', error);
+        alert(`Error updating profile: ${error.message}`);
+      }
+    }
   };
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
@@ -22,19 +352,10 @@ export default function UserInfoCard() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                First Name
+                Username
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Last Name
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
+                {loading ? "Loading..." : userProfile.username || "Not set"}
               </p>
             </div>
 
@@ -43,16 +364,7 @@ export default function UserInfoCard() {
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Phone
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
+                {loading ? "Loading..." : userProfile.email || "Not set"}
               </p>
             </div>
 
@@ -61,7 +373,16 @@ export default function UserInfoCard() {
                 Bio
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Team Manager
+                {loading ? "Loading..." : userProfile.bio || "IMG User"}
+              </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Country
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {userCountry ? countries.find(c => c.code === userCountry)?.name || userCountry : "Not set"}
               </p>
             </div>
           </div>
@@ -141,29 +462,75 @@ export default function UserInfoCard() {
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>First Name</Label>
-                    <Input type="text" value="Musharof" />
+                  <div className="col-span-2">
+                    <Label>Username</Label>
+                    <Input 
+                      type="text" 
+                      value={userProfile.username}
+                      onChange={(e) => setUserProfile(prev => ({ ...prev, username: e.target.value }))}
+                    />
                   </div>
 
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Last Name</Label>
-                    <Input type="text" value="Chowdhury" />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
+                  <div className="col-span-2">
                     <Label>Email Address</Label>
-                    <Input type="text" value="randomuser@pimjo.com" />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Phone</Label>
-                    <Input type="text" value="+09 363 398 46" />
+                    <Input 
+                      type="text" 
+                      value={userProfile.email}
+                      disabled
+                      className="bg-gray-100 dark:bg-gray-700"
+                    />
                   </div>
 
                   <div className="col-span-2">
                     <Label>Bio</Label>
-                    <Input type="text" value="Team Manager" />
+                    <Input 
+                      type="text" 
+                      value={userProfile.bio}
+                      onChange={(e) => setUserProfile(prev => ({ ...prev, bio: e.target.value }))}
+                      placeholder="IMG User"
+                    />
+                  </div>
+
+                  <div className="col-span-2">
+                    <Label>Avatar</Label>
+                    <div className="grid grid-cols-4 gap-4 mt-2">
+                      {avatarOptions.map((avatar) => (
+                        <div
+                          key={avatar.id}
+                          className={`cursor-pointer border-2 rounded-lg p-2 transition-all ${
+                            userProfile.avatar === avatar.id
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                          }`}
+                          onClick={() => setUserProfile(prev => ({ ...prev, avatar: avatar.id }))}
+                        >
+                          <img
+                            src={avatar.image}
+                            alt={avatar.name}
+                            className="w-full h-16 object-cover rounded"
+                          />
+                          <p className="text-xs text-center mt-1 text-gray-600 dark:text-gray-400">
+                            {avatar.name}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="col-span-2">
+                    <Label>Country</Label>
+                    <select
+                      value={selectedCountry}
+                      onChange={(e) => setSelectedCountry(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    >
+                      <option value="">Select a country</option>
+                      {countries.map((country) => (
+                        <option key={country.code} value={country.code}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>

@@ -1,6 +1,8 @@
 // react plugin for creating vector maps
 import { VectorMap } from "@react-jvectormap/core";
 import { worldMill } from "@react-jvectormap/world";
+import { useEffect, useState } from "react";
+import { fetchCountryUserData, getCountriesWithUsers } from "../../utils/countryData";
 
 // Define the component props
 interface CountryMapProps {
@@ -8,47 +10,65 @@ interface CountryMapProps {
 }
 
 const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
-  // Test data for countries with users
+  const [countryUserData, setCountryUserData] = useState<Record<string, number>>({});
+  const [countriesWithUsers, setCountriesWithUsers] = useState<string[]>([]);
+
+  // Load country data from Supabase
+  useEffect(() => {
+    const loadCountryData = async () => {
+      const data = await fetchCountryUserData();
+      const countryMap = data.reduce((acc, { country, userCount }) => {
+        acc[country] = userCount;
+        return acc;
+      }, {} as Record<string, number>);
+      
+      setCountryUserData(countryMap);
+      setCountriesWithUsers(getCountriesWithUsers(data));
+    };
+
+    loadCountryData();
+  }, []);
+
   const countryData = {
-    'US': { name: 'United States', flag: 'us', users: 1, percentage: 0.06 },
-    'FR': { name: 'France', flag: 'fr', users: 0, percentage: 0 },
-    'GB': { name: 'United Kingdom', flag: 'gb', users: 0, percentage: 0 },
-    'IN': { name: 'India', flag: 'in', users: 0, percentage: 0 },
-    'SE': { name: 'Sweden', flag: 'se', users: 0, percentage: 0 },
-    'DE': { name: 'Germany', flag: 'de', users: 0, percentage: 0 },
-    'CA': { name: 'Canada', flag: 'ca', users: 0, percentage: 0 },
-    'AU': { name: 'Australia', flag: 'au', users: 0, percentage: 0 },
-    'BR': { name: 'Brazil', flag: 'br', users: 0, percentage: 0 },
-    'JP': { name: 'Japan', flag: 'jp', users: 0, percentage: 0 },
-    'CN': { name: 'China', flag: 'cn', users: 0, percentage: 0 },
-    'RU': { name: 'Russia', flag: 'ru', users: 0, percentage: 0 },
-    'IT': { name: 'Italy', flag: 'it', users: 0, percentage: 0 },
-    'ES': { name: 'Spain', flag: 'es', users: 0, percentage: 0 },
-    'NL': { name: 'Netherlands', flag: 'nl', users: 0, percentage: 0 },
-    'BE': { name: 'Belgium', flag: 'be', users: 0, percentage: 0 },
-    'CH': { name: 'Switzerland', flag: 'ch', users: 0, percentage: 0 },
-    'AT': { name: 'Austria', flag: 'at', users: 0, percentage: 0 },
-    'DK': { name: 'Denmark', flag: 'dk', users: 0, percentage: 0 },
-    'NO': { name: 'Norway', flag: 'no', users: 0, percentage: 0 },
-    'FI': { name: 'Finland', flag: 'fi', users: 0, percentage: 0 },
-    'NZ': { name: 'New Zealand', flag: 'nz', users: 0, percentage: 0 },
-    'PL': { name: 'Poland', flag: 'pl', users: 0, percentage: 0 },
-    'CZ': { name: 'Czech Republic', flag: 'cz', users: 0, percentage: 0 },
-    'HU': { name: 'Hungary', flag: 'hu', users: 0, percentage: 0 },
-    'RO': { name: 'Romania', flag: 'ro', users: 0, percentage: 0 },
-    'BG': { name: 'Bulgaria', flag: 'bg', users: 0, percentage: 0 },
-    'GR': { name: 'Greece', flag: 'gr', users: 0, percentage: 0 },
-    'PT': { name: 'Portugal', flag: 'pt', users: 0, percentage: 0 },
-    'IE': { name: 'Ireland', flag: 'ie', users: 0, percentage: 0 },
-    'LU': { name: 'Luxembourg', flag: 'lu', users: 0, percentage: 0 },
-    'MT': { name: 'Malta', flag: 'mt', users: 0, percentage: 0 },
-    'CY': { name: 'Cyprus', flag: 'cy', users: 0, percentage: 0 },
-    'EE': { name: 'Estonia', flag: 'ee', users: 0, percentage: 0 },
-    'LV': { name: 'Latvia', flag: 'lv', users: 0, percentage: 0 },
-    'LT': { name: 'Lithuania', flag: 'lt', users: 0, percentage: 0 },
-    'SI': { name: 'Slovenia', flag: 'si', users: 0, percentage: 0 },
-    'SK': { name: 'Slovakia', flag: 'sk', users: 0, percentage: 0 },
-    'HR': { name: 'Croatia', flag: 'hr', users: 0, percentage: 0 },
+    'US': { name: 'United States', flag: 'us', users: countryUserData['US'] || 0, percentage: 0.06 },
+    'FR': { name: 'France', flag: 'fr', users: countryUserData['FR'] || 0, percentage: 0 },
+    'GB': { name: 'United Kingdom', flag: 'gb', users: countryUserData['GB'] || 0, percentage: 0 },
+    'IN': { name: 'India', flag: 'in', users: countryUserData['IN'] || 0, percentage: 0 },
+    'SE': { name: 'Sweden', flag: 'se', users: countryUserData['SE'] || 0, percentage: 0 },
+    'DE': { name: 'Germany', flag: 'de', users: countryUserData['DE'] || 0, percentage: 0 },
+    'CA': { name: 'Canada', flag: 'ca', users: countryUserData['CA'] || 0, percentage: 0 },
+    'AU': { name: 'Australia', flag: 'au', users: countryUserData['AU'] || 0, percentage: 0 },
+    'BR': { name: 'Brazil', flag: 'br', users: countryUserData['BR'] || 0, percentage: 0 },
+    'JP': { name: 'Japan', flag: 'jp', users: countryUserData['JP'] || 0, percentage: 0 },
+    'CN': { name: 'China', flag: 'cn', users: countryUserData['CN'] || 0, percentage: 0 },
+    'RU': { name: 'Russia', flag: 'ru', users: countryUserData['RU'] || 0, percentage: 0 },
+    'IT': { name: 'Italy', flag: 'it', users: countryUserData['IT'] || 0, percentage: 0 },
+    'ES': { name: 'Spain', flag: 'es', users: countryUserData['ES'] || 0, percentage: 0 },
+    'NL': { name: 'Netherlands', flag: 'nl', users: countryUserData['NL'] || 0, percentage: 0 },
+    'BE': { name: 'Belgium', flag: 'be', users: countryUserData['BE'] || 0, percentage: 0 },
+    'CH': { name: 'Switzerland', flag: 'ch', users: countryUserData['CH'] || 0, percentage: 0 },
+    'AT': { name: 'Austria', flag: 'at', users: countryUserData['AT'] || 0, percentage: 0 },
+    'DK': { name: 'Denmark', flag: 'dk', users: countryUserData['DK'] || 0, percentage: 0 },
+    'NO': { name: 'Norway', flag: 'no', users: countryUserData['NO'] || 0, percentage: 0 },
+    'FI': { name: 'Finland', flag: 'fi', users: countryUserData['FI'] || 0, percentage: 0 },
+    'NZ': { name: 'New Zealand', flag: 'nz', users: countryUserData['NZ'] || 0, percentage: 0 },
+    'PL': { name: 'Poland', flag: 'pl', users: countryUserData['PL'] || 0, percentage: 0 },
+    'CZ': { name: 'Czech Republic', flag: 'cz', users: countryUserData['CZ'] || 0, percentage: 0 },
+    'HU': { name: 'Hungary', flag: 'hu', users: countryUserData['HU'] || 0, percentage: 0 },
+    'RO': { name: 'Romania', flag: 'ro', users: countryUserData['RO'] || 0, percentage: 0 },
+    'BG': { name: 'Bulgaria', flag: 'bg', users: countryUserData['BG'] || 0, percentage: 0 },
+    'GR': { name: 'Greece', flag: 'gr', users: countryUserData['GR'] || 0, percentage: 0 },
+    'PT': { name: 'Portugal', flag: 'pt', users: countryUserData['PT'] || 0, percentage: 0 },
+    'IE': { name: 'Ireland', flag: 'ie', users: countryUserData['IE'] || 0, percentage: 0 },
+    'LU': { name: 'Luxembourg', flag: 'lu', users: countryUserData['LU'] || 0, percentage: 0 },
+    'MT': { name: 'Malta', flag: 'mt', users: countryUserData['MT'] || 0, percentage: 0 },
+    'CY': { name: 'Cyprus', flag: 'cy', users: countryUserData['CY'] || 0, percentage: 0 },
+    'EE': { name: 'Estonia', flag: 'ee', users: countryUserData['EE'] || 0, percentage: 0 },
+    'LV': { name: 'Latvia', flag: 'lv', users: countryUserData['LV'] || 0, percentage: 0 },
+    'LT': { name: 'Lithuania', flag: 'lt', users: countryUserData['LT'] || 0, percentage: 0 },
+    'SI': { name: 'Slovenia', flag: 'si', users: countryUserData['SI'] || 0, percentage: 0 },
+    'SK': { name: 'Slovakia', flag: 'sk', users: countryUserData['SK'] || 0, percentage: 0 },
+    'HR': { name: 'Croatia', flag: 'hr', users: countryUserData['HR'] || 0, percentage: 0 },
     'MX': { name: 'Mexico', flag: 'mx', users: 0, percentage: 0 },
     'AR': { name: 'Argentina', flag: 'ar', users: 0, percentage: 0 },
     'CL': { name: 'Chile', flag: 'cl', users: 0, percentage: 0 },
@@ -251,8 +271,56 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
     'IO': { name: 'British Indian Ocean Territory', flag: 'io', users: 0, percentage: 0 },
   };
 
+  // Effect to highlight countries with users after map loads
+  useEffect(() => {
+    const highlightCountriesWithUsers = () => {
+      // Wait for map to be fully rendered
+      setTimeout(() => {
+        const allPaths = document.querySelectorAll('svg path');
+        console.log(`Found ${allPaths.length} path elements`);
+        console.log(`Countries with users:`, countriesWithUsers);
+        
+        allPaths.forEach((path, index) => {
+          const element = path as HTMLElement;
+          const code = element.getAttribute('data-code');
+          const name = element.getAttribute('data-name');
+          
+          // Check if this country has users
+          if (code && countriesWithUsers.includes(code.toUpperCase())) {
+            console.log(`Highlighting ${code} - has ${countryUserData[code.toUpperCase()]} users`);
+            element.style.fill = "#10B981";
+            element.style.fillOpacity = "1";
+            element.style.stroke = "#059669";
+            element.style.strokeWidth = "1";
+          }
+        });
+      }, 2000);
+    };
+
+    if (countriesWithUsers.length > 0) {
+      highlightCountriesWithUsers();
+    }
+  }, [countriesWithUsers, countryUserData]);
+
   return (
-    <VectorMap
+    <>
+      <style>
+        {`
+          /* Highlight countries with users */
+          ${countriesWithUsers.map(countryCode => `
+            path[data-code="${countryCode}"],
+            path[data-code="${countryCode.toLowerCase()}"],
+            .jvectormap-region[data-code="${countryCode}"],
+            .jvectormap-region[data-code="${countryCode.toLowerCase()}"] {
+              fill: #10B981 !important;
+              fill-opacity: 1 !important;
+              stroke: #059669 !important;
+              stroke-width: 1 !important;
+            }
+          `).join('')}
+        `}
+      </style>
+      <VectorMap
       map={worldMill}
       backgroundColor="transparent"
       zoomOnScroll={false}
@@ -260,24 +328,6 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
       zoomMin={1}
       zoomAnimate={true}
       zoomStep={1.5}
-              onRegionTipShow={(event: any, tip: any, code: string) => {
-                // Show tooltip for all countries
-                const specificData = countryData[code as keyof typeof countryData];
-                const data = specificData || {
-                  name: code.toUpperCase(), // Use country code for unknown countries
-                  flag: code.toLowerCase(),
-                  users: 0,
-                  percentage: 0
-                };
-                
-                tip.html(`<div style="padding: 8px; background: #465FFF; color: white; border-radius: 4px; font-family: Outfit, sans-serif; display: flex; align-items: center; gap: 8px;">
-                  <span class="fi fi-${data.flag.toLowerCase()}" style="font-size: 16px;"></span>
-                  <div>
-                    <strong>${data.name}</strong><br/>
-                    ${data.users > 0 ? data.users : '0'}
-                  </div>
-                </div>`);
-              }}
       regionStyle={{
         initial: {
           fill: mapColor || "#D0D5DD",
@@ -288,7 +338,7 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
           strokeOpacity: 0,
         },
         hover: {
-          fillOpacity: 0.7,
+          fillOpacity: 0.8,
           cursor: "pointer",
           fill: "#465fff",
           stroke: "none",
@@ -297,6 +347,43 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
           fill: "#465FFF",
         },
         selectedHover: {},
+      }}
+      onRegionTipShow={(event: any, tip: any, code: string) => {
+        // Show tooltip for all countries
+        const specificData = countryData[code as keyof typeof countryData];
+        const data = specificData || {
+          name: code.toUpperCase(), // Use country code for unknown countries
+          flag: code.toLowerCase(),
+          users: 0,
+          percentage: 0
+        };
+        
+        tip.html(`<div style="padding: 8px; background: #465FFF; color: white; border-radius: 4px; font-family: Outfit, sans-serif; display: flex; align-items: center; gap: 8px;">
+          <span class="fi fi-${data.flag.toLowerCase()}" style="font-size: 16px;"></span>
+          <div>
+            <strong>${data.name}</strong><br/>
+            ${data.users > 0 ? data.users : '0'}
+          </div>
+        </div>`);
+      }}
+      onRegionOver={(event: any, code: string) => {
+        // Highlight countries with users on hover
+        const data = countryData[code as keyof typeof countryData];
+        if (data && data.users > 0) {
+          event.target.style.fill = "#10B981";
+          event.target.style.fillOpacity = "1";
+        }
+      }}
+      onRegionOut={(event: any, code: string) => {
+        // Reset color when mouse leaves
+        const data = countryData[code as keyof typeof countryData];
+        if (data && data.users > 0) {
+          event.target.style.fill = "#10B981";
+          event.target.style.fillOpacity = "1";
+        } else {
+          event.target.style.fill = mapColor || "#D0D5DD";
+          event.target.style.fillOpacity = "1";
+        }
       }}
       regionLabelStyle={{
         initial: {
@@ -310,6 +397,7 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
         selectedHover: {},
       }}
     />
+    </>
   );
 };
 

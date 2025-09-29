@@ -1,57 +1,33 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { MoreDotIcon } from "../../icons";
 import CountryMap from "./CountryMap";
+import { fetchCountryUserData, calculateRegionTotals, worldRegions } from "../../utils/countryData";
 
 export default function TerminalDemographicCard() {
   const [isOpen, setIsOpen] = useState(false);
+  const [regionTotals, setRegionTotals] = useState(worldRegions);
+  const [loading, setLoading] = useState(true);
 
-  // World regions mapping based on Our World in Data
-  const worldRegions = {
-    'North America': {
-      countries: ['US', 'CA', 'MX', 'GT', 'CU', 'HT', 'DO', 'HN', 'NI', 'CR', 'PA', 'JM', 'BS', 'BB', 'AG', 'DM', 'GD', 'KN', 'LC', 'VC', 'TT', 'BZ', 'GL'],
-      users: 0
-    },
-    'South America': {
-      countries: ['BR', 'AR', 'CL', 'CO', 'PE', 'VE', 'UY', 'PY', 'BO', 'EC', 'GY', 'SR', 'GF', 'FK'],
-      users: 0
-    },
-    'Europe': {
-      countries: ['GB', 'FR', 'DE', 'IT', 'ES', 'NL', 'BE', 'CH', 'AT', 'DK', 'NO', 'FI', 'SE', 'PL', 'CZ', 'HU', 'RO', 'BG', 'GR', 'PT', 'IE', 'LU', 'MT', 'CY', 'EE', 'LV', 'LT', 'SI', 'SK', 'HR', 'IS', 'LI', 'MC', 'SM', 'VA', 'AD', 'BY', 'MD', 'AL', 'BA', 'ME', 'MK', 'RS', 'XK', 'GE', 'AM', 'AZ', 'UA', 'TR', 'RU'],
-      users: 0
-    },
-    'Asia': {
-      countries: ['CN', 'IN', 'JP', 'KR', 'TH', 'VN', 'MY', 'SG', 'ID', 'PH', 'BD', 'PK', 'LK', 'NP', 'BT', 'MV', 'AF', 'IR', 'IQ', 'SY', 'LB', 'JO', 'IL', 'PS', 'SA', 'AE', 'QA', 'BH', 'KW', 'OM', 'YE', 'KZ', 'UZ', 'TM', 'TJ', 'KG', 'MN', 'KP', 'TW', 'HK', 'MO', 'LA', 'KH', 'MM', 'BN', 'TL'],
-      users: 0
-    },
-    'Africa': {
-      countries: ['ZA', 'NG', 'EG', 'KE', 'GH', 'MA', 'TN', 'DZ', 'LY', 'SD', 'ET', 'UG', 'TZ', 'ZW', 'BW', 'NA', 'ZM', 'MW', 'MZ', 'MG', 'MU', 'SC', 'KM', 'DJ', 'SO', 'ER', 'SS', 'CF', 'TD', 'NE', 'ML', 'BF', 'CI', 'LR', 'SL', 'GN', 'GW', 'GM', 'SN', 'MR', 'CV', 'ST', 'GQ', 'GA', 'CG', 'CD', 'AO', 'CM'],
-      users: 0
-    },
-    'Oceania': {
-      countries: ['AU', 'NZ', 'FJ', 'PG', 'SB', 'VU', 'NC', 'PF', 'WS', 'TO', 'KI', 'TV', 'NR', 'PW', 'FM', 'MH'],
-      users: 0
-    }
-  };
+  // Load real data from Supabase
+  useEffect(() => {
+    const loadRegionData = async () => {
+      try {
+        setLoading(true);
+        const countryData = await fetchCountryUserData();
+        const totals = calculateRegionTotals(countryData);
+        setRegionTotals(totals);
+      } catch (error) {
+        console.error('Error loading region data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Calculate region totals (for now using sample data - will be replaced with real data later)
-  const calculateRegionTotals = () => {
-    const totals = { ...worldRegions };
-    
-    // Sample data - in real implementation, this would come from your data source
-    totals['North America'].users = 450;
-    totals['South America'].users = 320;
-    totals['Europe'].users = 380;
-    totals['Asia'].users = 280;
-    totals['Africa'].users = 89;
-    totals['Oceania'].users = 40;
-    
-    return totals;
-  };
-
-  const regionTotals = calculateRegionTotals();
+    loadRegionData();
+  }, []);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -104,31 +80,51 @@ export default function TerminalDemographicCard() {
         </div>
       </div>
 
-      {/* World Regions Statistics */}
-      <div className="space-y-4">
-        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-          World Regions Overview
-        </h4>
-        <div className="grid grid-cols-2 gap-4">
-          {Object.entries(regionTotals).map(([regionName, regionData]) => (
-            <div key={regionName} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-              <div>
-                <p className="font-medium text-gray-800 dark:text-white/90 text-sm">
-                  {regionName}
-                </p>
+              {/* World Regions Statistics */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+                  World Regions Overview
+                </h4>
+                {loading ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    {Object.entries(regionTotals).map(([regionName, regionData]) => (
+                      <div key={regionName} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-gray-800 dark:text-white/90 text-sm">
+                            {regionName}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="animate-pulse bg-gray-300 dark:bg-gray-600 h-4 w-12 rounded"></div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            Terminal Users
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    {Object.entries(regionTotals).map(([regionName, regionData]) => (
+                      <div key={regionName} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-gray-800 dark:text-white/90 text-sm">
+                            {regionName}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-gray-800 dark:text-white/90 text-lg">
+                            {regionData.users.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Terminal Users
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="text-right">
-                <p className="font-semibold text-gray-800 dark:text-white/90 text-lg">
-                  {regionData.users.toLocaleString()}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Terminal Users
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
