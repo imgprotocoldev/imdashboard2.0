@@ -19,6 +19,10 @@ export default function UserInfoCard() {
     googleEmail: ""
   });
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
 
   // Avatar options
   const avatarOptions = [
@@ -350,10 +354,18 @@ export default function UserInfoCard() {
       window.dispatchEvent(new CustomEvent('profileUpdated'));
       
       // Close modal
-      closeModal();
+    closeModal();
       
-      // Show success message
-      alert('Profile updated successfully!');
+      // Show success notification
+      setNotification({
+        type: 'success',
+        message: 'Profile updated successfully!'
+      });
+      
+      // Clear notification after 3 seconds
+      setTimeout(() => {
+        setNotification({ type: null, message: '' });
+      }, 3000);
       
       // Try to update Supabase in the background (don't block UI)
       try {
@@ -380,7 +392,15 @@ export default function UserInfoCard() {
       
     } catch (error) {
       console.error('JavaScript error:', error);
-      alert(`Error updating profile: ${error instanceof Error ? error.message : String(error)}`);
+      setNotification({
+        type: 'error',
+        message: `Error updating profile: ${error instanceof Error ? error.message : String(error)}`
+      });
+      
+      // Clear notification after 5 seconds
+      setTimeout(() => {
+        setNotification({ type: null, message: '' });
+      }, 5000);
     }
   };
   return (
@@ -390,6 +410,17 @@ export default function UserInfoCard() {
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
             Personal Information
           </h4>
+
+          {/* Notification Display */}
+          {notification.type && (
+            <div className={`mb-4 p-3 rounded-lg text-sm font-medium ${
+              notification.type === 'success' 
+                ? 'bg-green-50 text-green-800 border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800' 
+                : 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
+            }`}>
+              {notification.message}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             <div>
