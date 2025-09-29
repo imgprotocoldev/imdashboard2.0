@@ -14,7 +14,6 @@ export default function UserInfoCard() {
   const [userProfile, setUserProfile] = useState({
     username: "",
     email: "",
-    bio: "",
     avatar: ""
   });
   const [loading, setLoading] = useState(true);
@@ -246,7 +245,6 @@ export default function UserInfoCard() {
             setUserProfile({
               username: data.username || user.user_metadata?.full_name || user.email?.split('@')[0] || "",
               email: user.email || "",
-              bio: data.bio || "",
               avatar: data.avatar_name || "user1"
             });
             setUserCountry(data.country || "");
@@ -257,7 +255,6 @@ export default function UserInfoCard() {
             setUserProfile({
               username: user.user_metadata?.full_name || user.email?.split('@')[0] || "",
               email: user.email || "",
-              bio: "",
               avatar: "user1"
             });
             setUserCountry("");
@@ -269,7 +266,6 @@ export default function UserInfoCard() {
           setUserProfile({
             username: user.user_metadata?.full_name || user.email?.split('@')[0] || "",
             email: user.email || "",
-            bio: "",
             avatar: "user1"
           });
         } finally {
@@ -294,7 +290,6 @@ export default function UserInfoCard() {
           .update({ 
             country: selectedCountry,
             username: userProfile.username,
-            bio: userProfile.bio,
             avatar_name: userProfile.avatar
           })
           .eq('id', user.id)
@@ -314,7 +309,6 @@ export default function UserInfoCard() {
                 username: userProfile.username,
                 email: user.email,
                 country: selectedCountry,
-                bio: userProfile.bio,
                 avatar_name: userProfile.avatar
               })
               .select();
@@ -337,7 +331,7 @@ export default function UserInfoCard() {
         }
       } catch (error) {
         console.error('JavaScript error:', error);
-        alert(`Error updating profile: ${error.message}`);
+        alert(`Error updating profile: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
   };
@@ -368,14 +362,6 @@ export default function UserInfoCard() {
               </p>
             </div>
 
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Bio
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {loading ? "Loading..." : userProfile.bio || "IMG User"}
-              </p>
-            </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
@@ -383,6 +369,20 @@ export default function UserInfoCard() {
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {userCountry ? countries.find(c => c.code === userCountry)?.name || userCountry : "Not set"}
+              </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Login Method
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {loading ? "Loading..." : (() => {
+                  if (user?.app_metadata?.provider === 'google') return 'Google';
+                  if (user?.app_metadata?.provider === 'twitter') return 'X (Twitter)';
+                  if (user?.app_metadata?.provider === 'email') return 'Email';
+                  return 'Email'; // Default fallback
+                })()}
               </p>
             </div>
           </div>
@@ -481,15 +481,6 @@ export default function UserInfoCard() {
                     />
                   </div>
 
-                  <div className="col-span-2">
-                    <Label>Bio</Label>
-                    <Input 
-                      type="text" 
-                      value={userProfile.bio}
-                      onChange={(e) => setUserProfile(prev => ({ ...prev, bio: e.target.value }))}
-                      placeholder="IMG User"
-                    />
-                  </div>
 
                   <div className="col-span-2">
                     <Label>Avatar</Label>
