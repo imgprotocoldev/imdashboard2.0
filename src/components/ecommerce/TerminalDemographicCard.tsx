@@ -7,19 +7,51 @@ import CountryMap from "./CountryMap";
 
 export default function TerminalDemographicCard() {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState({
-    name: "Global",
-    flag: "globalusers.webp",
-    users: 1559,
-    percentage: 100
-  });
 
-  const [hoveredCountry, setHoveredCountry] = useState({
-    name: "",
-    flag: "",
-    users: 0,
-    percentage: 0
-  });
+  // World regions mapping based on Our World in Data
+  const worldRegions = {
+    'North America': {
+      countries: ['US', 'CA', 'MX', 'GT', 'CU', 'HT', 'DO', 'HN', 'NI', 'CR', 'PA', 'JM', 'BS', 'BB', 'AG', 'DM', 'GD', 'KN', 'LC', 'VC', 'TT', 'BZ', 'GL'],
+      users: 0
+    },
+    'South America': {
+      countries: ['BR', 'AR', 'CL', 'CO', 'PE', 'VE', 'UY', 'PY', 'BO', 'EC', 'GY', 'SR', 'GF', 'FK'],
+      users: 0
+    },
+    'Europe': {
+      countries: ['GB', 'FR', 'DE', 'IT', 'ES', 'NL', 'BE', 'CH', 'AT', 'DK', 'NO', 'FI', 'SE', 'PL', 'CZ', 'HU', 'RO', 'BG', 'GR', 'PT', 'IE', 'LU', 'MT', 'CY', 'EE', 'LV', 'LT', 'SI', 'SK', 'HR', 'IS', 'LI', 'MC', 'SM', 'VA', 'AD', 'BY', 'MD', 'AL', 'BA', 'ME', 'MK', 'RS', 'XK', 'GE', 'AM', 'AZ', 'UA', 'TR', 'RU'],
+      users: 0
+    },
+    'Asia': {
+      countries: ['CN', 'IN', 'JP', 'KR', 'TH', 'VN', 'MY', 'SG', 'ID', 'PH', 'BD', 'PK', 'LK', 'NP', 'BT', 'MV', 'AF', 'IR', 'IQ', 'SY', 'LB', 'JO', 'IL', 'PS', 'SA', 'AE', 'QA', 'BH', 'KW', 'OM', 'YE', 'KZ', 'UZ', 'TM', 'TJ', 'KG', 'MN', 'KP', 'TW', 'HK', 'MO', 'LA', 'KH', 'MM', 'BN', 'TL'],
+      users: 0
+    },
+    'Africa': {
+      countries: ['ZA', 'NG', 'EG', 'KE', 'GH', 'MA', 'TN', 'DZ', 'LY', 'SD', 'ET', 'UG', 'TZ', 'ZW', 'BW', 'NA', 'ZM', 'MW', 'MZ', 'MG', 'MU', 'SC', 'KM', 'DJ', 'SO', 'ER', 'SS', 'CF', 'TD', 'NE', 'ML', 'BF', 'CI', 'LR', 'SL', 'GN', 'GW', 'GM', 'SN', 'MR', 'CV', 'ST', 'GQ', 'GA', 'CG', 'CD', 'AO', 'CM'],
+      users: 0
+    },
+    'Oceania': {
+      countries: ['AU', 'NZ', 'FJ', 'PG', 'SB', 'VU', 'NC', 'PF', 'WS', 'TO', 'KI', 'TV', 'NR', 'PW', 'FM', 'MH'],
+      users: 0
+    }
+  };
+
+  // Calculate region totals (for now using sample data - will be replaced with real data later)
+  const calculateRegionTotals = () => {
+    const totals = { ...worldRegions };
+    
+    // Sample data - in real implementation, this would come from your data source
+    totals['North America'].users = 450;
+    totals['South America'].users = 320;
+    totals['Europe'].users = 380;
+    totals['Asia'].users = 280;
+    totals['Africa'].users = 89;
+    totals['Oceania'].users = 40;
+    
+    return totals;
+  };
+
+  const regionTotals = calculateRegionTotals();
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -27,25 +59,6 @@ export default function TerminalDemographicCard() {
 
   function closeDropdown() {
     setIsOpen(false);
-  }
-
-  // This function will be called when user hovers over a country on the map
-  function handleCountryHover(countryData: any) {
-    if (countryData && countryData.name) {
-      setHoveredCountry({
-        name: countryData.name,
-        flag: countryData.flag,
-        users: countryData.users,
-        percentage: countryData.percentage
-      });
-    } else {
-      setHoveredCountry({
-        name: "",
-        flag: "",
-        users: 0,
-        percentage: 0
-      });
-    }
   }
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
@@ -87,73 +100,33 @@ export default function TerminalDemographicCard() {
           id="mapOne"
           className="mapOne map-btn -mx-4 -my-6 h-[212px] w-[252px] 2xsm:w-[307px] xsm:w-[358px] sm:-mx-6 md:w-[668px] lg:w-[634px] xl:w-[393px] 2xl:w-[554px]"
         >
-          <CountryMap onCountryHover={handleCountryHover} />
+          <CountryMap />
         </div>
       </div>
 
-      <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="items-center w-full rounded-full max-w-8">
-              {selectedCountry.flag === "globalusers.webp" ? (
-                <img src="./images/globalusers.webp" alt="global" className="w-8 h-8 rounded-full" />
-              ) : (
-                <span className={`fi fi-${selectedCountry.flag.toLowerCase()} text-2xl`}></span>
-              )}
+      {/* World Regions Statistics */}
+      <div className="space-y-4">
+        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+          World Regions Overview
+        </h4>
+        <div className="grid grid-cols-2 gap-4">
+          {Object.entries(regionTotals).map(([regionName, regionData]) => (
+            <div key={regionName} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+              <div>
+                <p className="font-medium text-gray-800 dark:text-white/90 text-sm">
+                  {regionName}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-gray-800 dark:text-white/90 text-lg">
+                  {regionData.users.toLocaleString()}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Terminal Users
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
-                {selectedCountry.name}
-              </p>
-              <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                {selectedCountry.users.toLocaleString()} Terminal Users
-              </span>
-            </div>
-          </div>
-
-          <div className="flex w-full max-w-[140px] items-center gap-3">
-            <div className="relative block h-2 w-full max-w-[100px] rounded bg-gray-200 dark:bg-gray-800">
-              <div 
-                className="absolute left-0 top-0 flex h-full items-center justify-center rounded bg-brand-500 text-xs font-medium text-white"
-                style={{ width: `${selectedCountry.percentage}%` }}
-              ></div>
-            </div>
-            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-              {selectedCountry.percentage}%
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="items-center w-full rounded-full max-w-8">
-              {hoveredCountry.flag === "globalusers.webp" ? (
-                <img src="./images/globalusers.webp" alt="global" className="w-8 h-8 rounded-full" />
-              ) : hoveredCountry.flag ? (
-                <span className={`fi fi-${hoveredCountry.flag.toLowerCase()} text-2xl`}></span>
-              ) : null}
-            </div>
-            <div>
-              <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
-                {hoveredCountry.name || "Country"}
-              </p>
-              <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                {hoveredCountry.name ? (hoveredCountry.users > 0 ? `${hoveredCountry.users.toLocaleString()} Terminal Users` : "No users") : "Hover over a country!"}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex w-full max-w-[140px] items-center gap-3">
-            <div className="relative block h-2 w-full max-w-[100px] rounded bg-gray-200 dark:bg-gray-800">
-              <div 
-                className="absolute left-0 top-0 flex h-full items-center justify-center rounded bg-brand-500 text-xs font-medium text-white"
-                style={{ width: `${hoveredCountry.percentage}%` }}
-              ></div>
-            </div>
-            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-              {hoveredCountry.percentage > 0 ? `${hoveredCountry.percentage}%` : ""}
-            </p>
-          </div>
+          ))}
         </div>
       </div>
     </div>

@@ -5,10 +5,9 @@ import { worldMill } from "@react-jvectormap/world";
 // Define the component props
 interface CountryMapProps {
   mapColor?: string;
-  onCountryHover?: (countryData: any) => void;
 }
 
-const CountryMap: React.FC<CountryMapProps> = ({ mapColor, onCountryHover }) => {
+const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
   // Test data for countries with users
   const countryData = {
     'US': { name: 'United States', flag: 'us', users: 1, percentage: 0.06 },
@@ -252,38 +251,6 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor, onCountryHover }) => 
     'IO': { name: 'British Indian Ocean Territory', flag: 'io', users: 0, percentage: 0 },
   };
 
-  const handleRegionHover = (event: any, code: string) => {
-    if (onCountryHover) {
-      // Check if we have specific data for this country
-      const specificData = countryData[code as keyof typeof countryData];
-      
-      if (specificData) {
-        // Use specific data if available
-        onCountryHover(specificData);
-      } else {
-        // For countries not in our data, create a generic entry
-        const genericData = {
-          name: code.toUpperCase(), // Use country code as name for unknown countries
-          flag: code.toLowerCase(), // Use country code as flag
-          users: 0,
-          percentage: 0
-        };
-        onCountryHover(genericData);
-      }
-    }
-  };
-
-  const handleRegionOut = () => {
-    // Clear hovered country when mouse leaves country
-    if (onCountryHover) {
-      onCountryHover({
-        name: "",
-        flag: "",
-        users: 0,
-        percentage: 0
-      });
-    }
-  };
   return (
     <VectorMap
       map={worldMill}
@@ -293,27 +260,24 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor, onCountryHover }) => 
       zoomMin={1}
       zoomAnimate={true}
       zoomStep={1.5}
-      onRegionTipShow={(event: any, tip: any, code: string) => {
-        // Show tooltip for all countries
-        const specificData = countryData[code as keyof typeof countryData];
-        const data = specificData || {
-          name: code.toUpperCase(), // Use country code for unknown countries
-          flag: code.toLowerCase(),
-          users: 0,
-          percentage: 0
-        };
-        
-        tip.html(`<div style="padding: 8px; background: #465FFF; color: white; border-radius: 4px; font-family: Outfit, sans-serif;">
-          <strong>${data.name}</strong><br/>
-          ${data.users > 0 ? `${data.users} Terminal User${data.users !== 1 ? 's' : ''}` : 'No users'}
-        </div>`);
-      }}
-      onRegionOver={(event: any, code: string) => {
-        handleRegionHover(event, code);
-      }}
-      onRegionOut={() => {
-        handleRegionOut();
-      }}
+              onRegionTipShow={(event: any, tip: any, code: string) => {
+                // Show tooltip for all countries
+                const specificData = countryData[code as keyof typeof countryData];
+                const data = specificData || {
+                  name: code.toUpperCase(), // Use country code for unknown countries
+                  flag: code.toLowerCase(),
+                  users: 0,
+                  percentage: 0
+                };
+                
+                tip.html(`<div style="padding: 8px; background: #465FFF; color: white; border-radius: 4px; font-family: Outfit, sans-serif; display: flex; align-items: center; gap: 8px;">
+                  <span class="fi fi-${data.flag.toLowerCase()}" style="font-size: 16px;"></span>
+                  <div>
+                    <strong>${data.name}</strong><br/>
+                    ${data.users > 0 ? data.users : '0'}
+                  </div>
+                </div>`);
+              }}
       regionStyle={{
         initial: {
           fill: mapColor || "#D0D5DD",
