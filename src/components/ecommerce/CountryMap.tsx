@@ -24,6 +24,7 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
     }, {} as Record<string, number>);
     
     console.log('CountryMap: Processed countryMap:', countryMap);
+    console.log('CountryMap: Setting countryUserData state with:', countryMap);
     setCountryUserData(countryMap);
     setCountriesWithUsers(getCountriesWithUsers(data));
   };
@@ -127,7 +128,13 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
       onRegionTipShow={(event: any, tip: any, code: string) => {
         // Get user count directly from countryUserData (same source as World Regions Overview)
         const userCount = countryUserData[code] || 0;
-        console.log('CountryMap Tooltip:', { code, userCount, countryUserData });
+        console.log('CountryMap Tooltip:', { 
+          code, 
+          userCount, 
+          countryUserDataKeys: Object.keys(countryUserData),
+          countryUserDataValues: Object.values(countryUserData),
+          fullCountryUserData: countryUserData
+        });
         
         // Country name mapping for proper display
         const countryNames: Record<string, string> = {
@@ -144,7 +151,12 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
           'TN': 'Tunisia', 'DZ': 'Algeria', 'LY': 'Libya', 'SD': 'Sudan', 'ET': 'Ethiopia',
           'UG': 'Uganda', 'TZ': 'Tanzania', 'ZW': 'Zimbabwe', 'BW': 'Botswana', 'NA': 'Namibia',
           'ZM': 'Zambia', 'MW': 'Malawi', 'MZ': 'Mozambique', 'MG': 'Madagascar', 'MU': 'Mauritius',
-          'SC': 'Seychelles', 'CN': 'China', 'JP': 'Japan', 'KR': 'South Korea', 'TH': 'Thailand',
+          'SC': 'Seychelles', 'KM': 'Comoros', 'DJ': 'Djibouti', 'SO': 'Somalia', 'ER': 'Eritrea',
+          'SS': 'South Sudan', 'CF': 'Central African Republic', 'TD': 'Chad', 'NE': 'Niger', 'ML': 'Mali',
+          'BF': 'Burkina Faso', 'CI': 'Ivory Coast', 'LR': 'Liberia', 'SL': 'Sierra Leone', 'GN': 'Guinea',
+          'GW': 'Guinea-Bissau', 'GM': 'Gambia', 'SN': 'Senegal', 'MR': 'Mauritania', 'CV': 'Cape Verde',
+          'ST': 'São Tomé and Príncipe', 'GQ': 'Equatorial Guinea', 'GA': 'Gabon', 'CG': 'Republic of the Congo',
+          'CD': 'Democratic Republic of the Congo', 'AO': 'Angola', 'CM': 'Cameroon', 'CN': 'China', 'JP': 'Japan', 'KR': 'South Korea', 'TH': 'Thailand',
           'VN': 'Vietnam', 'MY': 'Malaysia', 'SG': 'Singapore', 'ID': 'Indonesia', 'PH': 'Philippines',
           'BD': 'Bangladesh', 'PK': 'Pakistan', 'LK': 'Sri Lanka', 'NP': 'Nepal', 'BT': 'Bhutan',
           'MV': 'Maldives', 'AF': 'Afghanistan', 'IR': 'Iran', 'IQ': 'Iraq', 'SY': 'Syria',
