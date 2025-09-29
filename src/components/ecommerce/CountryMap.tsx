@@ -1,7 +1,7 @@
 // react plugin for creating vector maps
 import { VectorMap } from "@react-jvectormap/core";
 import { worldMill } from "@react-jvectormap/world";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { fetchCountryUserData, getCountriesWithUsers } from "../../utils/countryData";
 
 // Define the component props
@@ -44,7 +44,7 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
   }, []);
 
   // Create dynamic country data based on actual user data
-  const countryData = {
+  const countryData = useMemo(() => ({
     'US': { name: 'United States', flag: 'us', users: countryUserData['US'] || 0, percentage: 0.06 },
     'FR': { name: 'France', flag: 'fr', users: countryUserData['FR'] || 0, percentage: 0 },
     'GB': { name: 'United Kingdom', flag: 'gb', users: countryUserData['GB'] || 0, percentage: 0 },
@@ -284,7 +284,7 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
     'UM': { name: 'United States Minor Outlying Islands', flag: 'um', users: countryUserData['UM'] || 0, percentage: 0 },
     'EH': { name: 'Western Sahara', flag: 'eh', users: countryUserData['EH'] || 0, percentage: 0 },
     'IO': { name: 'British Indian Ocean Territory', flag: 'io', users: countryUserData['IO'] || 0, percentage: 0 },
-  };
+  }), [countryUserData]);
 
   // Effect to highlight countries with users after map loads
   useEffect(() => {
@@ -364,35 +364,34 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
         selectedHover: {},
       }}
       onRegionTipShow={(event: any, tip: any, code: string) => {
-        // Show tooltip for all countries
+        // Get user count directly from countryUserData (same source as World Regions Overview)
+        const userCount = countryUserData[code] || 0;
+        
+        // Get country name from our countryData or use code
         const specificData = countryData[code as keyof typeof countryData];
-        const data = specificData || {
-          name: code.toUpperCase(), // Use country code for unknown countries
-          flag: code.toLowerCase(),
-          users: 0,
-          percentage: 0
-        };
+        const countryName = specificData?.name || code.toUpperCase();
+        const flagCode = specificData?.flag || code.toLowerCase();
         
         tip.html(`<div style="padding: 8px; background: #465FFF; color: white; border-radius: 4px; font-family: Outfit, sans-serif; display: flex; align-items: center; gap: 8px;">
-          <span class="fi fi-${data.flag.toLowerCase()}" style="font-size: 16px;"></span>
+          <span class="fi fi-${flagCode}" style="font-size: 16px;"></span>
           <div>
-            <strong>${data.name}</strong><br/>
-            ${data.users > 0 ? data.users : '0'}
+            <strong>${countryName}</strong><br/>
+            ${userCount}
           </div>
         </div>`);
       }}
       onRegionOver={(event: any, code: string) => {
         // Highlight countries with users on hover
-        const data = countryData[code as keyof typeof countryData];
-        if (data && data.users > 0) {
+        const userCount = countryUserData[code] || 0;
+        if (userCount > 0) {
           event.target.style.fill = "#10B981";
           event.target.style.fillOpacity = "1";
         }
       }}
       onRegionOut={(event: any, code: string) => {
         // Reset color when mouse leaves
-        const data = countryData[code as keyof typeof countryData];
-        if (data && data.users > 0) {
+        const userCount = countryUserData[code] || 0;
+        if (userCount > 0) {
           event.target.style.fill = "#10B981";
           event.target.style.fillOpacity = "1";
         } else {

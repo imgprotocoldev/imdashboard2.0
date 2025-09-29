@@ -411,17 +411,6 @@ export default function UserInfoCard() {
             Personal Information
           </h4>
 
-          {/* Notification Display */}
-          {notification.type && (
-            <div className={`mb-4 p-3 rounded-lg text-sm font-medium ${
-              notification.type === 'success' 
-                ? 'bg-green-50 text-green-800 border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800' 
-                : 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
-            }`}>
-              {notification.message}
-            </div>
-          )}
-
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
@@ -466,6 +455,17 @@ export default function UserInfoCard() {
               </p>
             </div>
           </div>
+
+          {/* Notification Display */}
+          {notification.type && (
+            <div className={`mt-4 p-3 rounded-lg text-sm font-medium ${
+              notification.type === 'success' 
+                ? 'bg-green-50 text-green-800 border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800' 
+                : 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
+            }`}>
+              {notification.message}
+            </div>
+          )}
         </div>
 
         <button
