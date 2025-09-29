@@ -74,16 +74,20 @@ export async function fetchCountryUserData(): Promise<CountryUserData[]> {
 
 // Calculate region totals from country data
 export function calculateRegionTotals(countryData: CountryUserData[]): Record<string, RegionData> {
-  const totals = { ...worldRegions };
+  const totals: Record<string, RegionData> = {};
   
-  // Reset all region counts
-  Object.keys(totals).forEach(region => {
-    totals[region].users = 0;
+  // Initialize totals with proper structure
+  Object.entries(worldRegions).forEach(([regionName, regionData]) => {
+    totals[regionName] = {
+      name: regionName,
+      countries: regionData.countries,
+      users: 0
+    };
   });
 
   // Count users per region
   countryData.forEach(({ country, userCount }) => {
-    Object.entries(totals).forEach(([regionName, regionData]) => {
+    Object.entries(totals).forEach(([, regionData]) => {
       if (regionData.countries.includes(country)) {
         regionData.users += userCount;
       }

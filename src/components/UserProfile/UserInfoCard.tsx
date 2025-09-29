@@ -14,7 +14,9 @@ export default function UserInfoCard() {
   const [userProfile, setUserProfile] = useState({
     username: "",
     email: "",
-    avatar: ""
+    avatar: "",
+    xHandle: "",
+    googleEmail: ""
   });
   const [loading, setLoading] = useState(true);
 
@@ -235,27 +237,71 @@ export default function UserInfoCard() {
           // Try to load profile data
           const { data, error } = await supabase
             .from('profiles')
-            .select('*')
+            .select('username, avatar_name, country')
             .eq('id', user.id)
             .single();
           
           console.log('Profile query result:', { data, error });
           
           if (data && !error) {
+            // Profile exists, load the data
             setUserProfile({
               username: data.username || user.user_metadata?.full_name || user.email?.split('@')[0] || "",
               email: user.email || "",
-              avatar: data.avatar_name || "user1"
+              avatar: data.avatar_name || "user1",
+              xHandle: "",
+              googleEmail: ""
             });
             setUserCountry(data.country || "");
             setSelectedCountry(data.country || "");
+            console.log('Profile loaded successfully:', data);
+          } else if (error && error.code === 'PGRST116') {
+            // No profile found, create one
+            console.log('No profile found, creating new profile...');
+            const { data: insertData, error: insertError } = await supabase
+              .from('profiles')
+              .insert({
+                id: user.id,
+                username: user.user_metadata?.full_name || user.email?.split('@')[0] || "",
+                avatar_name: "user1",
+                country: ""
+              })
+              .select()
+              .single();
+            
+            if (insertError) {
+              console.error('Error creating profile:', insertError);
+              // Use default values on error
+              setUserProfile({
+                username: user.user_metadata?.full_name || user.email?.split('@')[0] || "",
+                email: user.email || "",
+                avatar: "user1",
+                xHandle: "",
+                googleEmail: ""
+              });
+              setUserCountry("");
+              setSelectedCountry("");
+            } else {
+              console.log('Profile created successfully:', insertData);
+              setUserProfile({
+                username: insertData.username || user.user_metadata?.full_name || user.email?.split('@')[0] || "",
+                email: user.email || "",
+                avatar: insertData.avatar_name || "user1",
+                xHandle: "",
+                googleEmail: ""
+              });
+              setUserCountry(insertData.country || "");
+              setSelectedCountry(insertData.country || "");
+            }
           } else {
-            console.log('No profile found, using default values...');
-            // Use default values if no profile exists
+            console.error('Error loading profile:', error);
+            // Use default values on error
             setUserProfile({
               username: user.user_metadata?.full_name || user.email?.split('@')[0] || "",
               email: user.email || "",
-              avatar: "user1"
+              avatar: "user1",
+              xHandle: "",
+              googleEmail: ""
             });
             setUserCountry("");
             setSelectedCountry("");
@@ -266,8 +312,12 @@ export default function UserInfoCard() {
           setUserProfile({
             username: user.user_metadata?.full_name || user.email?.split('@')[0] || "",
             email: user.email || "",
-            avatar: "user1"
+            avatar: "user1",
+            xHandle: "",
+            googleEmail: ""
           });
+          setUserCountry("");
+          setSelectedCountry("");
         } finally {
           setLoading(false);
         }
@@ -278,61 +328,59 @@ export default function UserInfoCard() {
   }, [user, supabase]);
 
   const handleSave = async () => {
-    if (user) {
-      try {
-        console.log('Updating profile for user:', user.id);
-        console.log('Selected country:', selectedCountry);
-        console.log('Profile data:', userProfile);
-        
-        // Try to update the profile
-        const { data, error } = await supabase
-          .from('profiles')
-          .update({ 
-            country: selectedCountry,
-            username: userProfile.username,
-            avatar_name: userProfile.avatar
-          })
-          .eq('id', user.id)
-          .select();
-        
-        if (error) {
-          console.error('Supabase error:', error);
-          console.error('Error details:', error.message, error.details, error.hint);
-          
-          // If table doesn't exist, try to create the profile
-          if (error.message.includes('relation "profiles" does not exist') || error.message.includes('Failed to fetch')) {
-            console.log('Table does not exist, creating profile...');
-            const { data: insertData, error: insertError } = await supabase
-              .from('profiles')
-              .insert({
-                id: user.id,
-                username: userProfile.username,
-                email: user.email,
-                country: selectedCountry,
-                avatar_name: userProfile.avatar
-              })
-              .select();
-            
-            if (insertError) {
-              console.error('Insert error:', insertError);
-              alert(`Error creating profile: ${insertError.message}`);
-            } else {
-              console.log('Profile created successfully:', insertData);
-              setUserCountry(selectedCountry);
-              closeModal();
-            }
-          } else {
-            alert(`Error updating profile: ${error.message}`);
-          }
-        } else {
-          console.log('Profile updated successfully:', data);
-          setUserCountry(selectedCountry);
-    closeModal();
-        }
-      } catch (error) {
-        console.error('JavaScript error:', error);
-        alert(`Error updating profile: ${error instanceof Error ? error.message : String(error)}`);
+    if (!user) {
+      alert('No user logged in');
+      return;
+    }
+
+    try {
+      console.log('Updating profile for user:', user.id);
+      console.log('Selected country:', selectedCountry);
+      console.log('Profile data:', userProfile);
+      
+      // Update the profile - simplified approach
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ 
+          username: userProfile.username,
+          avatar_name: userProfile.avatar,
+          country: selectedCountry
+        })
+        .eq('id', user.id)
+        .select();
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        alert(`Error updating profile: ${error.message}`);
+        return;
       }
+
+      if (data && data.length > 0) {
+        console.log('Profile updated successfully:', data[0]);
+        
+        // Update local state immediately
+        setUserCountry(selectedCountry);
+        setUserProfile(prev => ({
+          ...prev,
+          username: userProfile.username,
+          avatar: userProfile.avatar
+        }));
+        
+        // Trigger profile update event for other components
+        window.dispatchEvent(new CustomEvent('profileUpdated'));
+        
+        // Close modal
+    closeModal();
+        
+        // Show success message
+        alert('Profile updated successfully!');
+      } else {
+        console.error('No data returned from update');
+        alert('Error: No data returned from update');
+      }
+    } catch (error) {
+      console.error('JavaScript error:', error);
+      alert(`Error updating profile: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
   return (
@@ -371,6 +419,7 @@ export default function UserInfoCard() {
                 {userCountry ? countries.find(c => c.code === userCountry)?.name || userCountry : "Not set"}
               </p>
             </div>
+
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
@@ -523,6 +572,7 @@ export default function UserInfoCard() {
                       ))}
                     </select>
                   </div>
+
                 </div>
               </div>
             </div>
