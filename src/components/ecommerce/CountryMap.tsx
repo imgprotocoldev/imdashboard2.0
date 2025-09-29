@@ -367,6 +367,14 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
         // Get user count directly from countryUserData (same source as World Regions Overview)
         const userCount = countryUserData[code] || 0;
         
+        // Debug logging
+        console.log('=== MAP TOOLTIP DEBUG ===');
+        console.log('Country code:', code);
+        console.log('countryUserData:', countryUserData);
+        console.log('User count for', code, ':', userCount);
+        console.log('All countryUserData keys:', Object.keys(countryUserData));
+        console.log('========================');
+        
         // Get country name from our countryData or use code
         const specificData = countryData[code as keyof typeof countryData];
         const countryName = specificData?.name || code.toUpperCase();

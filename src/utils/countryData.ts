@@ -42,10 +42,14 @@ export const worldRegions = {
 // Fetch country user data from Supabase
 export async function fetchCountryUserData(): Promise<CountryUserData[]> {
   try {
+    console.log('=== FETCHING COUNTRY DATA ===');
     const { data, error } = await supabase
       .from('profiles')
       .select('country')
       .not('country', 'is', null);
+
+    console.log('Raw Supabase data:', data);
+    console.log('Supabase error:', error);
 
     if (error) {
       console.error('Error fetching country data:', error);
@@ -55,17 +59,24 @@ export async function fetchCountryUserData(): Promise<CountryUserData[]> {
     // Count users per country
     const countryCounts = data.reduce((acc, profile) => {
       const country = profile.country?.toUpperCase();
+      console.log('Processing profile country:', profile.country, '->', country);
       if (country) {
         acc[country] = (acc[country] || 0) + 1;
       }
       return acc;
     }, {} as Record<string, number>);
 
+    console.log('Country counts:', countryCounts);
+
     // Convert to array format
-    return Object.entries(countryCounts).map(([country, userCount]) => ({
+    const result = Object.entries(countryCounts).map(([country, userCount]) => ({
       country,
       userCount
     }));
+    
+    console.log('Final result:', result);
+    console.log('=============================');
+    return result;
   } catch (error) {
     console.error('Error fetching country data:', error);
     return [];
