@@ -16,8 +16,12 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   },
   global: {
     headers: {
-      'X-Client-Info': 'img-dashboard'
+      'X-Client-Info': 'img-dashboard',
+      'Content-Type': 'application/json'
     }
+  },
+  db: {
+    schema: 'public'
   }
 });
 

@@ -14,19 +14,33 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
   const [countriesWithUsers, setCountriesWithUsers] = useState<string[]>([]);
 
   // Load country data from Supabase
+  const loadCountryData = async () => {
+    const data = await fetchCountryUserData();
+    const countryMap = data.reduce((acc, { country, userCount }) => {
+      acc[country] = userCount;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    setCountryUserData(countryMap);
+    setCountriesWithUsers(getCountriesWithUsers(data));
+  };
+
   useEffect(() => {
-    const loadCountryData = async () => {
-      const data = await fetchCountryUserData();
-      const countryMap = data.reduce((acc, { country, userCount }) => {
-        acc[country] = userCount;
-        return acc;
-      }, {} as Record<string, number>);
-      
-      setCountryUserData(countryMap);
-      setCountriesWithUsers(getCountriesWithUsers(data));
+    loadCountryData();
+  }, []);
+
+  // Listen for profile updates to refresh country data
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      console.log('Profile updated, refreshing country data...');
+      loadCountryData();
     };
 
-    loadCountryData();
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
   }, []);
 
   const countryData = {

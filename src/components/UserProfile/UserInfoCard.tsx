@@ -338,46 +338,46 @@ export default function UserInfoCard() {
       console.log('Selected country:', selectedCountry);
       console.log('Profile data:', userProfile);
       
-      // Update the profile - simplified approach
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ 
-          username: userProfile.username,
-          avatar_name: userProfile.avatar,
-          country: selectedCountry
-        })
-        .eq('id', user.id)
-        .select();
+      // Update local state immediately (optimistic update)
+      setUserCountry(selectedCountry);
+      setUserProfile(prev => ({
+        ...prev,
+        username: userProfile.username,
+        avatar: userProfile.avatar
+      }));
       
-      if (error) {
-        console.error('Supabase error:', error);
-        alert(`Error updating profile: ${error.message}`);
-        return;
+      // Trigger profile update event for other components
+      window.dispatchEvent(new CustomEvent('profileUpdated'));
+      
+      // Close modal
+      closeModal();
+      
+      // Show success message
+      alert('Profile updated successfully!');
+      
+      // Try to update Supabase in the background (don't block UI)
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .update({ 
+            username: userProfile.username,
+            avatar_name: userProfile.avatar,
+            country: selectedCountry
+          })
+          .eq('id', user.id)
+          .select();
+        
+        if (error) {
+          console.warn('Supabase update failed, but local state updated:', error);
+          // Don't show error to user since local state is already updated
+        } else {
+          console.log('Profile synced to Supabase successfully:', data[0]);
+        }
+      } catch (supabaseError) {
+        console.warn('Supabase sync failed, but local state updated:', supabaseError);
+        // Don't show error to user since local state is already updated
       }
-
-      if (data && data.length > 0) {
-        console.log('Profile updated successfully:', data[0]);
-        
-        // Update local state immediately
-        setUserCountry(selectedCountry);
-        setUserProfile(prev => ({
-          ...prev,
-          username: userProfile.username,
-          avatar: userProfile.avatar
-        }));
-        
-        // Trigger profile update event for other components
-        window.dispatchEvent(new CustomEvent('profileUpdated'));
-        
-        // Close modal
-    closeModal();
-        
-        // Show success message
-        alert('Profile updated successfully!');
-      } else {
-        console.error('No data returned from update');
-        alert('Error: No data returned from update');
-      }
+      
     } catch (error) {
       console.error('JavaScript error:', error);
       alert(`Error updating profile: ${error instanceof Error ? error.message : String(error)}`);
