@@ -108,12 +108,15 @@ export default function RewardDistribution() {
               >
                 View More
               </DropdownItem>
-              <DropdownItem
-                onItemClick={closeDropdown}
-                className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-              >
-                Export Data
-              </DropdownItem>
+            <DropdownItem
+              onItemClick={() => {
+                closeDropdown();
+                window.open('https://solscan.io/', '_blank', 'noopener,noreferrer');
+              }}
+              className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+            >
+              Solscan
+            </DropdownItem>
             </Dropdown>
           </div>
         </div>

@@ -59,10 +59,13 @@ export default function DistributionBatchChart() {
               View More
             </DropdownItem>
             <DropdownItem
-              onItemClick={closeDropdown}
+              onItemClick={() => {
+                closeDropdown();
+                window.open(`https://solscan.io/tx/${distributionData.signature}`, '_blank', 'noopener,noreferrer');
+              }}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
-              Export Data
+              Solscan
             </DropdownItem>
           </Dropdown>
         </div>
@@ -99,27 +102,27 @@ export default function DistributionBatchChart() {
               </div>
 
               {/* Payment to Infra */}
-              <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-500/10 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
                     Payment to Infra
                   </span>
                 </div>
-                <span className="text-sm font-bold text-purple-600 dark:text-purple-400">
+                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
                   {formatSOL(distributionData.paymentToInfra)}
                 </span>
               </div>
 
               {/* Pending Rewards */}
-              <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-500/10 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
                     Pending Rewards
                   </span>
                 </div>
-                <span className="text-sm font-bold text-yellow-600 dark:text-yellow-400">
+                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
                   {formatSOL(distributionData.pendingRewards)}
                 </span>
               </div>
@@ -138,7 +141,7 @@ export default function DistributionBatchChart() {
               </div>
 
               {/* Transaction Signature */}
-              <div className="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
@@ -149,7 +152,7 @@ export default function DistributionBatchChart() {
                   href={`https://solscan.io/tx/${distributionData.signature}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors duration-200 truncate max-w-[120px]"
+                  className="text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300 transition-colors duration-200 truncate max-w-[120px]"
                   title={distributionData.signature}
                 >
                   View on Solscan

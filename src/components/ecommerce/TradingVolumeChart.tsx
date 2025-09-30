@@ -128,13 +128,29 @@ export default function TradingVolumeChart() {
             display: flex !important;
             justify-content: flex-end !important;
           }
-          .apexcharts-toolbar .apexcharts-toolbar-icon {
-            display: none !important;
-          }
+          /* Hide all icons by default */
+          .apexcharts-toolbar .apexcharts-toolbar-icon,
+          .apexcharts-toolbar .apexcharts-zoom-icon,
+          .apexcharts-toolbar .apexcharts-zoomx,
+          .apexcharts-toolbar .apexcharts-zoomy,
+          .apexcharts-toolbar .apexcharts-zoomxy,
+          .apexcharts-toolbar .apexcharts-selection-icon,
+          .apexcharts-toolbar .apexcharts-pan-icon,
+          .apexcharts-toolbar .apexcharts-reset-icon,
+          .apexcharts-toolbar .apexcharts-menu-icon,
+          .apexcharts-toolbar .apexcharts-download-icon { display: none !important; }
+
+          /* Only show zoom-in and zoom-out */
           .apexcharts-toolbar .apexcharts-zoomin-icon,
-          .apexcharts-toolbar .apexcharts-zoomout-icon {
-            display: inline-block !important;
-          }
+          .apexcharts-toolbar .apexcharts-zoomout-icon { display: inline-flex !important; align-items: center; justify-content: center; margin-left: 8px; }
+
+          /* Make zoom icons a bit larger for usability */
+          .apexcharts-toolbar .apexcharts-zoomin-icon svg,
+          .apexcharts-toolbar .apexcharts-zoomout-icon svg { width: 22px !important; height: 22px !important; }
+
+          /* Fallback scale in case width/height are overridden by theme */
+          .apexcharts-toolbar .apexcharts-zoomin-icon,
+          .apexcharts-toolbar .apexcharts-zoomout-icon { transform: scale(1.1); }
         `}
       </style>
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
@@ -163,10 +179,13 @@ export default function TradingVolumeChart() {
               View Details
             </DropdownItem>
             <DropdownItem
-              onItemClick={closeDropdown}
+              onItemClick={() => {
+                closeDropdown();
+                window.open('https://solscan.io/', '_blank', 'noopener,noreferrer');
+              }}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
-              Export Data
+              Solscan
             </DropdownItem>
           </Dropdown>
         </div>
