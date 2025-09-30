@@ -21,6 +21,7 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import Terminal from "./pages/Dashboard/Terminal";
+import Events from "./pages/Events";
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path="terminal" element={<Terminal />} />
             <Route path="mainscreen" element={<Home />} />
+            <Route path="events" element={<Events />} />
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />
