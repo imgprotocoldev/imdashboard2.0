@@ -6,8 +6,14 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    /* Reserve vertical scrollbar space to prevent layout shift when content height changes */
+    overflow-y: scroll;
+  }
   body {
     @apply relative text-base font-normal z-1 bg-gray-50 font-outfit;
+    /* Keep scrollbar gutter stable to avoid horizontal content jump */
+    scrollbar-gutter: stable both-edges;
   }
 }
 

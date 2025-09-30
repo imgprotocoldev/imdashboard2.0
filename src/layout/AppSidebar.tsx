@@ -33,6 +33,11 @@ const navItems: NavItem[] = [
     path: "terminal",
   },
   {
+    icon: <CalenderIcon />,
+    name: "Events",
+    path: "events",
+  },
+  {
     icon: <GridIcon />,
     name: "Dashboard",
     subItems: [
@@ -44,11 +49,6 @@ const navItems: NavItem[] = [
     icon: <CalenderIcon />, 
     name: "Calendar",
     path: "calendar",
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Events",
-    path: "events",
   },
   {
     icon: <UserCircleIcon />,

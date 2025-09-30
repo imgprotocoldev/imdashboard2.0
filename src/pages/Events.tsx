@@ -101,12 +101,7 @@ const EventsPage: React.FC = () => {
                 {featured.description}
               </p>
               <div className="mt-5 flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-                <img src="/images/avatar/user1.webp" alt="author" className="w-9 h-9 rounded-full object-cover" />
-                <span>IMG Team</span>
-                <span>•</span>
                 <span>{new Date(featured.date).toLocaleDateString()}</span>
-                <span>•</span>
-                <span>5 min read</span>
               </div>
             </div>
           </div>
@@ -182,12 +177,7 @@ const EventsPage: React.FC = () => {
                   {evt.description}
                 </p>
                 <div className="mt-4 flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-                  <img src="/images/avatar/user1.webp" alt="author" className="w-8 h-8 rounded-full object-cover" />
-                  <span>IMG Team</span>
-                  <span>•</span>
                   <span>{new Date(evt.date).toLocaleDateString()}</span>
-                  <span>•</span>
-                  <span>5 min read</span>
                 </div>
               </div>
             </div>
