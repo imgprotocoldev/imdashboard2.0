@@ -37,7 +37,7 @@ export default function TerminalDemographicCard() {
     setIsOpen(false);
   }
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+    <div className="rounded-2xl border border-gray-200 bg-white pt-5 px-5 pb-[18px] dark:border-gray-800 dark:bg-white/[0.03] sm:pt-6 sm:px-6 sm:pb-[22px]">
       <div className="flex justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -71,7 +71,7 @@ export default function TerminalDemographicCard() {
           </Dropdown>
         </div>
       </div>
-      <div className="px-4 py-6 my-6 overflow-hidden border border-gary-200 rounded-2xl dark:border-gray-800 sm:px-6">
+      <div className="px-4 py-6 mt-6 mb-[22px] overflow-hidden border border-gary-200 rounded-2xl dark:border-gray-800 sm:px-6">
         <div
           id="mapOne"
           className="mapOne map-btn -mx-4 -my-6 h-[212px] w-[252px] 2xsm:w-[307px] xsm:w-[358px] sm:-mx-6 md:w-[668px] lg:w-[634px] xl:w-[393px] 2xl:w-[554px]"
@@ -81,12 +81,9 @@ export default function TerminalDemographicCard() {
       </div>
 
               {/* World Regions Statistics */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                  World Regions Overview
-                </h4>
+              <div className="space-y-[14px]">
                 {loading ? (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-[14px]">
                     {Object.entries(regionTotals).map(([regionName, regionData]) => (
                       <div key={regionName} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                         <div>
@@ -104,7 +101,7 @@ export default function TerminalDemographicCard() {
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-[14px]">
                     {Object.entries(regionTotals).map(([regionName, regionData]) => (
                       <div key={regionName} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                         <div>

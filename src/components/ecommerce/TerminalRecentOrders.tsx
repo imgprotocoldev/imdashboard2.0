@@ -60,6 +60,14 @@ const tableData: Transaction[] = [
     timestamp: "12 hours ago",
     hash: "Snapshot 00005",
   },
+  {
+    id: 6,
+    type: "Signature",
+    amount: "12.34",
+    status: "Completed",
+    timestamp: "just now",
+    hash: "Snapshot 00006",
+  },
 ];
 
 export default function TerminalRecentOrders() {
@@ -195,6 +203,17 @@ export default function TerminalRecentOrders() {
             ))}
           </TableBody>
         </Table>
+      </div>
+      <div className="border-t border-gray-100 dark:border-gray-800 mt-2" />
+      <div className="mt-2 pb-1 text-[13px] text-gray-500 dark:text-gray-400 flex justify-center">
+        <a
+          href="https://solscan.io/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-gray-700 dark:hover:text-gray-300"
+        >
+          View on Solscan
+        </a>
       </div>
     </div>
   );
