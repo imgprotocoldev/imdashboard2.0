@@ -17,7 +17,7 @@ const EventDetail: React.FC = () => {
           to="/events"
           className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 transition-colors"
         >
-          ← Back to Events
+          Back to Events
         </Link>
       </div>
     );
@@ -43,21 +43,23 @@ const EventDetail: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumbs & Back Button */}
-      <div className="flex items-center justify-between">
-        <nav className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-          <Link to="/" className="hover:text-brand-500">Home</Link>
-          <span>/</span>
-          <Link to="/events" className="hover:text-brand-500">Events</Link>
-          <span>/</span>
-          <span className="text-gray-800 dark:text-gray-200 font-medium">{event.title}</span>
-        </nav>
-        <button
-          onClick={() => navigate('/events')}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03]"
-        >
-          ← Back to Events
-        </button>
+      {/* Header Bar with Breadcrumbs & Back Button */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] sm:p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <nav className="flex items-center gap-2 text-sm">
+            <Link to="/events" className="text-gray-600 dark:text-gray-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors">
+              Events
+            </Link>
+            <span className="text-gray-400 dark:text-gray-600">/</span>
+            <span className="text-gray-900 dark:text-white font-medium">{event.title}</span>
+          </nav>
+          <button
+            onClick={() => navigate('/events')}
+            className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors"
+          >
+            Back to Events
+          </button>
+        </div>
       </div>
 
       {/* Main Article */}
@@ -274,15 +276,6 @@ const EventDetail: React.FC = () => {
         </div>
       )}
 
-      {/* Navigation */}
-      <div className="flex justify-center">
-        <button
-          onClick={() => navigate('/events')}
-          className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-6 py-3 text-sm font-medium text-white hover:bg-brand-600 transition-colors"
-        >
-          ← Back to All Events
-        </button>
-      </div>
     </div>
   );
 };
