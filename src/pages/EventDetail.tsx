@@ -70,61 +70,62 @@ const EventDetail: React.FC = () => {
 
       {/* Main Article */}
       <article className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-        {/* Hero Image */}
-        <div className="overflow-hidden rounded-t-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
-          <img
-            src={event.image}
-            alt={event.title}
-            className="w-full h-64 md:h-96 object-cover"
-          />
-        </div>
-
-        {/* Content */}
+        {/* Header Section - Two Column Layout */}
         <div className="p-6 sm:p-8 md:p-10">
-          {/* Category Badge */}
-          <div className="mb-4">
-            <span className="inline-flex items-center rounded-full bg-brand-50 border border-brand-200 px-3 py-1 text-xs font-medium text-brand-700 dark:bg-brand-500/10 dark:border-brand-500/20 dark:text-brand-400">
-              {event.category}
-            </span>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            {/* Left Column - Header Info */}
+            <div className="flex flex-col h-full min-h-[20rem]">
+              {/* Category Badge */}
+              <div className="mb-6">
+                <span className="inline-flex items-center rounded-full bg-brand-50 border border-brand-200 px-3 py-1 text-xs font-medium text-brand-700 dark:bg-brand-500/10 dark:border-brand-500/20 dark:text-brand-400">
+                  {event.category}
+                </span>
+              </div>
 
-          {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
-            {event.title}
-          </h1>
+              {/* Title */}
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
+                {event.title}
+              </h1>
 
-          {/* Meta Info */}
-          <div className="flex flex-wrap items-center gap-4 pb-6 mb-6 border-b border-gray-200 dark:border-gray-800">
-            <div className="flex items-center gap-3">
-              <img
-                src={event.author.avatar}
-                alt={event.author.name}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div>
-                <p className="text-sm font-medium text-gray-800 dark:text-white">
-                  {event.author.name}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {new Date(event.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </p>
+              {/* Excerpt/Subtext */}
+              <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+                {event.excerpt}
+              </p>
+
+              {/* Author Info - Always at bottom */}
+              <div className="flex items-center gap-3 mt-auto pt-4">
+                <img
+                  src={event.author.avatar}
+                  alt={event.author.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {event.author.name}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {new Date(event.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 ml-auto">
-              {event.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300"
-                >
-                  {tag}
-                </span>
-              ))}
+
+            {/* Right Column - Hero Image */}
+            <div className="overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
+              <img
+                src={event.image}
+                alt={event.title}
+                className="w-full h-64 lg:h-80 object-cover"
+              />
             </div>
           </div>
+
+          {/* Separator */}
+          <div className="border-t border-gray-200 dark:border-gray-800 my-8"></div>
 
           {/* Article Content */}
           <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-brand-500 dark:prose-a:text-brand-400 prose-strong:text-gray-900 dark:prose-strong:text-white">
