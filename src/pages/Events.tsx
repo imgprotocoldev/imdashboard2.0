@@ -33,11 +33,11 @@ const EventsPage: React.FC = () => {
       {featuredEvent && (
         <Link to={`/events/${featuredEvent.slug}`}>
           <article className="group rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow duration-300 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6 cursor-pointer">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-start">
-              <div className="md:col-span-2 overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
-                <img src={featuredEvent.image} alt={featuredEvent.title} className="w-full h-56 md:h-72 object-cover transition-transform duration-300 group-hover:scale-105" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              <div className="overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
+                <img src={featuredEvent.image} alt={featuredEvent.title} className="w-full h-64 md:h-80 object-cover transition-transform duration-300 group-hover:scale-105" />
               </div>
-              <div className="md:col-span-3 flex flex-col h-full min-h-[18rem]">
+              <div className="flex flex-col h-full min-h-[18rem]">
                 {/* Topic badge */}
                 <div className="mb-3">
                   <span className="inline-flex items-center rounded-full bg-brand-50 border border-brand-200 px-3 py-1 text-xs font-medium text-brand-700 dark:bg-brand-500/10 dark:border-brand-500/20 dark:text-brand-400">
@@ -127,11 +127,11 @@ const EventsPage: React.FC = () => {
                     </span>
                   </div>
                   {/* Header */}
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-8 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors duration-200">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-7 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors duration-200">
                     {evt.title}
                   </h3>
                   {/* Information text with flex-grow to push date to bottom */}
-                  <p className="mt-3 flex-grow text-gray-700 dark:text-gray-300 leading-7">
+                  <p className="mt-3 flex-grow text-sm text-gray-700 dark:text-gray-300 leading-6">
                     {evt.excerpt}
                   </p>
                   {/* Date always at bottom */}
