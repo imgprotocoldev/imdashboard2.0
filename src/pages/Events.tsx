@@ -83,23 +83,27 @@ const EventsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Featured card */}
       {featured && (
-        <article className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+        <article className="group rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow duration-300 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-start">
-            <div className="md:col-span-2 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-900">
-              <img src={featured.image} alt={featured.title} className="w-full h-56 md:h-72 object-cover" />
+            <div className="md:col-span-2 overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
+              <img src={featured.image} alt={featured.title} className="w-full h-56 md:h-72 object-cover transition-transform duration-300 group-hover:scale-105" />
             </div>
-            <div className="md:col-span-3 flex flex-col">
+            <div className="md:col-span-3 flex flex-col h-full min-h-[18rem]">
+              {/* Topic badge */}
               <div className="mb-3">
-                <span className="inline-flex items-center rounded-full border border-gray-300 px-2 py-[2px] text-xs text-gray-600 dark:border-gray-700 dark:text-gray-300">
+                <span className="inline-flex items-center rounded-full bg-brand-50 border border-brand-200 px-3 py-1 text-xs font-medium text-brand-700 dark:bg-brand-500/10 dark:border-brand-500/20 dark:text-brand-400">
                   {featured.category}
                 </span>
               </div>
-              <h1 className="text-2xl md:text-3xl font-semibold text-gray-800 dark:text-white/90 leading-9">
+              {/* Header */}
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-9 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors duration-200">
                 {featured.title}
               </h1>
-              <p className="mt-4 text-gray-700 dark:text-gray-300 leading-7">
+              {/* Information text with flex-grow to push date to bottom */}
+              <p className="mt-4 flex-grow text-gray-700 dark:text-gray-300 leading-7">
                 {featured.description}
               </p>
+              {/* Date always at bottom */}
               <div className="mt-5 flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
                 <span>{new Date(featured.date).toLocaleDateString()}</span>
               </div>
@@ -159,23 +163,27 @@ const EventsPage: React.FC = () => {
       {/* Other events */}
       <div className="grid gap-6 sm:grid-cols-2">
         {rest.map((evt) => (
-          <article key={evt.id} className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 items-start">
-              <div className="sm:col-span-2 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-900">
-                <img src={evt.image} alt={evt.title} className="w-full h-44 sm:h-48 object-cover" />
+          <article key={evt.id} className="group rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow duration-300 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 items-center">
+              <div className="sm:col-span-2 overflow-hidden rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
+                <img src={evt.image} alt={evt.title} className="w-full h-56 sm:h-80 object-cover transition-transform duration-300 group-hover:scale-105" />
               </div>
-              <div className="sm:col-span-3 flex flex-col">
+              <div className="sm:col-span-3 flex flex-col h-full min-h-[20rem]">
+                {/* Topic badge */}
                 <div className="mb-2">
-                  <span className="inline-flex items-center rounded-full border border-gray-300 px-2 py-[2px] text-xs text-gray-600 dark:border-gray-700 dark:text-gray-300">
+                  <span className="inline-flex items-center rounded-full bg-brand-50 border border-brand-200 px-3 py-1 text-xs font-medium text-brand-700 dark:bg-brand-500/10 dark:border-brand-500/20 dark:text-brand-400">
                     {evt.category}
                   </span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-800 dark:text-white/90 leading-8">
+                {/* Header */}
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-8 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors duration-200">
                   {evt.title}
                 </h3>
-                <p className="mt-3 text-gray-700 dark:text-gray-300 leading-7">
+                {/* Information text with flex-grow to push date to bottom */}
+                <p className="mt-3 flex-grow text-gray-700 dark:text-gray-300 leading-7">
                   {evt.description}
                 </p>
+                {/* Date always at bottom */}
                 <div className="mt-4 flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
                   <span>{new Date(evt.date).toLocaleDateString()}</span>
                 </div>
