@@ -46,12 +46,18 @@ const EventDetail: React.FC = () => {
       {/* Header Bar with Breadcrumbs & Back Button */}
       <div className="rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <nav className="flex items-center gap-2 text-sm">
-            <Link to="/events" className="text-gray-600 dark:text-gray-400 hover:text-brand-500 dark:hover:text-brand-400 transition-colors">
-              Events
-            </Link>
-            <span className="text-gray-400 dark:text-gray-600">/</span>
-            <span className="text-gray-900 dark:text-white font-medium">{event.title}</span>
+          <nav className="flex items-center gap-2">
+            <div className="inline-flex rounded-xl border border-gray-200 dark:border-gray-800 p-1 bg-gray-50 dark:bg-gray-900/50">
+              <Link
+                to="/events"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+              >
+                Events
+              </Link>
+              <span className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm">
+                {event.title}
+              </span>
+            </div>
           </nav>
           <button
             onClick={() => navigate('/events')}
