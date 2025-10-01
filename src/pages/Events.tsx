@@ -102,11 +102,11 @@ const EventsPage: React.FC = () => {
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors line-clamp-2">
                 {evt.title}
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-4 flex-grow">
+              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-4 mb-4 flex-grow leading-relaxed">
                 {evt.excerpt}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-auto">
-                {new Date(evt.date).toLocaleDateString()}
+                {new Date(evt.date).toLocaleDateString('en-GB')}
               </p>
             </div>
           </Link>

@@ -17,6 +17,117 @@ export type EventItem = {
 
 export const eventsData: EventItem[] = [
   {
+    id: "e7",
+    slug: "img-new-developer",
+    title: "IMG New Developer",
+    category: "updates",
+    date: new Date("2025-08-12T00:00:00.000Z").toISOString(),
+    image: "/images/events/imgnewdeveloper.webp",
+    excerpt:
+      "We're excited to welcome Jerry Balderas as our new developer! With 12+ years of full-stack experience, he's focused on building a high-performance rewards script and tax-optimized systems to strengthen $IMG and deliver long-term value for the community.",
+    content: `We're thrilled to announce that Jerry Balderas has officially joined the $IMG development team! With more than 12 years of full-stack engineering and tech lead experience, Jerry brings the expertise and vision needed to take $IMG's infrastructure, rewards system, and long-term sustainability to the next level.
+
+## GitHub – Jerry Balderas
+
+[@https://github.com/midnjerry](https://github.com/midnjerry)
+
+## Jerry's Mission at $IMG
+
+Jerry's primary focus will be on:
+- Building a high-performance, redundant rewards distribution script
+- Creating tax-optimized systems to maximize long-term project value
+- Strengthening the technical foundation for $IMG's growth
+
+He has previously developed trading platforms with advanced backtesting and even a real-time auditing prototype: IMG Audit Demo
+
+## From Jerry Himself:
+
+"First and foremost, thank you all for your recommendation. I've been praying long and hard and although it's a great responsibility, I am honored and excited to step in.
+
+My goal with the distribution script is obviously high-redundancy performance, but I'm looking at this as a marathon. I'm currently in the process of setting up tax vehicles to incorporate a Self-Directed IRA (SDIRA) framework. Imagine an auto-compounding trading engine (with no capital gains) which doubles every year, but also takes profits and buys $IMG.
+
+Not only am I bringing maintenance, but I'm also building a framework that will create a tax-optimized revenue stream for consistent $IMG buybacks. This is a marathon, and if we stay the course, we will bless many people."*
+
+## Why This Is Big for $IMG
+
+Jerry isn't just maintaining and upgrading the system — he's helping $IMG evolve into a self-sustaining ecosystem.
+
+✅ Stronger, more reliable distribution mechanics
+✅ New tax-optimized structures to support buybacks
+✅ A forward-looking strategy for scalability and growth
+
+With Jerry onboard, $IMG is doubling down on long-term development, transparency, and innovation. This marks a huge step forward in ensuring $IMG remains one of the most sustainable and community-driven projects in crypto.`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Update", "Developer", "Team"],
+    popularity: 90,
+  },
+  {
+    id: "e6",
+    slug: "infra-wallet-0-5",
+    title: "Infra Wallet",
+    category: "updates",
+    date: new Date("2025-08-04T00:00:00.000Z").toISOString(),
+    image: "/images/events/imgvault-infra0.5.webp",
+    excerpt:
+      "The Infra Wallet collects 0.5% from every buy, sell, and transfer (from the 5% tax). These funds are dedicated to strengthening the project, fueling marketing, growth, and future development while creating lasting value for the entire $IMG community.",
+    content: `The $IMG community has spoken! By majority vote on our official Telegram, the community decided to introduce an Infrastructure Wallet (Infra Wallet) a transparent, on-chain solution designed to strengthen the project and ensure long-term sustainability.
+
+## What is the Infra Wallet?
+
+The Infra Wallet collects 0.5% from every buy, sell, and transfer (out of the 5% transaction tax). These funds are fully transparent on-chain and can be tracked by anyone in the community.
+
+Unlike hidden or centralized funding models, the Infra Wallet makes sure every token holder knows exactly where resources are going — creating trust and accountability at the heart of the $IMG ecosystem.
+
+## Why It Matters
+
+The purpose of the Infra Wallet is simple:
+to fuel growth, strengthen infrastructure, and support ongoing development, making $IMG more sustainable in the long run.
+
+Funds from the Infra Wallet are being used for:
+
+- Infrastructure operations and upgrades
+- Paid marketing campaigns & social promotions
+- Updating Dexscreener and other tracking platforms
+- Paying developers to improve the rewards script
+- Third-party audits & CEX listing fees
+- Launching new liquidity pools (IMG/BONK, IMG/USDC, and more)
+
+Even several whales have contributed additional support, helping accelerate these efforts and expand the reach of $IMG.
+
+## Community-Backed Rewards System
+
+The Infra Wallet works hand-in-hand with the automatic Solana rewards system, another upgrade chosen directly by community vote.
+
+Here’s how it works:
+
+- 5% tax on all transactions
+- 4.5% goes directly back to holders
+- 0.5% goes to the Infra Wallet
+- 100% of the collected tax is converted into Solana
+
+Rewards are harvested hourly and distributed daily at 2 AM, 8 AM, 2 PM, and 8 PM EST
+
+All execution is on-chain and verifiable — no claiming required
+By combining automated Solana rewards with the Infra Wallet, $IMG achieves both immediate value for holders and long-term growth for the project.
+
+## A Community-Led Future
+
+The addition of the Infra Wallet shows exactly what makes $IMG different: every major decision is guided by the community.
+
+With transparency, sustainability, and growth at its core, the Infra Wallet ensures $IMG is built to last.
+
+This is only the beginning, with the Infra Wallet in place, $IMG is positioned to expand faster, scale smarter, and deliver even more value to its community.`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Update", "Infra", "Tax"],
+    popularity: 80,
+  },
+  {
     id: "e1",
     slug: "img-v2-terminal-launch-webinar",
     title: "IMG v2 Terminal Launch Webinar",

@@ -104,7 +104,7 @@ const EventDetail: React.FC = () => {
                     {event.author.name}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {new Date(event.date).toLocaleDateString('en-US', {
+                    {new Date(event.date).toLocaleDateString('en-GB', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric'
@@ -128,19 +128,19 @@ const EventDetail: React.FC = () => {
           <div className="border-t border-gray-200 dark:border-gray-800 my-8"></div>
 
           {/* Article Content */}
-          <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-brand-500 dark:prose-a:text-brand-400 prose-strong:text-gray-900 dark:prose-strong:text-white">
+          <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-h1:text-gray-900 dark:prose-h1:text-white prose-h2:text-gray-900 dark:prose-h2:text-white prose-h3:text-gray-900 dark:prose-h3:text-white prose-h4:text-gray-900 dark:prose-h4:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-brand-500 dark:prose-a:text-brand-400 prose-strong:text-gray-900 dark:prose-strong:text-white">
             {event.content.split('\n\n').map((paragraph, index) => {
               // Handle markdown headers
               if (paragraph.startsWith('## ')) {
                 return (
-                  <h2 key={index} className="text-2xl font-bold mt-8 mb-4">
+                  <h2 key={index} className="text-2xl font-bold mt-8 mb-4 text-gray-900 dark:text-white">
                     {paragraph.replace('## ', '')}
                   </h2>
                 );
               }
               if (paragraph.startsWith('### ')) {
                 return (
-                  <h3 key={index} className="text-xl font-semibold mt-6 mb-3">
+                  <h3 key={index} className="text-xl font-semibold mt-6 mb-3 text-gray-900 dark:text-white">
                     {paragraph.replace('### ', '')}
                   </h3>
                 );
