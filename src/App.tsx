@@ -22,6 +22,7 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import Terminal from "./pages/Dashboard/Terminal";
 import Events from "./pages/Events";
+import EventDetail from "./pages/EventDetail";
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="terminal" element={<Terminal />} />
             <Route path="mainscreen" element={<Home />} />
             <Route path="events" element={<Events />} />
+            <Route path="events/:slug" element={<EventDetail />} />
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />
