@@ -17,6 +17,291 @@ export type EventItem = {
 
 export const eventsData: EventItem[] = [
   {
+    id: "e12",
+    slug: "biggest-buy-competition",
+    title: "Biggest Buy Competition!",
+    category: "featured",
+    date: new Date("2025-08-26T00:00:00.000Z").toISOString(),
+    image: "/images/events/biggestbuycompetition1.webp",
+    excerpt:
+      "We're turning up the heat with a new weekly contest format! Instead of short 3-day events, the $IMG community will now enjoy a full week of competition and rewards.",
+    content: `## Competition Details
+
+📅 Duration: August 26 – September 2 (ending Tuesday, 12:30 PM EST)
+💰 Prizes:
+
+- Biggest Buy → Wins 50,000 IMG
+- $25+ Buy Contest → 2 lucky winners of 25,000 IMG each
+
+## Rules
+
+- The biggest single buy during the competition wins the top prize.
+- Any purchase of $25 or more automatically enters you into the raffle for 25,000 IMG.
+- Selling before the competition ends will disqualify your entry.
+
+More time, more winners, more fun. Join the competition and good luck, IMG holders!
+
+Competition Ended
+This competition has now ended. Winners were announced in our official Telegram. Congratulations to everyone who participated and supported $IMG!`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Featured", "Competition", "Rewards"],
+    popularity: 95,
+  },
+  {
+    id: "e11",
+    slug: "temporary-tax-structure",
+    title: "Temporary Tax structure",
+    category: "updates",
+    date: new Date("2025-09-15T00:00:00.000Z").toISOString(),
+    image: "/images/events/temporarytax.webp",
+    excerpt:
+      "The $IMG community voted in favor of a temporary tax adjustment to strengthen the project during these early stages of growth. The new structure allocates 2.5% to the Infra Wallet and 2.5% to holders. This flexible system is designed to support ongoing development while ensuring long-term sustainability for the project.",
+    content: `## Why a Temporary Tax Structure?
+
+At lower market caps, even small trading volumes can make it difficult to fund critical development, marketing, and infrastructure. To solve this, the community voted to temporarily adjust the tax split:
+
+- Holders: 2.5%
+- Infra Wallet: 2.5%
+
+This ensures that while holders still earn significant $SOL rewards, a larger share goes into the Infra Wallet, funding essential upgrades and growth strategies that benefit everyone long-term.
+
+## How the Infra Wallet Builds Value
+
+The Infra Wallet is the project's backbone. It has already been used to:
+
+✅ Build new liquidity pools like IMG/BONK and IMG/USDC, generating more trading volume.
+
+✅ Fund marketing campaigns to attract new holders.
+
+✅ Pay for development upgrades, including improvements to the rewards script.
+
+✅ Sponsor events and promotions to grow visibility.
+
+This reinvestment creates a positive feedback loop: stronger infrastructure → more volume → more tax collected → more rewards and growth.
+
+## Liquidity Pools = Volume Engine
+
+One of the biggest benefits of boosting the Infra Wallet has been the ability to launch new trading pairs.
+
+- IMG/BONK Pool ($5K) → generates $7,500–$30,000 daily volume.
+- IMG/ETH Pool ($5K) → attracts ETH whales, adds $5,000–$20,000 daily volume.
+- IMG/USDC Pool ($10K) → provides routing backbone for CEX/DEX arbitrage.
+
+As more pools are added, arbitrage bots trade nonstop between them, driving consistent daily volume and tax revenue. This directly benefits holders by:
+
+🔹 Increasing trading activity & visibility.
+
+🔹 Lowering slippage → better experience for traders.
+
+🔹 Generating higher tax income → more rewards + more funds for growth.
+
+Even small pools ($2K–$5K) can generate 5x–10x their size in daily volume.
+
+## Flexible Tax Based on Marketcap
+
+After another community vote, we introduced a flexible tax model that adjusts as the project grows:
+
+- Under $3M Marketcap → 2.5% holders / 2.5% infra wallet
+- $3M–$5M → 3% holders / 2% infra wallet
+- $5M–$7.5M → 3.5% holders / 1.5% infra wallet
+- $7.5M–$10M → 4% holders / 1% infra wallet
+- $10M+ → 4.5% holders / 0.5% infra wallet
+
+This approach ensures:
+
+✅ Strong funding when the project is small and needs it most.
+
+✅ Gradual return to normal rewards as marketcap grows.
+
+✅ Long-term sustainability, with the Infra Wallet always receiving 0.5% at $10M+ to keep development funded forever.
+
+## The Bigger Picture
+
+This flexible tax structure is temporary and designed for sustainability. As marketcap grows, rewards gradually shift back toward holders while still maintaining a small but steady Infra Wallet allocation to fund development.
+
+Bottom line:
+
+📌 Temporary boost to build stronger foundations.
+
+📌 Flexible system that adapts to market growth.
+
+📌 Self-sustaining model at scale with 0.5% Infra Wallet.
+
+With this strategy, $IMG is building a sustainable reward ecosystem that grows alongside its holders — creating value today, and ensuring development for tomorrow.`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Update", "Tax", "Structure"],
+    popularity: 89,
+  },
+  {
+    id: "e10",
+    slug: "server-optimization-upgrade",
+    title: "Server Optimization Upgrade",
+    category: "updates",
+    date: new Date("2025-09-04T00:00:00.000Z").toISOString(),
+    image: "/images/events/serverOptimizationevent.webp",
+    excerpt:
+      "The server has been upgraded to improve stability and support the growing database. Next milestone: optimizing the database to reduce bandwidth and memory usage. Auditing tools are also in development to strengthen reliability.",
+    content: `Server Optimization Upgrade: Stronger, Smarter, More Reliable
+
+The $IMG infrastructure has received a major server upgrade to improve stability, handle the growing database, and ensure the reward system remains reliable as the project scales.
+
+## Why the Upgrade Was Needed
+
+The rewards system has already processed over 13,099 transactions. With such growth, the database reached 12 million records, which began slowing down queries and affecting efficiency. On top of that, some unaccounted transactions appeared due to Solana API issues, requiring deeper auditing.
+
+To handle this scale, the server was upgraded to meet memory and bandwidth requirements — ensuring smoother operation for both the rewards script and the dashboard.
+
+## What's Being Worked On
+
+- Reconcile Phase – A new step in the rewards process will verify wallet balances against expected values, eliminating mismatches and improving accuracy.
+- Spam Airdrop Filtering – A script is being built to identify and remove spam airdrops from transaction history, keeping records clean.
+- Accrual Distribution System – An "add-on" script in development will automatically track and re-distribute any skipped or pending rewards, so no holder is left behind.
+
+## Rewards Flow (New & Improved)
+
+The upgraded process will now follow four phases:
+
+1. Harvest – Collect IMG fees.
+2. Allocation – Convert to SOL.
+3. Distribution – Pay rewards to holders.
+4. Reconcile – Confirm balances match on-chain expectations.
+
+## Why This Matters for Holders
+
+- Stronger reliability → fewer missed transactions, smoother rewards.
+- Better accuracy → every SOL accounted for, no holder overlooked.
+- Future-proof scaling → optimized database ensures the system can keep growing.
+- Community trust → full transparency and clean execution, all verifiable on-chain.
+
+This upgrade ensures $IMG continues to build a sustainable, resilient, and transparent rewards ecosystem, benefitting every single holder.
+
+Next milestone: optimizing the database further to reduce bandwidth and memory usage — paving the way for seamless growth.`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Update", "Server", "Optimization"],
+    popularity: 87,
+  },
+  {
+    id: "e9",
+    slug: "reward-system-upgrade",
+    title: "Reward system upgrade",
+    category: "updates",
+    date: new Date("2025-08-20T00:00:00.000Z").toISOString(),
+    image: "/images/events/solrewardsevents.webp",
+    excerpt:
+      "Rewards are harvested hourly and distributed daily at 2 AM, 8 AM, 2 PM, and 8 PM EST. Payouts roll out gradually, so while not every wallet receives rewards at those exact times, all holders receive their full share by day's end, execution is on-chain and verifiable.",
+    content: `Reward System Upgrade: Smarter, Fairer, Stronger
+
+The $IMG reward system has been upgraded to provide more efficient payouts, lower fees, and a smoother experience for all holders.
+
+This upgrade was decided by community vote on Telegram — a true community-led step forward.
+
+## Why the Change?
+
+Previously, rewards were distributed every 5 minutes. While fast, this method caused:
+
+- Unnecessary transaction fees piling up
+- Higher risk of Solana blockchain congestion during peak activity
+- Frequent small reward transfers that weren't efficient for holders
+
+To solve this, the system now uses a fixed distribution schedule four times daily.
+
+## How It Works Now
+
+- Harvesting: Rewards are harvested hourly, with $IMG fees converted to $SOL in small batches (avoiding large sell-offs).
+- Distribution: Rewards are paid out at 2 AM, 8 AM, 2 PM, and 8 PM EST.
+- Rolling Payouts: Not every wallet receives SOL at the exact times, but all holders get their full rewards by day's end.
+- On-Chain Transparency: Every step is executed and verifiable directly on-chain.
+
+## Why This is Better for Holders
+
+- Bigger, juicier payouts (4 times daily vs. tiny amounts every 5 minutes)
+- Lower transaction costs → more value stays in the system
+- Less stress on Solana → smoother and more reliable reward flow
+- Smarter harvesting → IMG converted to SOL gradually, not in large dumps
+
+## Designed for the Community
+
+This upgrade balances efficiency and fairness, ensuring rewards are distributed in a way that strengthens $IMG's long-term sustainability while maximizing value for holders.
+
+The result: smoother operations, fewer fees, and stronger rewards — all decided by the community.`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Update", "Rewards", "System"],
+    popularity: 88,
+  },
+  {
+    id: "e8",
+    slug: "blacklist-wallets",
+    title: "Blacklist Wallets",
+    category: "updates",
+    date: new Date("2025-08-11T00:00:00.000Z").toISOString(),
+    image: "/images/events/blackwalletsevents.webp",
+    excerpt:
+      "The Rewards script now blacklists several wallets, including CoinEx hot wallet, Raydium, Phantom, and others that were unfairly collecting fees and rewards. This update protects the project ensuring fairer distribution and increased earnings for real $IMG holders.",
+    content: `Blacklist Wallets: A Major Upgrade for Fair Rewards
+
+We're excited to introduce an important upgrade to the $IMG reward system: Blacklist Wallets.
+
+This system ensures that rewards are distributed fairly by excluding wallets that should not be receiving them, such as DEX liquidity pools, exchange hot wallets, and fee wallets. Instead of rewards being wasted on inactive or platform-controlled wallets, they are redirected to real $IMG holders.
+
+## What Are Blacklist Wallets?
+
+The rewards script now automatically blacklists certain addresses, including:
+
+- CoinEx hot wallet
+- Raydium liquidity pools
+- Phantom fee wallet
+- And other similar exchange-related wallets
+
+By excluding these wallets, the system prevents rewards from being sent to places where they provide no benefit to the community.
+
+## How It Helps Holders
+
+- Rewards are distributed only among true $IMG holders
+- Prevents wasted payouts to liquidity pools and exchanges
+- Increases individual rewards by narrowing the eligible pool of recipients
+
+This means more SOL is sent directly to wallets that actually hold $IMG, strengthening the fairness and value of the ecosystem.
+
+## How It Works (On-Chain & Transparent)
+
+The rewards script fully automates the process:
+
+- Scans the blockchain for wallet balances
+- Harvests rewards
+- Converts IMG tax into SOL
+- Distributes SOL to all eligible (non-blacklisted) holders
+
+All steps are executed on-chain and can be verified publicly.
+
+## A Flexible & Evolving System
+
+Blacklist Wallets is not static — the system can add or remove addresses as needed. As the project grows, more exchange or platform wallets may be blacklisted to ensure rewards always benefit the community first.
+
+## Why This Matters
+
+This update marks a big step toward making the reward system more efficient, fair, and sustainable. It ensures that $IMG continues to deliver maximum value to holders, rather than rewarding inactive or platform-controlled addresses.
+
+With this upgrade, $IMG proves once again that it is committed to innovation, transparency, and community-first development.`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Update", "Rewards", "Blacklist"],
+    popularity: 85,
+  },
+  {
     id: "e7",
     slug: "img-new-developer",
     title: "IMG New Developer",
