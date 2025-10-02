@@ -17,6 +17,37 @@ export type EventItem = {
 
 export const eventsData: EventItem[] = [
   {
+    id: "e13",
+    slug: "img-giveaway-august-28-2025",
+    title: "IMG Giveaway – August 28, 2025",
+    category: "featured",
+    date: new Date("2025-08-28T00:00:00.000Z").toISOString(),
+    image: "/images/events/giveawayAugust 2025.webp",
+    excerpt:
+      "The Buy Competition Giveaway went live and the community showed up strong! This event gave everyone a chance to win big while supporting $IMG.",
+    content: `## Giveaway Details
+
+📅 Date: August 28, 2025
+🏆 Prizes:
+
+- 50,000 $IMG → Biggest Buy Winner
+- 2x 25,000 $IMG → Raffle Winners
+
+Every $25 buy counted as one entry, and all participants needed to hold at least 5,000 $IMG to qualify.
+
+## Results
+
+✅ Winners were selected and officially announced in our Telegram community.
+
+Winners have been selected and announced in our Telegram community. Congratulations to everyone who participated.`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Featured", "Giveaway", "Competition"],
+    popularity: 20,
+  },
+  {
     id: "e12",
     slug: "biggest-buy-competition",
     title: "Biggest Buy Competition!",
@@ -48,7 +79,7 @@ This competition has now ended. Winners were announced in our official Telegram.
       avatar: "/images/logo/imglogoround.webp",
     },
     tags: ["Featured", "Competition", "Rewards"],
-    popularity: 95,
+    popularity: 50,
   },
   {
     id: "e11",
@@ -187,7 +218,7 @@ Next milestone: optimizing the database further to reduce bandwidth and memory u
       avatar: "/images/logo/imglogoround.webp",
     },
     tags: ["Update", "Server", "Optimization"],
-    popularity: 87,
+    popularity: 70,
   },
   {
     id: "e9",
@@ -238,7 +269,7 @@ The result: smoother operations, fewer fees, and stronger rewards — all decide
       avatar: "/images/logo/imglogoround.webp",
     },
     tags: ["Update", "Rewards", "System"],
-    popularity: 88,
+    popularity: 80,
   },
   {
     id: "e8",
@@ -299,7 +330,7 @@ With this upgrade, $IMG proves once again that it is committed to innovation, tr
       avatar: "/images/logo/imglogoround.webp",
     },
     tags: ["Update", "Rewards", "Blacklist"],
-    popularity: 85,
+    popularity: 80,
   },
   {
     id: "e7",
@@ -347,7 +378,7 @@ With Jerry onboard, $IMG is doubling down on long-term development, transparency
       avatar: "/images/logo/imglogoround.webp",
     },
     tags: ["Update", "Developer", "Team"],
-    popularity: 90,
+    popularity: 100,
   },
   {
     id: "e6",
@@ -410,7 +441,7 @@ This is only the beginning, with the Infra Wallet in place, $IMG is positioned t
       avatar: "/images/logo/imglogoround.webp",
     },
     tags: ["Update", "Infra", "Tax"],
-    popularity: 80,
+    popularity: 90,
   },
   {
     id: "e1",
