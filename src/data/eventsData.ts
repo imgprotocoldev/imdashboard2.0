@@ -17,6 +17,155 @@ export type EventItem = {
 
 export const eventsData: EventItem[] = [
   {
+    id: "e16",
+    slug: "alphai-listing",
+    title: "Alph.ai Listing",
+    category: "featured",
+    date: new Date("2025-08-20T00:00:00.000Z").toISOString(),
+    image: "/images/events/alphailistingbanner.webp",
+    excerpt:
+      "$IMG is now live on Alph.AI with $IMG/SOL trading! Hosting a special event for the First-Time Trade & Trading Volume Challenge! Event: Aug 20 – 27, 2025 (UTC+7).",
+    content: `## Alph.AI X Img: Free Trading Fee Event
+
+Event Period
+10/09/2025–27/09/2025
+
+Eligible Participants
+All registered users on Alph AI are eligible to join.
+
+Trading Fee Waiver Details
+0% trading fees apply only for buy and sell transactions of $IMG token during the event period.
+
+The fee waiver does not apply to:
+
+- Withdrawals
+- Deposits
+- Trades involving other tokens
+
+Standard trading rules and limits remain in effect.
+
+How to Participate
+1. Log in to your Alph AI account.
+2. Trade $IMG during the event period to enjoy free trading fees.
+
+CA : znv3FZt2HFAvzYf5LxzVyryh3mBXWuTRRng25gEZAjh
+
+Event Rules
+- Only trades of $IMG are eligible.
+- Users must comply with Alph AI's Terms of Service.
+
+Reward Distribution
+- Rewards come in the form of 0% trading fees, applied instantly during execution of eligible trades.
+- No manual claim required.
+- Users can verify fee discounts in their Alph AI trade history.
+
+Disclaimer — Free Trading Fee Event
+- Alph AI reserves the right to modify, suspend, or cancel the event at any time without prior notice.
+- Any form of fraudulent activity, market manipulation, or abuse of the system will result in disqualification.
+- Cryptocurrency trading involves high risks, including price volatility and possible capital loss. Participants should conduct their own research before trading.
+- Alph AI does not provide financial, investment, or trading advice. Participation in this event does not guarantee profit or risk-free trading.
+
+Contact & Support
+For any questions or assistance regarding the Alph AI Event, please reach out to Alph AI's official support team via:
+
+- Telegram: [https://t.me/AlphAICommunity](https://t.me/AlphAICommunity)
+- Twitter (X): [https://x.com/alphai_snipe](https://x.com/alphai_snipe)
+
+Event ended and winners were selected on the Alph.AI Exchange!`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Featured", "Alph.AI", "Listing", "Trading"],
+    popularity: 5,
+  },
+  {
+    id: "e15",
+    slug: "bitrue-listing",
+    title: "Bitrue Listing",
+    category: "featured",
+    date: new Date("2025-08-20T00:00:00.000Z").toISOString(),
+    image: "/images/events/bitruelisting.webp",
+    excerpt:
+      "$IMG is now listed on Bitrue! Trade/USDT directly at bitrue.com. To celebrate, Bitrue is hosting a trading competition with a $2,000 USDT prize pool. Event runs from Aug 20 – 27, 2025 (UTC+7).",
+    content: `## #️⃣ Event Period
+20 August 2025, 00:00 UTC+7 – 27 August 2025, 23:59 UTC+7
+
+🎯 Airdrop activities are exclusively available on Bitrue Alpha App!
+
+## #️⃣ Event Prizes
+
+Total $2,000 USDT Prize Pool
+
+- Top 10 Traders
+- 10 Lucky Draw Winners: $10 USDT each ($100 total)
+- Trading Volume Share Pool: $1,400 USDT distributed proportionally to qualified participants
+
+## #️⃣ Event Details
+
+**Activity 1: Top 10 Traders**
+
+Trade $IMG/USDT on Bitrue Alpha during the event. The Top 10 traders with the highest trading volume (buy + sell) will be rewarded.
+
+**Activity 2: Lucky Draw Winners**
+
+10 random eligible traders will win $10 USDT each.
+
+**Activity 3: Volume Share Pool**
+
+The remaining $1,400 USDT will be shared proportionally among all qualified participants based on their $IMG/USDT trading volume.
+
+## #️⃣ Reward Distribution
+
+- Rewards will be distributed within 14 working days after the campaign ends.
+- Winners will be announced via Bitrue Official Telegram
+
+## #️⃣ Terms & Conditions
+
+- Participants must have a Bitrue Alpha account and complete KYC verification.
+- Only trades of $IMG/USDT (Alpha) count towards rankings.
+- Fake trading, wash trading, use of bots, or multiple accounts will result in disqualification.
+- Bitrue Alpha reserves the right to suspend the campaign if misuse or suspicious activity is detected.
+- Decisions made by Bitrue are final and cannot be contested.
+
+## #️⃣ Disclaimer
+
+Bitrue reserves the right in its sole discretion to amend, modify, or cancel this campaign at any time without prior notice. Cryptocurrency trading is highly volatile and involves risk of loss. Please invest responsibly. For more details, see [Competition details](https://www.bitrue.com/land/img) and our [Terms of Use and Privacy Policy](https://support.bitrue.com/hc/en-001/articles/4405473185945-Bitrue-Privacy-Policy).
+
+Event ended and winners were selected on the Bitrue Exchange!`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Featured", "Bitrue", "Listing", "Trading"],
+    popularity: 10,
+  },
+  {
+    id: "e14",
+    slug: "coingecko-update",
+    title: "CoinGecko Update",
+    category: "featured",
+    date: new Date("2025-08-28T00:00:00.000Z").toISOString(),
+    image: "/images/events/trackimgcoingecko.webp",
+    excerpt:
+      "The team has submitted a request to CoinGecko for Infinite Money Glitch ($IMG) and is working with their support to gain full ownership of the listing, including updating information and social links.",
+    content: `## CoinGecko Update - $IMG Listing
+
+We're excited to announce that our CoinGecko listing for Infinite Money Glitch ($IMG) has been successfully updated! 
+
+The team has gained full ownership and control of the listing, which means all token information, social links, and project details are now fully up to date and managed directly by us.
+
+Check it out here: [CoinGecko – Infinite Money Glitch](https://www.coingecko.com/en/coins/infinite-money-glitch)
+
+This marks another important step in strengthening our presence across major platforms and ensuring transparency for the $IMG community.`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Featured", "CoinGecko", "Listing"],
+    popularity: 15,
+  },
+  {
     id: "e13",
     slug: "img-giveaway-august-28-2025",
     title: "IMG Giveaway – August 28, 2025",
@@ -442,294 +591,6 @@ This is only the beginning, with the Infra Wallet in place, $IMG is positioned t
     },
     tags: ["Update", "Infra", "Tax"],
     popularity: 90,
-  },
-  {
-    id: "e1",
-    slug: "img-v2-terminal-launch-webinar",
-    title: "IMG v2 Terminal Launch Webinar",
-    category: "featured",
-    date: new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString(),
-    image: "/images/events/event1.webp",
-    excerpt: "Walkthrough of the new terminal features and roadmap.",
-    content: `We're excited to announce the launch of IMG v2 Terminal - a complete redesign of our distribution dashboard with powerful new features and improved user experience.
-
-## What's New in v2
-
-The new terminal brings a host of improvements designed to make managing your IMG rewards easier and more transparent:
-
-### Enhanced Network Demographics
-Get real-time insights into your validator network with our interactive world map showing user distribution across regions. The new demographics panel provides instant visibility into your global reach.
-
-### Advanced Reward Tracking
-Track reward conversions, distribution batches, and pending rewards all in one unified interface. Our new visualization tools make it easy to understand your reward flow at a glance.
-
-### Improved Performance
-Built from the ground up with modern React architecture, the terminal is faster and more responsive than ever. Real-time updates ensure you're always seeing the latest data.
-
-## Join the Webinar
-
-Don't miss this opportunity to get a guided tour of all the new features. We'll cover:
-
-- How to navigate the new terminal interface
-- Best practices for monitoring your distributions
-- Tips and tricks for maximizing efficiency
-- Q&A session with the development team
-
-Register now to secure your spot!`,
-    author: {
-      name: "IMG Team",
-      avatar: "/images/avatar/user1.webp",
-    },
-    tags: ["Terminal", "Launch", "Features"],
-    popularity: 85,
-  },
-  {
-    id: "e2",
-    slug: "partnership-announcement",
-    title: "Partnership Announcement",
-    category: "updates",
-    date: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString(),
-    image: "/images/events/event2.webp",
-    excerpt: "Integrations to improve reward distribution pipeline.",
-    content: `We're thrilled to announce a strategic partnership that will significantly enhance our reward distribution infrastructure and expand IMG Protocol's capabilities.
-
-## Partnership Overview
-
-This collaboration brings together industry-leading technology to create a more robust and efficient distribution pipeline. Our partners share our commitment to transparency and reliability.
-
-### Key Benefits
-
-**Enhanced Infrastructure**
-- Improved transaction processing speeds
-- Reduced distribution latency
-- Better fault tolerance and reliability
-
-**Expanded Capabilities**
-- New integration options for validators
-- Enhanced monitoring and analytics
-- Streamlined onboarding process
-
-**Cost Optimization**
-- Lower transaction fees
-- More efficient batch processing
-- Optimized reward calculations
-
-## What This Means for You
-
-Validators and token holders can expect:
-
-- Faster reward distributions
-- Lower operational costs
-- Better visibility into distribution status
-- Enhanced security and reliability
-
-## Timeline
-
-The integration is already underway, with the first phase going live next month. Full rollout is expected within the quarter.
-
-Stay tuned for more updates as we continue to build the future of decentralized reward distribution!`,
-    author: {
-      name: "IMG Team",
-      avatar: "/images/avatar/user1.webp",
-    },
-    tags: ["Partnership", "Infrastructure", "Updates"],
-    popularity: 60,
-  },
-  {
-    id: "e3",
-    slug: "community-ama",
-    title: "Community AMA",
-    category: "featured",
-    date: new Date(Date.now() + 3 * 24 * 3600 * 1000).toISOString(),
-    image: "/images/events/event3.webp",
-    excerpt: "Join the team to discuss IMG, SOL conversions, and plans.",
-    content: `Join us for an interactive AMA (Ask Me Anything) session where the IMG Protocol team will answer your questions about our platform, future plans, and the broader Solana ecosystem.
-
-## Event Details
-
-**When:** Coming up this week
-**Where:** Telegram Community Channel
-**Duration:** 2 hours
-
-## Topics We'll Cover
-
-### Protocol Development
-- Recent updates and improvements
-- Upcoming features on the roadmap
-- Technical architecture decisions
-
-### Tokenomics & Rewards
-- IMG to SOL conversion mechanisms
-- Reward distribution strategies
-- Validator economics
-
-### Community & Governance
-- How to get more involved
-- Contribution opportunities
-- Future governance plans
-
-## How to Participate
-
-1. Join our Telegram community
-2. Submit your questions in advance or ask live
-3. Engage with other community members
-
-No question is too simple or too complex - we want to hear from everyone!
-
-## Special Announcements
-
-We'll also be sharing some exclusive updates during the AMA, including:
-
-- New partnership reveals
-- Product roadmap sneak peeks
-- Community incentive programs
-
-Mark your calendars and bring your questions. We're looking forward to connecting with our amazing community!
-
-Join our Telegram to get notified when we go live.`,
-    author: {
-      name: "IMG Team",
-      avatar: "/images/avatar/user1.webp",
-    },
-    tags: ["Community", "AMA", "Featured"],
-    popularity: 95,
-  },
-  {
-    id: "e4",
-    slug: "quarterly-update-q4-2024",
-    title: "Quarterly Update",
-    category: "updates",
-    date: new Date(Date.now() - 14 * 24 * 3600 * 1000).toISOString(),
-    image: "/images/events/event4.webp",
-    excerpt: "Metrics, releases, and next milestones.",
-    content: `As we close out another successful quarter, we're excited to share our progress, key metrics, and what's ahead for IMG Protocol.
-
-## Key Metrics
-
-Our network continues to grow steadily:
-
-**Network Growth**
-- 40% increase in active validators
-- 1,200+ total users across 25+ countries
-- $2.5M+ in total rewards distributed
-
-**Platform Performance**
-- 99.9% uptime across all services
-- Average distribution time: <5 minutes
-- Zero critical incidents
-
-## Major Releases
-
-### Terminal v2
-Launched our completely redesigned terminal with enhanced analytics, real-time monitoring, and improved UX. User feedback has been overwhelmingly positive.
-
-### Mobile Optimization
-Rolled out mobile-responsive designs across the entire platform, making it easier to monitor distributions on the go.
-
-### API Enhancements
-Released v2 of our public API with better documentation, new endpoints, and improved rate limits.
-
-## What's Next
-
-### Q1 2025 Roadmap
-
-**Infrastructure Upgrades**
-- Multi-sig wallet support
-- Advanced batch scheduling
-- Enhanced security protocols
-
-**Feature Additions**
-- Custom reward calculation rules
-- Advanced reporting and exports
-- Integration with major wallets
-
-**Community Initiatives**
-- Validator education program
-- Expanded documentation
-- Community governance beta
-
-## Thank You
-
-None of this would be possible without our incredible community of validators, token holders, and contributors. Your feedback drives our development, and your support keeps us motivated.
-
-Here's to an even more successful quarter ahead!`,
-    author: {
-      name: "IMG Team",
-      avatar: "/images/avatar/user1.webp",
-    },
-    tags: ["Update", "Metrics", "Roadmap"],
-    popularity: 72,
-  },
-  {
-    id: "e5",
-    slug: "validator-ops-workshop",
-    title: "Validator Ops Workshop",
-    category: "featured",
-    date: new Date(Date.now() + 21 * 24 * 3600 * 1000).toISOString(),
-    image: "/images/events/event5.webp",
-    excerpt: "Hands-on session for infra contributors and power users.",
-    content: `Calling all validators and infrastructure enthusiasts! Join us for an in-depth, hands-on workshop covering everything you need to know about running validator operations on IMG Protocol.
-
-## Workshop Overview
-
-This technical workshop is designed for both new and experienced validators who want to optimize their operations and get the most out of the IMG ecosystem.
-
-## What You'll Learn
-
-### Setup & Configuration
-- Step-by-step validator setup
-- Best practices for node configuration
-- Security hardening essentials
-
-### Operations & Monitoring
-- Using the Terminal dashboard effectively
-- Setting up alerts and notifications
-- Troubleshooting common issues
-
-### Optimization Strategies
-- Maximizing reward efficiency
-- Resource allocation tips
-- Performance tuning
-
-### Advanced Topics
-- Custom integration patterns
-- API usage for automation
-- Batch processing optimization
-
-## Who Should Attend
-
-- Current validators looking to optimize
-- Infrastructure contributors
-- Power users interested in validation
-- Anyone curious about validator operations
-
-## Workshop Format
-
-**Duration:** 3 hours
-**Format:** Live presentation + hands-on exercises
-**Prerequisites:** Basic understanding of Solana validators
-
-We'll have breakout sessions for different experience levels, so everyone can participate at their own pace.
-
-## Materials Provided
-
-All attendees will receive:
-- Comprehensive setup guide
-- Configuration templates
-- Troubleshooting checklist
-- Access to private support channel
-
-## Register Now
-
-Spaces are limited to ensure quality interaction. Register early to secure your spot!
-
-Looking forward to seeing you there and helping you become a validator pro! 🚀`,
-    author: {
-      name: "IMG Team",
-      avatar: "/images/avatar/user1.webp",
-    },
-    tags: ["Workshop", "Validators", "Technical"],
-    popularity: 68,
   },
 ];
 

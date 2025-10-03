@@ -171,6 +171,48 @@ const EventDetail: React.FC = () => {
             </div>
           );
         }
+
+        // Handle Alph.AI Event Ended alert box
+        if (paragraph.includes('Event ended and winners were selected on the Alph.AI Exchange!')) {
+          return (
+            <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 my-6 dark:bg-yellow-900/10 dark:border-yellow-800">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-black dark:text-white">Event Ended</h3>
+                  <div className="mt-2 text-sm text-black dark:text-white">
+                    <p>Event ended and winners were selected on the Alph.AI Exchange!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // Handle Bitrue Event Ended alert box
+        if (paragraph.includes('Event ended and winners were selected on the Bitrue Exchange!')) {
+          return (
+            <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 my-6 dark:bg-yellow-900/10 dark:border-yellow-800">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-black dark:text-white">Event Ended</h3>
+                  <div className="mt-2 text-sm text-black dark:text-white">
+                    <p>Event ended and winners were selected on the Bitrue Exchange!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
               // Handle markdown headers
               if (paragraph.startsWith('## ')) {
                 return (
@@ -207,10 +249,46 @@ const EventDetail: React.FC = () => {
                   </ul>
                 );
               }
-              // Regular paragraph
+              // Regular paragraph with markdown link processing
+              const processMarkdownLinks = (text: string) => {
+                const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+                const parts = [];
+                let lastIndex = 0;
+                let match;
+                
+                while ((match = linkRegex.exec(text)) !== null) {
+                  // Add text before the link
+                  if (match.index > lastIndex) {
+                    parts.push(text.slice(lastIndex, match.index));
+                  }
+                  
+                  // Add the link
+                  parts.push(
+                    <a
+                      key={match.index}
+                      href={match[2]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-500 dark:text-brand-400 hover:underline"
+                    >
+                      {match[1]}
+                    </a>
+                  );
+                  
+                  lastIndex = match.index + match[0].length;
+                }
+                
+                // Add remaining text
+                if (lastIndex < text.length) {
+                  parts.push(text.slice(lastIndex));
+                }
+                
+                return parts.length > 0 ? parts : text;
+              };
+
               return (
                 <p key={index} className="text-gray-700 dark:text-gray-300 leading-7 mt-4">
-                  {paragraph}
+                  {processMarkdownLinks(paragraph)}
                 </p>
               );
             })}
