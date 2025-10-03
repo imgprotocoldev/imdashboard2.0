@@ -23,6 +23,8 @@ import Home from "./pages/Dashboard/Home";
 import Terminal from "./pages/Dashboard/Terminal";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
+import Harvesting from "./pages/Harvesting";
+import Distribution from "./pages/Distribution";
 
 export default function App() {
   return (
@@ -37,6 +39,8 @@ export default function App() {
             <Route path="mainscreen" element={<Home />} />
             <Route path="events" element={<Events />} />
             <Route path="events/:slug" element={<EventDetail />} />
+            <Route path="harvesting" element={<Harvesting />} />
+            <Route path="distribution" element={<Distribution />} />
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />

@@ -38,6 +38,16 @@ const navItems: NavItem[] = [
     path: "events",
   },
   {
+    icon: <PieChartIcon />,
+    name: "Harvesting",
+    path: "harvesting",
+  },
+  {
+    icon: <BoxCubeIcon />,
+    name: "Distribution",
+    path: "distribution",
+  },
+  {
     icon: <GridIcon />,
     name: "Dashboard",
     subItems: [
