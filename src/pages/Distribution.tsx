@@ -5,6 +5,7 @@ import DistributionTableOne from "../components/tables/DistributionTable/Distrib
 
 export default function Distribution() {
   const [selectedMonth, setSelectedMonth] = useState('all');
+  const [searchAddress, setSearchAddress] = useState('');
 
   // Generate month options
   const monthOptions = [
@@ -35,8 +36,17 @@ export default function Distribution() {
           desc="Track SOL reward distributions to holders and their USD values"
           className="relative"
         >
-          {/* Monthly Filter in Card Header */}
-          <div className="absolute top-4 right-4">
+          {/* Search and Filter Controls */}
+          <div className="absolute top-4 right-4 flex gap-3">
+            {/* Search Bar */}
+            <input
+              type="text"
+              placeholder="Search Address..."
+              value={searchAddress}
+              onChange={(e) => setSearchAddress(e.target.value)}
+              className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent w-48"
+            />
+            {/* Monthly Filter */}
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
@@ -49,7 +59,7 @@ export default function Distribution() {
               ))}
             </select>
           </div>
-          <DistributionTableOne selectedMonth={selectedMonth} />
+          <DistributionTableOne selectedMonth={selectedMonth} searchAddress={searchAddress} />
         </ComponentCard>
       </div>
     </>

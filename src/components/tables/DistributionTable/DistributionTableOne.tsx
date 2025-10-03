@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -12,206 +12,151 @@ interface DistributionData {
   date: string;
   reward: string;
   value: string;
+  address: string;
 }
 
-// Sample data for demonstration
+// Sample data with realistic blockchain signatures
 const distributionData: DistributionData[] = [
   {
-    id: 'D001',
+    id: '5z88yMEAZZL4P7D16dHhCjZHKH74wWXXP88FEqFnnmRcQyRDfhKPBx8zdHsgdBpVHoDpFkCiJNh8HrKNEx5TZqu',
     date: '2025-01-15',
     reward: '0.125',
-    value: '$18.75'
+    value: '$18.75',
+    address: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM'
   },
   {
-    id: 'D002',
+    id: '3Kj8mNpQ2RtV5XyZ9WcE7FgH4L6MnB8AsD1CvXzPqR3Tj',
     date: '2025-01-15',
     reward: '0.089',
-    value: '$13.35'
+    value: '$13.35',
+    address: '7HxK9LmN2PqR5TvW8YzA3BcD6EfG1HjK4MnP7QsT2UvX'
   },
   {
-    id: 'D003',
+    id: '8RtV5XyZ9WcE7FgH4L6MnB8AsD1CvXzPqR3TjKj8mNpQ2',
     date: '2025-01-16',
     reward: '0.234',
-    value: '$35.10'
-  },
-  {
-    id: 'D004',
-    date: '2025-01-16',
-    reward: '0.156',
-    value: '$23.40'
-  },
-  {
-    id: 'D005',
-    date: '2025-01-17',
-    reward: '0.312',
-    value: '$46.80'
-  },
-  {
-    id: 'D006',
-    date: '2025-01-17',
-    reward: '0.178',
-    value: '$26.70'
-  },
-  {
-    id: 'D007',
-    date: '2025-01-18',
-    reward: '0.267',
-    value: '$40.05'
-  },
-  {
-    id: 'D008',
-    date: '2025-01-18',
-    reward: '0.134',
-    value: '$20.10'
-  },
-  {
-    id: 'D009',
-    date: '2025-01-19',
-    reward: '0.298',
-    value: '$44.70'
-  },
-  {
-    id: 'D010',
-    date: '2025-01-19',
-    reward: '0.201',
-    value: '$30.15'
-  },
-  {
-    id: 'D011',
-    date: '2025-01-20',
-    reward: '0.345',
-    value: '$51.75'
-  },
-  {
-    id: 'D012',
-    date: '2025-01-20',
-    reward: '0.189',
-    value: '$28.35'
-  },
-  {
-    id: 'D013',
-    date: '2025-01-21',
-    reward: '0.278',
-    value: '$41.70'
-  },
-  {
-    id: 'D014',
-    date: '2025-01-21',
-    reward: '0.223',
-    value: '$33.45'
-  },
-  {
-    id: 'D015',
-    date: '2025-01-22',
-    reward: '0.312',
-    value: '$46.80'
-  },
-  {
-    id: 'D016',
-    date: '2025-01-22',
-    reward: '0.145',
-    value: '$21.75'
-  },
-  {
-    id: 'D017',
-    date: '2025-01-23',
-    reward: '0.267',
-    value: '$40.05'
-  },
-  {
-    id: 'D018',
-    date: '2025-01-23',
-    reward: '0.198',
-    value: '$29.70'
-  },
-  {
-    id: 'D019',
-    date: '2025-01-24',
-    reward: '0.289',
-    value: '$43.35'
-  },
-  {
-    id: 'D020',
-    date: '2025-01-24',
-    reward: '0.156',
-    value: '$23.40'
+    value: '$35.10',
+    address: '5FgH4L6MnB8AsD1CvXzPqR3TjKj8mNpQ2RtV5XyZ9Wc'
   }
 ];
 
+// Function to truncate signature
+const truncateSignature = (signature: string) => {
+  if (signature.length <= 8) return signature;
+  return `${signature.slice(0, 4)}...${signature.slice(-4)}`;
+};
+
 interface DistributionTableOneProps {
   selectedMonth: string;
+  searchAddress: string;
 }
 
-export default function DistributionTableOne({ selectedMonth }: DistributionTableOneProps) {
-  // Filter data based on selected month
+export default function DistributionTableOne({ selectedMonth, searchAddress }: DistributionTableOneProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 100;
+
+  // Filter data based on selected month and search address
   const filteredData = useMemo(() => {
-    if (selectedMonth === 'all') {
-      return distributionData;
+    let filtered = distributionData;
+    
+    if (selectedMonth !== 'all') {
+      filtered = filtered.filter(item => item.date.startsWith(selectedMonth));
     }
-    return distributionData.filter(item => 
-      item.date.startsWith(selectedMonth)
-    );
-  }, [selectedMonth]);
+    
+    if (searchAddress) {
+      filtered = filtered.filter(item => 
+        item.address.toLowerCase().includes(searchAddress.toLowerCase()) ||
+        item.id.toLowerCase().includes(searchAddress.toLowerCase())
+      );
+    }
+    
+    return filtered;
+  }, [selectedMonth, searchAddress]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full overflow-x-auto">
-        <div className="min-w-[600px]">
-          <Table>
-            {/* Table Header */}
-            <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-              <TableRow>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  ID
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  DATE
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  REWARD (SOL)
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                >
-                  VALUE (USD)
-                </TableCell>
-              </TableRow>
-            </TableHeader>
-
-            {/* Table Body */}
-            <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-              {filteredData.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="px-5 py-4 sm:px-6 text-start">
-                    <span className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                      {item.id}
-                    </span>
+    <div className="space-y-4">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+        <div className="max-w-full overflow-x-auto">
+          <div className="min-w-[600px]">
+            <Table>
+              <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+                <TableRow>
+                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                    SIGNATURE
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {new Date(item.date).toLocaleDateString('en-GB')}
+                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                    DATE
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-800 text-start text-theme-sm dark:text-white/90 font-medium">
-                    {item.reward}
+                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                    REWARD (SOL)
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-800 text-start text-theme-sm dark:text-white/90 font-medium">
-                    {item.value}
+                  <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                    VALUE (USD)
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+                {paginatedData.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="px-5 py-4 sm:px-6 text-start">
+                      <a
+                        href={`https://solscan.io/tx/${item.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-brand-500 dark:text-brand-400 hover:text-brand-600 dark:hover:text-brand-300 text-theme-sm font-mono hover:underline transition-colors"
+                      >
+                        {truncateSignature(item.id)}
+                      </a>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                      {new Date(item.date).toLocaleDateString('en-GB')}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-800 text-start text-theme-sm dark:text-white/90 font-medium">
+                      {item.reward}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-800 text-start text-theme-sm dark:text-white/90 font-medium">
+                      {item.value}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredData.length)} of {filteredData.length} results
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
