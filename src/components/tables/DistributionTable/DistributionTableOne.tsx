@@ -105,7 +105,7 @@ export default function DistributionTableOne({ selectedMonth, searchAddress }: D
                 {paginatedData.map((item, index) => (
                   <TableRow 
                     key={item.id}
-                    className={`group hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors duration-150 ${
+                    className={`group hover:bg-gray-100/80 dark:hover:bg-gray-700/40 transition-all duration-200 cursor-pointer ${
                       index % 2 === 0 
                         ? 'bg-white dark:bg-white/[0.02]' 
                         : 'bg-gray-50/50 dark:bg-gray-800/20'

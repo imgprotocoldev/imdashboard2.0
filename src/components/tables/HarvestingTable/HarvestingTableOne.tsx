@@ -213,15 +213,15 @@ export default function HarvestingTableOne({ selectedMonth }: HarvestingTableOne
 
               {/* Table Body */}
               <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                {paginatedData.map((item, index) => (
-                  <TableRow 
-                    key={item.id}
-                    className={`group hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors duration-150 ${
-                      index % 2 === 0 
-                        ? 'bg-white dark:bg-white/[0.02]' 
-                        : 'bg-gray-50/50 dark:bg-gray-800/20'
-                    }`}
-                  >
+                        {paginatedData.map((item, index) => (
+                          <TableRow 
+                            key={item.id}
+                            className={`group hover:bg-gray-100/80 dark:hover:bg-gray-700/40 transition-all duration-200 cursor-pointer ${
+                              index % 2 === 0 
+                                ? 'bg-white dark:bg-white/[0.02]' 
+                                : 'bg-gray-50/50 dark:bg-gray-800/20'
+                            }`}
+                          >
                     <TableCell className="px-6 py-4 text-start">
                       <span className="font-medium text-[#3641F5] dark:text-[#7592FF] text-sm group-hover:text-[#2A31D8] dark:group-hover:text-[#9CB9FF] transition-colors">
                         {item.id}
