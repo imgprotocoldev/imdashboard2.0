@@ -6,6 +6,7 @@ import {
   BoxCubeIcon,
   CalenderIcon,
   ChevronDownIcon,
+  DollarLineIcon,
   GridIcon,
   HorizontaLDots,
   ListIcon,
@@ -46,6 +47,11 @@ const navItems: NavItem[] = [
     icon: <BoxCubeIcon />,
     name: "Distribution",
     path: "distribution",
+  },
+  {
+    icon: <DollarLineIcon />,
+    name: "Earnings",
+    path: "earnings",
   },
   {
     icon: <GridIcon />,

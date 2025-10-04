@@ -25,6 +25,7 @@ import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
 import Harvesting from "./pages/Harvesting";
 import Distribution from "./pages/Distribution";
+import Earnings from "./pages/Earnings";
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
             <Route path="events/:slug" element={<EventDetail />} />
             <Route path="harvesting" element={<Harvesting />} />
             <Route path="distribution" element={<Distribution />} />
+            <Route path="earnings" element={<Earnings />} />
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />
