@@ -142,7 +142,7 @@ export default function DistributionTableOne({ selectedMonth, searchAddress }: D
       {totalPages > 1 && (
         <div className="flex items-center justify-between bg-white dark:bg-gray-800/50 px-6 py-4 border border-gray-200 dark:border-white/[0.05] rounded-lg">
           <div className="text-sm text-gray-600 dark:text-gray-400">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredData.length)} of {filteredData.length} results
+            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredData.length)}
           </div>
           <div className="flex items-center space-x-2">
             <button
