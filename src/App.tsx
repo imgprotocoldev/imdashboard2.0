@@ -19,6 +19,7 @@ import FormElements from "./pages/Forms/FormElements";
 import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
+import { AuthProvider } from "./contexts/AuthContext";
 import Home from "./pages/Dashboard/Home";
 import Terminal from "./pages/Dashboard/Terminal";
 import Events from "./pages/Events";
@@ -30,7 +31,7 @@ import Voting from "./pages/Voting";
 
 export default function App() {
   return (
-    <>
+    <AuthProvider>
       <Router>
         <ScrollToTop />
         <Routes>
@@ -83,6 +84,6 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
-    </>
+    </AuthProvider>
   );
 }
