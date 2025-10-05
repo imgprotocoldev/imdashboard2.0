@@ -28,6 +28,7 @@ import Harvesting from "./pages/Harvesting";
 import Distribution from "./pages/Distribution";
 import Earnings from "./pages/Earnings";
 import Voting from "./pages/Voting";
+import Hub from "./pages/Hub";
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
                     <Route path="distribution" element={<Distribution />} />
                     <Route path="earnings" element={<Earnings />} />
                     <Route path="voting" element={<Voting />} />
+                    <Route path="hub" element={<Hub />} />
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />

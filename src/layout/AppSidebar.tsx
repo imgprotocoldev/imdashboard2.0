@@ -60,6 +60,11 @@ const navItems: NavItem[] = [
     path: "voting",
   },
   {
+    icon: <PlugInIcon />,
+    name: "Hub",
+    path: "hub",
+  },
+  {
     icon: <GridIcon />,
     name: "Dashboard",
     subItems: [
