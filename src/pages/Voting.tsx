@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PageMeta from "../components/common/PageMeta";
 import ComponentCard from "../components/common/ComponentCard";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../components/ui/table";
-import { supabase, Vote, VoteResult } from '../lib/supabase';
+import { supabase, VoteResult } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Voting() {
@@ -12,7 +12,6 @@ export default function Voting() {
   const [totalVotes, setTotalVotes] = useState<number>(0);
   const [hasVoted, setHasVoted] = useState<boolean>(false);
   const [isVoting, setIsVoting] = useState<boolean>(false);
-  const [voteMessage, setVoteMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
 
   // Sample active voting data
@@ -54,7 +53,7 @@ export default function Voting() {
       endDate: "2024-12-20T23:59:59.000Z",
       status: "Passed",
       totalVotes: 1250000,
-      winningOption: "Yes - Burn 10M tokens",
+      winningOption: "Yes: Burn 10M tokens",
       winningVotes: 850000,
       winningPercentage: 68.0
     },
@@ -65,7 +64,7 @@ export default function Voting() {
       endDate: "2024-12-10T23:59:59.000Z",
       status: "Rejected",
       totalVotes: 980000,
-      winningOption: "No - Keep current fee structure",
+      winningOption: "No: Keep current fee structure",
       winningVotes: 520000,
       winningPercentage: 53.1
     },
@@ -76,7 +75,7 @@ export default function Voting() {
       endDate: "2024-11-25T23:59:59.000Z", 
       status: "Passed",
       totalVotes: 2100000,
-      winningOption: "Yes - Increase rewards by 25%",
+      winningOption: "Yes: Increase rewards by 25%",
       winningVotes: 1680000,
       winningPercentage: 80.0
     }
@@ -149,7 +148,6 @@ export default function Voting() {
     if (!selectedOption || !user || hasVoted) return;
 
     setIsVoting(true);
-    setVoteMessage('');
 
     try {
       // Check if user already voted
@@ -161,7 +159,6 @@ export default function Voting() {
         .single();
 
       if (existingVote) {
-        setVoteMessage('You have already voted in this poll.');
         setHasVoted(true);
         return;
       }
@@ -178,13 +175,11 @@ export default function Voting() {
       if (error) throw error;
 
       setHasVoted(true);
-      setVoteMessage('Your vote has been submitted successfully!');
       
       // Refresh results
       await fetchVoteResults();
     } catch (error) {
       console.error('Error submitting vote:', error);
-      setVoteMessage('Error submitting vote. Please try again.');
     } finally {
       setIsVoting(false);
     }
@@ -305,17 +300,17 @@ export default function Voting() {
                 </span>
               </div>
             )}
-            <div className="space-y-6">
+            <div className="space-y-4">
 
               {/* Voting Options */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {activeVote.options.map((option) => {
                   const result = voteResults.find(r => r.option_id === option.id);
                   const voteCount = result?.count || 0;
                   const percentage = result?.percentage || 0;
                   
                   return (
-                    <div key={option.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <div key={option.id} className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                       <div className="flex items-center h-5 mt-1">
                         <input
                           id={option.id}
@@ -339,10 +334,10 @@ export default function Voting() {
                           {option.text}
                         </label>
                         {totalVotes > 0 && (
-                          <div className="mt-2 flex items-center space-x-2">
-                            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="mt-1 flex items-center space-x-2">
+                            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                               <div 
-                                className="bg-brand-600 h-2 rounded-full transition-all duration-300" 
+                                className="bg-brand-600 h-1.5 rounded-full transition-all duration-300" 
                                 style={{ width: `${percentage}%` }}
                               ></div>
                             </div>
@@ -375,7 +370,7 @@ export default function Voting() {
                         </span>
                       ) : hasVoted ? (
                         <span className="text-green-600 dark:text-green-400 font-medium">
-                          ✓ You have voted
+                          ✓ Vote submitted
                         </span>
                       ) : selectedOption ? (
                         <span className="text-green-600 dark:text-green-400 font-medium">
@@ -387,15 +382,6 @@ export default function Voting() {
                         </span>
                       )}
                     </p>
-                    {voteMessage && (
-                      <p className={`text-sm mt-1 text-right ${
-                        voteMessage.includes('successfully') 
-                          ? 'text-green-600 dark:text-green-400' 
-                          : 'text-red-600 dark:text-red-400'
-                      }`}>
-                        {voteMessage}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
@@ -458,11 +444,18 @@ export default function Voting() {
                       <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                         <span className="font-medium">{vote.winningPercentage}%</span>
                       </TableCell>
-                      <TableCell className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 pl-8">
+                    <TableCell className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 pl-8">
+                      <div>
                         <div className="font-medium text-gray-900 dark:text-white">
-                          {vote.winningOption}
+                          {vote.winningOption.split(':')[0]}
                         </div>
-                      </TableCell>
+                        {vote.winningOption.includes(':') && (
+                          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            {vote.winningOption.split(':')[1].trim()}
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
