@@ -395,71 +395,95 @@ export default function Voting() {
           title="Voting History" 
           desc="Results from completed governance proposals"
         >
-          <div className="overflow-x-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-white/[0.05] shadow-sm">
-              <Table className="min-w-full divide-y divide-gray-200 dark:divide-white/[0.05]">
-                <TableHeader className="bg-gray-50 dark:bg-gray-800/50 rounded-t-xl">
-                  <TableRow>
-                    <TableCell className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                      Proposal
-                    </TableCell>
-                    <TableCell className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                      End Date
-                    </TableCell>
-                    <TableCell className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                      Total Votes
-                    </TableCell>
-                    <TableCell className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                      Result
-                    </TableCell>
-                    <TableCell className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                      Winning Option
-                    </TableCell>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-white/[0.05]">
-                  {votingHistory.map((vote, index) => (
-                    <TableRow 
-                      key={vote.id} 
-                      className={`hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors ${
-                        index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50/30 dark:bg-gray-800/50'
-                      } ${index === votingHistory.length - 1 ? 'rounded-b-xl' : ''}`}
-                    >
-                      <TableCell className="px-6 py-4">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {vote.title}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            {vote.description}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                        {formatDate(vote.endDate)}
-                      </TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                        {formatNumber(vote.totalVotes)}
-                      </TableCell>
-                      <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                        <span className="font-medium">{vote.winningPercentage}%</span>
-                      </TableCell>
-                    <TableCell className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 pl-8">
-                      <div>
-                        <div className="font-medium text-gray-900 dark:text-white">
-                          {vote.winningOption.split(':')[0]}
-                        </div>
-                        {vote.winningOption.includes(':') && (
-                          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            {vote.winningOption.split(':')[1].trim()}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+          <div className="space-y-4">
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03] shadow-sm">
+              <div className="max-w-full overflow-x-auto">
+                <div className="min-w-[800px]">
+                  <Table>
+                    {/* Table Header */}
+                    <TableHeader className="border-b border-gray-100 dark:border-white/[0.05] bg-gray-50 dark:bg-gray-800/50">
+                      <TableRow className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                        <TableCell
+                          isHeader
+                          className="px-6 py-4 font-semibold text-gray-500 text-start text-sm dark:text-gray-400 uppercase tracking-wider"
+                        >
+                          Proposal
+                        </TableCell>
+                        <TableCell
+                          isHeader
+                          className="px-6 py-4 font-semibold text-gray-500 text-start text-sm dark:text-gray-400 uppercase tracking-wider"
+                        >
+                          End Date
+                        </TableCell>
+                        <TableCell
+                          isHeader
+                          className="px-6 py-4 font-semibold text-gray-500 text-start text-sm dark:text-gray-400 uppercase tracking-wider"
+                        >
+                          Total Votes
+                        </TableCell>
+                        <TableCell
+                          isHeader
+                          className="px-6 py-4 font-semibold text-gray-500 text-start text-sm dark:text-gray-400 uppercase tracking-wider"
+                        >
+                          Result
+                        </TableCell>
+                        <TableCell
+                          isHeader
+                          className="px-6 py-4 font-semibold text-gray-500 text-start text-sm dark:text-gray-400 uppercase tracking-wider"
+                        >
+                          Winning Option
+                        </TableCell>
+                      </TableRow>
+                    </TableHeader>
+
+                    {/* Table Body */}
+                    <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+                      {votingHistory.map((vote, index) => (
+                        <TableRow 
+                          key={vote.id}
+                          className={`group hover:bg-gray-100/80 dark:hover:bg-gray-700/40 transition-all duration-200 cursor-pointer ${
+                            index % 2 === 0 
+                              ? 'bg-white dark:bg-white/[0.02]' 
+                              : 'bg-gray-50/50 dark:bg-gray-800/20'
+                          }`}
+                        >
+                          <TableCell className="px-6 py-4 text-start">
+                            <div>
+                              <div className="font-medium text-gray-900 dark:text-white text-sm group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                                {vote.title}
+                              </div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400 mt-1 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+                                {vote.description}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-6 py-4 text-gray-600 text-start text-sm dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100 transition-colors">
+                            {formatDate(vote.endDate)}
+                          </TableCell>
+                          <TableCell className="px-6 py-4 text-gray-900 text-start text-sm dark:text-white/90 font-semibold group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                            {formatNumber(vote.totalVotes)}
+                          </TableCell>
+                          <TableCell className="px-6 py-4 text-gray-900 text-start text-sm dark:text-white/90 font-semibold group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                            {vote.winningPercentage}%
+                          </TableCell>
+                          <TableCell className="px-6 py-4 text-start">
+                            <div>
+                              <div className="font-medium text-gray-900 dark:text-white text-sm group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                                {vote.winningOption.split(':')[0]}
+                              </div>
+                              {vote.winningOption.includes(':') && (
+                                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+                                  {vote.winningOption.split(':')[1].trim()}
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
             </div>
           </div>
         </ComponentCard>
