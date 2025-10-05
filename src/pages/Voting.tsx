@@ -48,36 +48,36 @@ export default function Voting() {
   const votingHistory = [
     {
       id: "vote-hist-001",
-      title: "IMG Token Burn Proposal",
-      description: "Proposal to burn 10M IMG tokens from treasury",
-      endDate: "2024-12-20T23:59:59.000Z",
+      title: "Increase infra",
+      description: "2.5% Infra Temporarily Tax",
+      endDate: "2025-09-08T23:59:59.000Z",
       status: "Passed",
-      totalVotes: 1250000,
-      winningOption: "Yes: Burn 10M tokens",
-      winningVotes: 850000,
-      winningPercentage: 68.0
+      totalVotes: 103,
+      winningOption: "Yes: Infra wallet Temporarily Tax 2.5%",
+      winningVotes: 72,
+      winningPercentage: 70.0
     },
     {
       id: "vote-hist-002", 
-      title: "Exchange Listing Fee Structure",
-      description: "Proposal to reduce listing fees for new exchanges",
-      endDate: "2024-12-10T23:59:59.000Z",
-      status: "Rejected",
-      totalVotes: 980000,
-      winningOption: "No: Keep current fee structure",
-      winningVotes: 520000,
-      winningPercentage: 53.1
+      title: "Logo Image for Kimbos shorts",
+      description: "Logo Image Option A or B",
+      endDate: "2025-08-30T23:59:59.000Z",
+      status: "Passed",
+      totalVotes: 87,
+      winningOption: "Option B: Kimbos shorts IMG logo used.",
+      winningVotes: 53,
+      winningPercentage: 61.0
     },
     {
       id: "vote-hist-003",
-      title: "Community Rewards Program",
-      description: "Proposal to increase community rewards by 25%",
-      endDate: "2024-11-25T23:59:59.000Z", 
+      title: "Spaces with Kimbo Jr",
+      description: "Spaces on Friday/saturday/sunday",
+      endDate: "2025-08-29T23:59:59.000Z", 
       status: "Passed",
-      totalVotes: 2100000,
-      winningOption: "Yes: Increase rewards by 25%",
-      winningVotes: 1680000,
-      winningPercentage: 80.0
+      totalVotes: 93,
+      winningOption: "Friday: X Space With Kimbo Jr",
+      winningVotes: 48,
+      winningPercentage: 52.0
     }
   ];
 
