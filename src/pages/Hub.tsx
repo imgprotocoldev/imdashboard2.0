@@ -57,7 +57,10 @@ const Hub: React.FC = () => {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium">Rookie</div>
             </div>
             <div className="flex md:justify-end">
-              <button className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">Connect X</button>
+              <div className="flex items-center gap-3">
+                <button className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">Connect X</button>
+                <button className="bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700">Connect Wallet</button>
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3 mt-6">
@@ -74,6 +77,22 @@ const Hub: React.FC = () => {
               <div className="text-xl font-semibold text-gray-900 dark:text-white">--</div>
             </div>
           </div>
+
+          {/* XP Progress Bar */}
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Level Progress</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">0 / 1,000 XP</span>
+            </div>
+            <div className="w-full h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-brand-500 to-brand-600 rounded-full" style={{ width: '0%' }}></div>
+            </div>
+            <div className="flex items-center justify-end mt-3">
+              <button className="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/[0.06] disabled:opacity-50" disabled>
+                Collect Rewards
+              </button>
+            </div>
+          </div>
         </ComponentCard>
 
         {/* Active Raids */}
@@ -86,11 +105,28 @@ const Hub: React.FC = () => {
                     <div className="text-sm text-gray-500 dark:text-gray-400">X Post</div>
                     <div className="font-semibold text-gray-900 dark:text-white">Raid #{id}</div>
                   </div>
-                  <span className="text-xs px-2 py-1 rounded-full bg-brand-50 text-brand-700 dark:bg-brand-600/20 dark:text-brand-300">New</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Ends in</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">29m</span>
+                  </div>
                 </div>
                 <div className="h-20 rounded-lg bg-gray-100 dark:bg-gray-800" />
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-gray-500 dark:text-gray-400">XP: 25 • Time: 30m</div>
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div className="bg-white dark:bg-gray-700 rounded-lg p-2 border border-gray-200 dark:border-gray-600">
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">LIKE</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">+5 XP</div>
+                  </div>
+                  <div className="bg-white dark:bg-gray-700 rounded-lg p-2 border border-gray-200 dark:border-gray-600">
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">REPLY</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">+10 XP</div>
+                  </div>
+                  <div className="bg-white dark:bg-gray-700 rounded-lg p-2 border border-gray-200 dark:border-gray-600">
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">RETWEET</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">+15 XP</div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Total: 30 XP • Duration: 30m</div>
                   <button className="bg-brand-600 hover:bg-brand-700 text-white text-sm px-3 py-1.5 rounded-lg">Join Raid</button>
                 </div>
               </div>
