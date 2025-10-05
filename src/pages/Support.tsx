@@ -223,7 +223,7 @@ export default function Support() {
         </ComponentCard>
 
         {/* Contact Us */}
-        <ComponentCard title="Contact Us" className="h-fit">
+        <ComponentCard title="Contact Us" className="h-fit pb-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -263,12 +263,12 @@ export default function Support() {
                   {successMsg && <div className="text-xs text-success-600">{successMsg}</div>}
                 </div>
               </div>
-              <div>
+              <div className="pb-2">
                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Attach Images (optional)</label>
-                <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500 h-full min-h-[140px]">
+                <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500 h-full min-h-[120px]">
                   <div
                     {...getRootProps()}
-                    className={`rounded-xl border-dashed p-5 lg:p-6 h-full flex items-center justify-center ${
+                    className={`rounded-xl border-dashed p-4 lg:p-5 h-full flex items-center justify-center ${
                       isDragActive
                         ? "border-brand-500 bg-gray-100 dark:bg-gray-800"
                         : "border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900"
