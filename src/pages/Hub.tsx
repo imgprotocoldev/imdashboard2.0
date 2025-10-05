@@ -49,6 +49,11 @@ const Hub: React.FC = () => {
   // Social media platforms
   const socialPlatforms: SocialPlatform[] = [
     {
+      name: 'X',
+      icon: '/images/hub/xlogo.webp',
+      url: 'https://x.com/imgprotocol'
+    },
+    {
       name: 'Telegram',
       icon: '/images/hub/telegram.webp',
       url: 'https://t.me/imgprotocol'
@@ -77,6 +82,11 @@ const Hub: React.FC = () => {
       name: 'Medium',
       icon: '/images/hub/medium.webp',
       url: 'https://medium.com/@imgprotocol'
+    },
+    {
+      name: 'Stocktwits',
+      icon: '/images/hub/stocktwits1.webp',
+      url: 'https://stocktwits.com/imgprotocol'
     }
   ];
 
