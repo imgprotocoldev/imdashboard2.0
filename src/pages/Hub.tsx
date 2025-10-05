@@ -87,6 +87,16 @@ const Hub: React.FC = () => {
       name: 'Stocktwits',
       icon: '/images/hub/stocktwits1.webp',
       url: 'https://stocktwits.com/imgprotocol'
+    },
+    {
+      name: 'CoinGecko',
+      icon: '/images/hub/CoinGeckologo.webp',
+      url: 'https://www.coingecko.com/en/coins/infinite-money-glitch'
+    },
+    {
+      name: 'CoinMarketCap',
+      icon: '/images/hub/coinmarketcaplogo.webp',
+      url: 'https://coinmarketcap.com/currencies/infinite-money-glitch/'
     }
   ];
 
