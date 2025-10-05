@@ -60,7 +60,12 @@ const navItems: NavItem[] = [
     path: "voting",
   },
   {
-    icon: <PlugInIcon />,
+    icon: <ListIcon />, // forms icon
+    name: "Information",
+    path: "information",
+  },
+  {
+    icon: <PlugInIcon />, // authentication icon
     name: "Hub",
     path: "hub",
   },
