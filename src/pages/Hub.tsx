@@ -50,23 +50,33 @@ const Hub: React.FC = () => {
   const socialPlatforms: SocialPlatform[] = [
     {
       name: 'Telegram',
-      icon: '/images/hub/telegramlogo.png',
+      icon: '/images/hub/telegram.webp',
       url: 'https://t.me/imgprotocol'
     },
     {
       name: 'Discord',
-      icon: '/images/hub/discordlogo.png',
+      icon: '/images/hub/discord.webp',
       url: 'https://discord.gg/imgprotocol'
     },
     {
       name: 'YouTube',
-      icon: '/images/hub/youtubelogo.png',
+      icon: '/images/hub/youtube.webp',
       url: 'https://youtube.com/@imgprotocol'
     },
     {
-      name: 'TikTok',
-      icon: '/images/hub/tiktoklogo.png',
-      url: 'https://tiktok.com/@imgprotocol'
+      name: 'Instagram',
+      icon: '/images/hub/instagram.webp',
+      url: 'https://instagram.com/imgprotocol'
+    },
+    {
+      name: 'Truth Social',
+      icon: '/images/hub/truthsocial.webp',
+      url: 'https://truthsocial.com/@imgprotocol'
+    },
+    {
+      name: 'Medium',
+      icon: '/images/hub/medium.webp',
+      url: 'https://medium.com/@imgprotocol'
     }
   ];
 
@@ -192,29 +202,29 @@ const Hub: React.FC = () => {
                 {/* Price Changes */}
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">Price Changes</div>
-                  <div className="grid grid-cols-4 gap-4 text-center">
-                    <div>
+                  <div className="grid grid-cols-4 gap-3">
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">5M</div>
+                      <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                        N/A
+                      </div>
+                    </div>
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
                       <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">1H</div>
                       <div className="text-sm font-semibold">
                         {formatChange(tokenMetrics.change1H)}
                       </div>
                     </div>
-                    <div>
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
                       <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">6H</div>
                       <div className="text-sm font-semibold">
                         {formatChange(tokenMetrics.change6H)}
                       </div>
                     </div>
-                    <div>
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
                       <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">24H</div>
                       <div className="text-sm font-semibold">
                         {formatChange(tokenMetrics.change24H)}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">VOLUME</div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                        ${formatNumber(tokenMetrics.volume24H)}
                       </div>
                     </div>
                   </div>
@@ -223,33 +233,50 @@ const Hub: React.FC = () => {
                 {/* Transaction Details */}
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">Transaction Details</div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">TXNS</span>
-                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {tokenMetrics.transactions}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">MAKERS</span>
-                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {tokenMetrics.makers}
-                        </span>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">TXNS</div>
+                      <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {tokenMetrics.transactions}
                       </div>
                     </div>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">BUYS</span>
-                        <span className="text-sm font-semibold text-green-500">
-                          {tokenMetrics.buys}
-                        </span>
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">MAKERS</div>
+                      <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {tokenMetrics.makers}
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">SELLS</span>
-                        <span className="text-sm font-semibold text-red-500">
-                          {tokenMetrics.sells}
-                        </span>
+                    </div>
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">VOLUME</div>
+                      <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                        ${formatNumber(tokenMetrics.volume24H)}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3 mt-3">
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">BUYS</div>
+                      <div className="text-lg font-semibold text-green-500 mb-1">
+                        {tokenMetrics.buys}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        ${formatNumber(tokenMetrics.buyVolume)} vol
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {tokenMetrics.buyers} buyers
+                      </div>
+                    </div>
+                    <div className="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">SELLS</div>
+                      <div className="text-lg font-semibold text-red-500 mb-1">
+                        {tokenMetrics.sells}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        ${formatNumber(tokenMetrics.sellVolume)} vol
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {tokenMetrics.sellers} sellers
                       </div>
                     </div>
                   </div>
@@ -264,23 +291,23 @@ const Hub: React.FC = () => {
 
           {/* Social Media Card */}
           <ComponentCard title="Social Platforms" className="h-fit">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-3">
               {socialPlatforms.map((platform, index) => (
                 <a
                   key={index}
                   href={platform.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="group flex flex-col items-center p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-brand-300 dark:hover:border-brand-500 transition-all duration-200"
                 >
-                  <div className="w-12 h-12 mb-3 flex items-center justify-center">
+                  <div className="w-10 h-10 mb-2 flex items-center justify-center">
                     <img
                       src={platform.icon}
                       alt={platform.name}
-                      className="w-8 h-8 object-contain"
+                      className="w-6 h-6 object-contain"
                     />
                   </div>
-                  <div className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                  <div className="text-xs font-medium text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors text-center">
                     {platform.name}
                   </div>
                 </a>
