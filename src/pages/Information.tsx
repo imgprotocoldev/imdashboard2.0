@@ -103,6 +103,61 @@ const Information: React.FC = () => {
   return (
     <>
       <div className="space-y-6">
+        {/* Token Information */}
+        <ComponentCard title="Token Information" className="h-fit">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            <div className="flex items-center gap-4">
+              <img src="/images/imgtextlogo.webp" alt="IMG" className="w-14 h-14 rounded-lg object-contain bg-white dark:bg-white/5 p-2 border border-gray-200 dark:border-white/[0.06]" />
+              <div>
+                <div className="text-lg font-semibold text-gray-900 dark:text-white">Infinite Money Glitch</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Ticker: <span className="font-medium text-gray-900 dark:text-gray-200">IMG</span></div>
+              </div>
+            </div>
+            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-3">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Contract Address</div>
+                <div className="text-[13px] font-mono break-all text-gray-900 dark:text-white">znv3FZt2HFAvzYf5LxzVyryh3mBXWuTRRng25gEZAjh</div>
+              </div>
+              <div className="rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-3">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Reward Address</div>
+                <div className="text-[13px] font-mono break-all text-gray-900 dark:text-white">DvJ5raMqt67hKat9XZYUYpSWvKU1yyQdpbAuytauz2X9</div>
+              </div>
+              <div className="md:col-span-2 rounded-lg border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-3">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Infra Wallet</div>
+                <div className="text-[13px] font-mono break-all text-gray-900 dark:text-white">7sFfWaCKUfCykeh3suuuT7X9RGXjwq6VtQu6qk1KgUgF</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Metrics Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+            <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">PRICE USD</div>
+              <div className="text-lg font-semibold text-gray-900 dark:text-white">{tokenMetrics ? `$${tokenMetrics.priceUSD.toFixed(6)}` : '--'}</div>
+            </div>
+            <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">PRICE SOL</div>
+              <div className="text-lg font-semibold text-gray-900 dark:text-white">{tokenMetrics ? `${tokenMetrics.priceSOL.toFixed(6)} SOL` : '--'}</div>
+            </div>
+            <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">MKT CAP</div>
+              <div className="text-lg font-semibold text-gray-900 dark:text-white">{tokenMetrics ? `$${formatNumber(tokenMetrics.marketCap)}` : '--'}</div>
+            </div>
+            <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">LIQUIDITY</div>
+              <div className="text-lg font-semibold text-gray-900 dark:text-white">{tokenMetrics ? `$${formatNumber(tokenMetrics.liquidity)}` : '--'}</div>
+            </div>
+          </div>
+        </ComponentCard>
+
+        {/* Dex Chart */}
+        <ComponentCard title="DEX Chart" className="h-fit">
+          <style>{`#dexscreener-embed{position:relative;width:100%;padding-bottom:125%;}@media(min-width:1400px){#dexscreener-embed{padding-bottom:65%;}}#dexscreener-embed iframe{position:absolute;width:100%;height:100%;top:0;left:0;border:0;}`}</style>
+          <div id="dexscreener-embed">
+            <iframe src="https://dexscreener.com/solana/CXgcuECqdaBpvJWH5cwEir9Y5FY9SKTjhGutMc95bGy3?embed=1&loadChartSettings=0&info=0&chartLeftToolbar=0&chartTheme=dark&theme=dark&chartStyle=0&chartType=usd&interval=15" />
+          </div>
+        </ComponentCard>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <ComponentCard title="Token Metrics" className="h-fit">
             {loading ? (
@@ -194,15 +249,40 @@ const Information: React.FC = () => {
           </ComponentCard>
 
           <ComponentCard title="Social Platforms" className="h-fit">
-            <div className="grid grid-cols-3 gap-3">
-              {socialPlatforms.map((platform, index) => (
-                <a key={index} href={platform.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-brand-300 dark:hover:border-brand-500 transition-all duration-200">
-                  <div className="w-10 h-10 mb-2 flex items-center justify-center">
-                    <img src={platform.icon} alt={platform.name} className="w-6 h-6 object-contain" />
-                  </div>
-                  <div className="text-xs font-medium text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors text-center">{platform.name}</div>
-                </a>
-              ))}
+            <div className="space-y-5">
+              <div>
+                <div className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Chatroom</div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {socialPlatforms.filter(s => ['Telegram','Discord'].includes(s.name)).map((platform, index) => (
+                    <a key={index} href={platform.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200">
+                      <img src={platform.icon} alt={platform.name} className="w-6 h-6 object-contain mb-2" />
+                      <div className="text-xs font-medium text-gray-900 dark:text-white">{platform.name}</div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Marketplace</div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {socialPlatforms.filter(s => ['CoinGecko','CoinMarketCap'].includes(s.name)).map((platform, index) => (
+                    <a key={index} href={platform.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200">
+                      <img src={platform.icon} alt={platform.name} className="w-6 h-6 object-contain mb-2" />
+                      <div className="text-xs font-medium text-gray-900 dark:text-white">{platform.name}</div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Social Media</div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {socialPlatforms.filter(s => ['X','Instagram','Truth Social','YouTube','Stocktwits','Medium'].includes(s.name)).map((platform, index) => (
+                    <a key={index} href={platform.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200">
+                      <img src={platform.icon} alt={platform.name} className="w-6 h-6 object-contain mb-2" />
+                      <div className="text-xs font-medium text-gray-900 dark:text-white text-center">{platform.name}</div>
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
           </ComponentCard>
         </div>
