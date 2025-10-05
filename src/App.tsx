@@ -29,7 +29,8 @@ import Distribution from "./pages/Distribution";
 import Earnings from "./pages/Earnings";
 import Voting from "./pages/Voting";
 import Hub from "./pages/Hub";
-import Information from "./pages/Information";
+// Information page currently unused
+import Raid from "./pages/Raid";
 
 export default function App() {
   return (
@@ -48,8 +49,8 @@ export default function App() {
                     <Route path="distribution" element={<Distribution />} />
                     <Route path="earnings" element={<Earnings />} />
                     <Route path="voting" element={<Voting />} />
-                    <Route path="information" element={<Information />} />
                     <Route path="hub" element={<Hub />} />
+                    <Route path="raid" element={<Raid />} />
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />

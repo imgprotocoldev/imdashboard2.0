@@ -290,24 +290,7 @@ export default function Voting() {
     return new Intl.NumberFormat('en-US').format(num);
   };
 
-  if (loading || authLoading) {
-    return (
-      <>
-        <PageMeta
-          title="IMG Voting | IMG Protocol Dashboard"
-          description="Participate in IMG Protocol governance and view voting history"
-        />
-        <div className="space-y-6">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600 dark:text-gray-400">Loading voting data...</p>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
+  const voteLoading = loading || authLoading;
 
   return (
     <>
@@ -337,7 +320,7 @@ export default function Voting() {
             className="relative"
           >
             {/* Total Votes in Header */}
-            {totalVotes > 0 && (
+            {!voteLoading && totalVotes > 0 && (
               <div className="absolute top-4 right-4">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   Total Votes: <span className="font-semibold text-gray-900 dark:text-white">{totalVotes}</span>
@@ -345,6 +328,12 @@ export default function Voting() {
               </div>
             )}
             <div className="space-y-4">
+              {voteLoading && (
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-600"></div>
+                  Loading vote status...
+                </div>
+              )}
 
               {/* Voting Options */}
               <div className="space-y-3">
@@ -362,7 +351,7 @@ export default function Voting() {
                           type="checkbox"
                           checked={selectedOption === option.id}
                           onChange={() => handleVoteChange(option.id)}
-                          disabled={hasVoted || !user}
+                          disabled={voteLoading || hasVoted || !user}
                           className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-0 dark:bg-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                       </div>
@@ -377,7 +366,7 @@ export default function Voting() {
                         >
                           {option.text}
                         </label>
-                        {totalVotes > 0 && (
+                        {!voteLoading && totalVotes > 0 && (
                           <div className="mt-1 flex items-center space-x-2">
                             <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                               <div 
@@ -401,7 +390,7 @@ export default function Voting() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <button
                     onClick={handleSubmitVote}
-                    disabled={!selectedOption || hasVoted || isVoting || !user}
+                    disabled={voteLoading || !selectedOption || hasVoted || isVoting || !user}
                     className="px-6 py-2 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
                   >
                     {isVoting ? 'Submitting...' : hasVoted ? 'Vote Submitted' : 'Submit Vote'}

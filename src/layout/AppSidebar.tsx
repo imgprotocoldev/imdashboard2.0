@@ -62,12 +62,12 @@ const navItems: NavItem[] = [
   {
     icon: <ListIcon />, // forms icon
     name: "Hub",
-    path: "information",
+    path: "hub",
   },
   {
     icon: <PlugInIcon />, // authentication icon
     name: "Raid",
-    path: "hub",
+    path: "raid",
   },
   {
     icon: <GridIcon />,
