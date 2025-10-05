@@ -95,65 +95,30 @@ const Hub: React.FC = () => {
     }
   ];
 
-  // Fetch token metrics from DexScreener API
+  // Initialize token metrics with static data
   useEffect(() => {
-    const fetchTokenMetrics = async () => {
-      try {
-        setLoading(true);
-        // DexScreener API endpoint for the specific token
-        const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/cxgcuecqdabpvjwh5cweir9y5fy9sktjhgutmc95bgy3');
-        const data = await response.json();
-        
-        if (data.pairs && data.pairs.length > 0) {
-          const pair = data.pairs[0];
-          setTokenMetrics({
-            priceUSD: parseFloat(pair.priceUsd) || 0,
-            priceSOL: parseFloat(pair.priceNative) || 0,
-            liquidity: parseFloat(pair.liquidity?.usd) || 0,
-            fdv: parseFloat(pair.fdv) || 0,
-            marketCap: parseFloat(pair.marketCap) || 0,
-            change1H: parseFloat(pair.priceChange?.h1) || 0,
-            change6H: parseFloat(pair.priceChange?.h6) || 0,
-            change24H: parseFloat(pair.priceChange?.h24) || 0,
-            volume24H: parseFloat(pair.volume?.h24) || 0,
-            transactions: pair.txns?.h24?.buys + pair.txns?.h24?.sells || 0,
-            makers: pair.makers || 0,
-            buys: pair.txns?.h24?.buys || 0,
-            sells: pair.txns?.h24?.sells || 0,
-            buyVolume: parseFloat(pair.volume?.h24) * (pair.txns?.h24?.buys / (pair.txns?.h24?.buys + pair.txns?.h24?.sells)) || 0,
-            sellVolume: parseFloat(pair.volume?.h24) * (pair.txns?.h24?.sells / (pair.txns?.h24?.buys + pair.txns?.h24?.sells)) || 0,
-            buyers: pair.buyers || 0,
-            sellers: pair.sellers || 0
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching token metrics:', error);
-        // Set mock data if API fails
-        setTokenMetrics({
-          priceUSD: 0.002254,
-          priceSOL: 0.059712,
-          liquidity: 395000,
-          fdv: 2200000,
-          marketCap: 2200000,
-          change1H: -0.67,
-          change6H: 0.86,
-          change24H: 7.94,
-          volume24H: 21000,
-          transactions: 232,
-          makers: 101,
-          buys: 129,
-          sells: 103,
-          buyVolume: 13000,
-          sellVolume: 7400,
-          buyers: 69,
-          sellers: 50
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTokenMetrics();
+    setLoading(true);
+    // Set static token metrics data
+    setTokenMetrics({
+      priceUSD: 0.002254,
+      priceSOL: 0.059712,
+      liquidity: 395000,
+      fdv: 2200000,
+      marketCap: 2200000,
+      change1H: -0.67,
+      change6H: 0.86,
+      change24H: 7.94,
+      volume24H: 21000,
+      transactions: 232,
+      makers: 101,
+      buys: 129,
+      sells: 103,
+      buyVolume: 13000,
+      sellVolume: 7400,
+      buyers: 69,
+      sellers: 50
+    });
+    setLoading(false);
   }, []);
 
   const formatPrice = (price: number) => {
@@ -175,15 +140,6 @@ const Hub: React.FC = () => {
   return (
     <>
       <div className="space-y-6">
-        {/* Page Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Hub</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Token metrics, social platforms, and games
-            </p>
-          </div>
-        </div>
 
         {/* Token Metrics and Social Media Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
