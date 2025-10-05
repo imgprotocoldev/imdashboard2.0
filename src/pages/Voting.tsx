@@ -78,6 +78,50 @@ export default function Voting() {
       winningOption: "Friday: X Space With Kimbo Jr",
       winningVotes: 48,
       winningPercentage: 52.0
+    },
+    {
+      id: "vote-hist-004",
+      title: "Website url change",
+      description: "deciding the best domain",
+      endDate: "2025-08-26T23:59:59.000Z",
+      status: "Passed",
+      totalVotes: 82,
+      winningOption: "Option 3: imgsolana.com website domain",
+      winningVotes: 51,
+      winningPercentage: 62.0
+    },
+    {
+      id: "vote-hist-005",
+      title: "Reward frequency",
+      description: "Changing Holders rewards timeframe",
+      endDate: "2025-08-23T23:59:59.000Z",
+      status: "Passed",
+      totalVotes: 140,
+      winningOption: "Option 1: Every 6 hours rewards",
+      winningVotes: 97,
+      winningPercentage: 69.0
+    },
+    {
+      id: "vote-hist-006",
+      title: "Update IMG branding",
+      description: "Pixel Bunny or [IMG] logo",
+      endDate: "2025-08-22T23:59:59.000Z",
+      status: "Passed",
+      totalVotes: 155,
+      winningOption: "OG [IMG]: Original IMG branding",
+      winningVotes: 127,
+      winningPercentage: 82.0
+    },
+    {
+      id: "vote-hist-007",
+      title: "Telegram View",
+      description: "Group or Topics in Mainroom",
+      endDate: "2025-08-22T23:59:59.000Z",
+      status: "Passed",
+      totalVotes: 119,
+      winningOption: "Option 1: Telegram View set to group",
+      winningVotes: 79,
+      winningPercentage: 66.0
     }
   ];
 
