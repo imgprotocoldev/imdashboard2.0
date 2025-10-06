@@ -88,16 +88,13 @@ const Raid: React.FC = () => {
     handleXConnection();
   }, [user, profile, supabase]);
 
-  const handleDisconnectX = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/raid';
-  };
+  // Removed X disconnect handler as X connect/disconnect controls are not shown on Raid page
   return (
     <>
       <div className="space-y-6">
         {/* Profile Card */}
         <ComponentCard title="Your Raid Profile" className="h-fit">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div className="flex items-center gap-4">
               <img
                 src={avatarSrc}
@@ -115,27 +112,18 @@ const Raid: React.FC = () => {
                     Connected to X
                   </div>
                 ) : (
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Connect to X to Raid and earn</div>
+                  <a
+                    href="/profile"
+                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 underline-offset-2 hover:underline"
+                  >
+                    Connect to X to Raid and earn
+                  </a>
                 )}
               </div>
             </div>
-            <div className="text-center">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Rank</div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium">Rookie</div>
-            </div>
                 <div className="flex md:justify-end">
                   <div className="flex items-center gap-3">
-                    {profile?.x_handle ? (
-                      <button onClick={handleDisconnectX} className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Disconnect X</button>
-                    ) : (
-                      <button 
-                        onClick={() => window.location.href = '/profile'} 
-                        className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800"
-                      >
-                        Connect X (Go to Profile)
-                      </button>
-                    )}
-                    <button className="bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700">Connect Wallet</button>
+                    <button className="bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700">Collect Rewards</button>
                   </div>
                 </div>
           </div>
@@ -149,8 +137,8 @@ const Raid: React.FC = () => {
               <div className="text-xl font-semibold text-gray-900 dark:text-white">0</div>
             </div>
             <div className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
-              <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Success Rate</div>
-              <div className="text-xl font-semibold text-gray-900 dark:text-white">--</div>
+              <div className="text-xs text-gray-500 dark:text-gray-300 mb-1">Rank</div>
+              <div className="text-xl font-semibold text-gray-900 dark:text-white">Rookie</div>
             </div>
           </div>
 
@@ -163,11 +151,7 @@ const Raid: React.FC = () => {
             <div className="w-full h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-brand-500 to-brand-600 rounded-full" style={{ width: '0%' }}></div>
             </div>
-            <div className="flex items-center justify-end mt-3">
-              <button className="px-4 py-2 rounded-lg border border-gray-200 dark:border-white/[0.06] text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/[0.06] disabled:opacity-50" disabled>
-                Collect Rewards
-              </button>
-            </div>
+            
           </div>
         </ComponentCard>
 
