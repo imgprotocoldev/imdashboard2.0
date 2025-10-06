@@ -5,6 +5,7 @@ import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { useSupabaseAuth } from "../../hooks/useSupabaseAuth";
 import { useState, useEffect } from "react";
+import { XHandleManager } from "../../utils/xHandleManager";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -238,10 +239,13 @@ export default function UserInfoCard() {
           setLoading(true);
           console.log('Loading profile for user:', user.id);
           
+          // Process X login and store handle if needed
+          await XHandleManager.processXLogin(user);
+          
           // Try to load profile data
           const { data, error } = await supabase
             .from('profiles')
-            .select('username, avatar_name, country')
+            .select('username, avatar_name, country, x_handle')
             .eq('id', user.id)
             .single();
           
@@ -253,7 +257,7 @@ export default function UserInfoCard() {
               username: data.username || user.user_metadata?.full_name || user.email?.split('@')[0] || "",
               email: user.email || "",
               avatar: data.avatar_name || "user1",
-              xHandle: "",
+              xHandle: data.x_handle || "",
               googleEmail: ""
             });
             setUserCountry(data.country || "");
@@ -268,7 +272,8 @@ export default function UserInfoCard() {
                 id: user.id,
                 username: user.user_metadata?.full_name || user.email?.split('@')[0] || "",
                 avatar_name: "user1",
-                country: ""
+                country: "",
+                x_handle: null
               })
               .select()
               .single();
@@ -291,7 +296,7 @@ export default function UserInfoCard() {
                 username: insertData.username || user.user_metadata?.full_name || user.email?.split('@')[0] || "",
                 email: user.email || "",
                 avatar: insertData.avatar_name || "user1",
-                xHandle: "",
+                xHandle: insertData.x_handle || "",
                 googleEmail: ""
               });
               setUserCountry(insertData.country || "");
@@ -331,6 +336,48 @@ export default function UserInfoCard() {
     loadUserProfile();
   }, [user, supabase]);
 
+  // Handle X connection after OAuth redirect
+  useEffect(() => {
+    const handleXConnection = async () => {
+      if (!user) return;
+      
+      // Check if this is a fresh X login (not already processed)
+      const isXLogin = user.app_metadata?.provider === 'twitter' || user.user_metadata?.provider === 'twitter';
+      
+      if (isXLogin && userProfile.xHandle === "") {
+        // User just connected X, update their existing profile
+        const success = await XHandleManager.connectXToExistingProfile(user);
+        
+        if (success) {
+          // Reload profile to get updated X handle
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('x_handle')
+            .eq('id', user.id)
+            .single();
+            
+          if (!error && data) {
+            setUserProfile(prev => ({ ...prev, xHandle: data.x_handle || "" }));
+            setNotification({
+              type: 'success',
+              message: 'X account connected successfully!'
+            });
+            setTimeout(() => {
+              setNotification({ type: null, message: '' });
+            }, 3000);
+          }
+        } else {
+          setNotification({
+            type: 'error',
+            message: 'Failed to connect X account. Please try again.'
+          });
+        }
+      }
+    };
+    
+    handleXConnection();
+  }, [user, userProfile.xHandle, supabase]);
+
   const handleSave = async () => {
     if (!user) {
       alert('No user logged in');
@@ -367,27 +414,35 @@ export default function UserInfoCard() {
         setNotification({ type: null, message: '' });
       }, 3000);
       
-      // Try to update Supabase in the background (don't block UI)
+      // Persist to Supabase (create row if missing), then refetch once
       try {
-        const { data, error } = await supabase
+        const { data: upserted, error } = await supabase
           .from('profiles')
-          .update({ 
+          .upsert({
+            id: user.id,
             username: userProfile.username,
             avatar_name: userProfile.avatar,
-            country: selectedCountry
-          })
-          .eq('id', user.id)
+            country: selectedCountry,
+            x_handle: userProfile.xHandle || null
+          }, { onConflict: 'id' })
           .select();
-        
+
         if (error) {
-          console.warn('Supabase update failed, but local state updated:', error);
-          // Don't show error to user since local state is already updated
-        } else {
-          console.log('Profile synced to Supabase successfully:', data[0]);
+          console.warn('Supabase upsert failed:', error);
+          setNotification({ type: 'error', message: `Failed to save profile: ${error.message || 'Unknown error'}` });
+        } else if (upserted && upserted[0]) {
+          console.log('Profile saved:', upserted[0]);
+          setUserProfile(prev => ({
+            ...prev,
+            username: upserted[0].username ?? prev.username,
+            avatar: upserted[0].avatar_name ?? prev.avatar,
+          }));
+          setUserCountry(upserted[0].country || '');
+          setSelectedCountry(upserted[0].country || '');
         }
       } catch (supabaseError) {
-        console.warn('Supabase sync failed, but local state updated:', supabaseError);
-        // Don't show error to user since local state is already updated
+        console.warn('Supabase sync error:', supabaseError);
+        setNotification({ type: 'error', message: 'Unexpected error saving profile.' });
       }
       
     } catch (error) {
@@ -403,151 +458,269 @@ export default function UserInfoCard() {
       }, 5000);
     }
   };
+
+
+  const handleDisconnectX = async () => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ x_handle: null })
+        .eq('id', user.id);
+        
+      if (error) {
+        throw error;
+      }
+      
+      setUserProfile(prev => ({ ...prev, xHandle: "" }));
+      setNotification({
+        type: 'success',
+        message: 'X account disconnected successfully!'
+      });
+      
+      setTimeout(() => {
+        setNotification({ type: null, message: '' });
+      }, 3000);
+    } catch (error) {
+      console.error('Error disconnecting X:', error);
+      setNotification({
+        type: 'error',
+        message: 'Failed to disconnect X account. Please try again.'
+      });
+    }
+  };
+
+  const handleSaveXHandle = async () => {
+    if (!user || !userProfile.xHandle.trim()) return;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ x_handle: userProfile.xHandle.trim() })
+        .eq('id', user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      setNotification({
+        type: 'success',
+        message: 'X handle saved successfully!'
+      });
+      setTimeout(() => {
+        setNotification({ type: null, message: '' });
+      }, 3000);
+    } catch (error) {
+      console.error('Error saving X handle:', error);
+      setNotification({
+        type: 'error',
+        message: 'Failed to save X handle. Please try again.'
+      });
+    }
+  };
   return (
-    <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm">
+      <div className="p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-            Personal Information
-          </h4>
-
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Username
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {loading ? "Loading..." : userProfile.username || "Not set"}
-              </p>
+          <div className="flex-1">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Username
+                </label>
+                <div className="flex items-center">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {loading ? "Loading..." : userProfile.username || "Not set"}
+                  </p>
+                </div>
             </div>
 
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Email address
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {loading ? "Loading..." : userProfile.email || "Not set"}
-              </p>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Email Address
+                </label>
+                <div className="flex items-center">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {loading ? "Loading..." : userProfile.email || "Not set"}
+                  </p>
+                </div>
             </div>
 
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Country
+                </label>
+                <div className="flex items-center">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {userCountry ? countries.find(c => c.code === userCountry)?.name || userCountry : "Not set"}
+                  </p>
+                </div>
+              </div>
 
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Country
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {userCountry ? countries.find(c => c.code === userCountry)?.name || userCountry : "Not set"}
-              </p>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Login Method
+                </label>
+                <div className="flex items-center">
+                  <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                    {loading ? "Loading..." : (() => {
+                      if (user?.app_metadata?.provider === 'google') return 'Google';
+                      if (user?.app_metadata?.provider === 'twitter') return 'X (Twitter)';
+                      if (user?.app_metadata?.provider === 'email') return 'Email';
+                      return 'Email'; // Default fallback
+                    })()}
+                  </div>
+                </div>
             </div>
 
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Login Method
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {loading ? "Loading..." : (() => {
-                  if (user?.app_metadata?.provider === 'google') return 'Google';
-                  if (user?.app_metadata?.provider === 'twitter') return 'X (Twitter)';
-                  if (user?.app_metadata?.provider === 'email') return 'Email';
-                  return 'Email'; // Default fallback
-                })()}
-              </p>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  X Account
+                </label>
+                <div className="flex items-center">
+                  {userProfile.xHandle ? (
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">@{userProfile.xHandle}</span>
+                      </div>
+                      <button
+                        onClick={handleDisconnectX}
+                        className="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        Disconnect
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={openModal}
+                      className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                    >
+                      Setup X
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Notification Display */}
-          {notification.type && (
-            <div className={`mt-4 p-3 rounded-lg text-sm font-medium ${
-              notification.type === 'success' 
-                ? 'bg-green-50 text-green-800 border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800' 
-                : 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
-            }`}>
-              {notification.message}
+            {/* Notification Display */}
+            {notification.type && (
+              <div className={`mt-6 p-4 rounded-lg text-sm font-medium ${
+                notification.type === 'success' 
+                  ? 'bg-green-50 text-green-800 border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800' 
+                  : 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
+              }`}>
+                {notification.message}
             </div>
-          )}
+            )}
         </div>
 
+          <div className="flex justify-end lg:ml-6">
         <button
           onClick={openModal}
-          className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 shadow-sm hover:shadow-md"
         >
           <svg
-            className="fill-current"
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
+                className="w-4 h-4"
             fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
-              fill=""
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
             />
           </svg>
-          Edit
+              Edit Profile
         </button>
+          </div>
+        </div>
       </div>
 
-      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-          <div className="px-2 pr-14">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Personal Information
-            </h4>
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
-            </p>
-          </div>
-          <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[800px] m-4">
+        <div className="no-scrollbar relative w-full max-w-[800px] overflow-y-auto rounded-2xl bg-white dark:bg-gray-900 shadow-2xl">
+          <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4 rounded-t-2xl">
+            <div className="flex items-center justify-between">
               <div>
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+                <h4 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Edit Profile
+            </h4>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Update your personal information and preferences
+                </p>
+              </div>
+              <button
+                onClick={closeModal}
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="p-6">
+          <form className="flex flex-col">
+            <div className="custom-scrollbar max-h-[500px] overflow-y-auto space-y-8">
+              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6">
+                <h5 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
                   Social Links
                 </h5>
 
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <div>
                     <Label>Facebook</Label>
                     <Input
                       type="text"
                       value="https://www.facebook.com/PimjoHQ"
+                      className="mt-2"
                     />
                   </div>
 
                   <div>
                     <Label>X.com</Label>
-                    <Input type="text" value="https://x.com/PimjoHQ" />
+                    <Input type="text" value="https://x.com/PimjoHQ" className="mt-2" />
                   </div>
 
                   <div>
-                    <Label>Linkedin</Label>
+                    <Label>LinkedIn</Label>
                     <Input
                       type="text"
                       value="https://www.linkedin.com/company/pimjo"
+                      className="mt-2"
                     />
                   </div>
 
                   <div>
                     <Label>Instagram</Label>
-                    <Input type="text" value="https://instagram.com/PimjoHQ" />
+                    <Input type="text" value="https://instagram.com/PimjoHQ" className="mt-2" />
                   </div>
                 </div>
               </div>
-              <div className="mt-7">
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+
+              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6">
+                <h5 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
                   Personal Information
                 </h5>
 
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <div className="col-span-2">
                     <Label>Username</Label>
                     <Input 
                       type="text" 
                       value={userProfile.username}
                       onChange={(e) => setUserProfile(prev => ({ ...prev, username: e.target.value }))}
+                      className="mt-2"
                     />
                   </div>
 
@@ -557,10 +730,9 @@ export default function UserInfoCard() {
                       type="text" 
                       value={userProfile.email}
                       disabled
-                      className="bg-gray-100 dark:bg-gray-700"
+                      className="mt-2 bg-gray-100 dark:bg-gray-700"
                     />
                   </div>
-
 
                   <div className="col-span-2">
                     <Label>Avatar</Label>
@@ -568,19 +740,19 @@ export default function UserInfoCard() {
                       {avatarOptions.map((avatar) => (
                         <div
                           key={avatar.id}
-                          className={`cursor-pointer border-2 rounded-lg p-2 transition-all ${
+                          className={`cursor-pointer border-2 rounded-xl p-3 transition-all hover:scale-105 ${
                             userProfile.avatar === avatar.id
-                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                           }`}
                           onClick={() => setUserProfile(prev => ({ ...prev, avatar: avatar.id }))}
                         >
                           <img
                             src={avatar.image}
                             alt={avatar.name}
-                            className="w-full h-16 object-cover rounded"
+                            className="w-full h-16 object-cover rounded-lg"
                           />
-                          <p className="text-xs text-center mt-1 text-gray-600 dark:text-gray-400">
+                          <p className="text-xs text-center mt-2 text-gray-600 dark:text-gray-400 font-medium">
                             {avatar.name}
                           </p>
                         </div>
@@ -593,7 +765,7 @@ export default function UserInfoCard() {
                     <select
                       value={selectedCountry}
                       onChange={(e) => setSelectedCountry(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="mt-2 w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     >
                       <option value="">Select a country</option>
                       {countries.map((country) => (
@@ -604,18 +776,69 @@ export default function UserInfoCard() {
                     </select>
                   </div>
 
+                  <div className="col-span-2">
+                    <Label>X Account</Label>
+                    <div className="space-y-4 mt-2">
+                      <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                        <p className="text-sm text-green-800 dark:text-green-200 flex items-center gap-2">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <strong>Easy Setup:</strong> Enter your X handle below and click "Save X Handle" to connect your account instantly!
+                        </p>
+                      </div>
+                      <Input
+                        id="xHandle"
+                        type="text"
+                        placeholder="Enter your X handle (without @) - e.g., 'elonmusk'"
+                        value={userProfile.xHandle}
+                        onChange={(e) => setUserProfile(prev => ({ ...prev, xHandle: e.target.value }))}
+                        className="w-full"
+                      />
+                      <div className="flex gap-3">
+                        <button
+                          onClick={handleSaveXHandle}
+                          disabled={!userProfile.xHandle.trim()}
+                          className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
+                        >
+                          Save X Handle
+                        </button>
+                      </div>
+                      {userProfile.xHandle && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Your X handle will be saved as: <span className="font-medium">@{userProfile.xHandle}</span>
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
-                Close
+            
+            <div className="sticky bottom-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-6 py-4 -mx-6 -mb-6 rounded-b-2xl">
+              <div className="flex items-center justify-end gap-3">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={closeModal}
+                  className="px-6 py-2.5"
+                >
+                  Cancel
               </Button>
-              <Button size="sm" onClick={handleSave}>
+                <Button 
+                  size="sm" 
+                  onClick={handleSave}
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white"
+                >
                 Save Changes
               </Button>
+              </div>
             </div>
           </form>
+          </div>
         </div>
       </Modal>
     </div>

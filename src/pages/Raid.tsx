@@ -1,7 +1,97 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ComponentCard from '../components/common/ComponentCard';
+import { useSupabaseAuth } from '../hooks/useSupabaseAuth';
+import { XHandleManager } from '../utils/xHandleManager';
 
 const Raid: React.FC = () => {
+  const { user, supabase } = useSupabaseAuth();
+  const [profile, setProfile] = useState<{ username: string; avatar_name: string | null; x_handle?: string | null } | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!user) {
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      
+      // Process X login and store handle if needed
+      await XHandleManager.processXLogin(user);
+      
+      // Load profile data
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username, avatar_name, x_handle')
+        .eq('id', user.id)
+        .limit(1)
+        .maybeSingle();
+      
+      if (!error && data) {
+        setProfile({ 
+          username: data.username || '', 
+          avatar_name: data.avatar_name || 'user1', 
+          x_handle: data.x_handle ?? null 
+        });
+      } else {
+        // Fallback for users without profiles
+        setProfile({ 
+          username: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Guest', 
+          avatar_name: 'user1', 
+          x_handle: null 
+        });
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user, supabase]);
+
+  const displayName = useMemo(() => {
+    if (loading) return 'Loading...';
+    return profile?.username || 'IMG User';
+  }, [loading, profile]);
+
+  const avatarSrc = useMemo(() => {
+    const name = profile?.avatar_name || 'user1';
+    return `/images/user/${name}.webp`;
+  }, [profile]);
+
+
+  // Handle X connection after OAuth redirect
+  useEffect(() => {
+    const handleXConnection = async () => {
+      if (!user) return;
+      
+      // Check if this is a fresh X login (not already processed)
+      const isXLogin = user.app_metadata?.provider === 'twitter' || user.user_metadata?.provider === 'twitter';
+      
+      if (isXLogin && profile && !profile.x_handle) {
+        // User just connected X, update their existing profile
+        const success = await XHandleManager.connectXToExistingProfile(user);
+        
+        if (success) {
+          // Reload profile to get updated X handle
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('x_handle')
+            .eq('id', user.id)
+            .single();
+            
+          if (!error && data) {
+            setProfile(prev => prev ? { ...prev, x_handle: data.x_handle } : null);
+          }
+        }
+      }
+    };
+    
+    handleXConnection();
+  }, [user, profile, supabase]);
+
+  const handleDisconnectX = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/raid';
+  };
   return (
     <>
       <div className="space-y-6">
@@ -9,22 +99,45 @@ const Raid: React.FC = () => {
         <ComponentCard title="Your Raid Profile" className="h-fit">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
             <div className="flex items-center gap-4">
-              <img src="/images/avatars/user-01.png" alt="avatar" className="w-14 h-14 rounded-full object-cover" />
+              <img
+                src={avatarSrc}
+                alt="avatar"
+                className="w-14 h-14 rounded-full object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/images/user/user1.webp';
+                }}
+              />
               <div>
-                <div className="text-lg font-semibold text-gray-900 dark:text-white">Guest</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Connect X to personalize</div>
+                <div className="text-lg font-semibold text-gray-900 dark:text-white">{displayName}</div>
+                {profile?.x_handle ? (
+                  <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                    <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                    Connected to X
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Connect to X to Raid and earn</div>
+                )}
               </div>
             </div>
             <div className="text-center">
               <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Rank</div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium">Rookie</div>
             </div>
-            <div className="flex md:justify-end">
-              <div className="flex items-center gap-3">
-                <button className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">Connect X</button>
-                <button className="bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700">Connect Wallet</button>
-              </div>
-            </div>
+                <div className="flex md:justify-end">
+                  <div className="flex items-center gap-3">
+                    {profile?.x_handle ? (
+                      <button onClick={handleDisconnectX} className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Disconnect X</button>
+                    ) : (
+                      <button 
+                        onClick={() => window.location.href = '/profile'} 
+                        className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800"
+                      >
+                        Connect X (Go to Profile)
+                      </button>
+                    )}
+                    <button className="bg-brand-600 text-white px-4 py-2 rounded-lg hover:bg-brand-700">Connect Wallet</button>
+                  </div>
+                </div>
           </div>
           <div className="grid grid-cols-3 gap-3 mt-6">
             <div className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center border border-gray-200 dark:border-gray-600">
