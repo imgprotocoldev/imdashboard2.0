@@ -27,8 +27,8 @@ const Raid: React.FC = () => {
       id: 'r1',
       tweetId: '1965479870571675783',
       tweetUrl: 'https://x.com/img_protocol/status/1965479870571675783',
-      profile: { name: 'IMG Protocol', handle: '@img_protocol', avatar: '/images/avatars/user-01.png' },
-      banner: null,
+      profile: { name: 'Infinite Money Glitch', handle: '@img_protocol', avatar: '/images/raid/IMGlogo.webp' },
+      banner: '/images/raid/raidactive1.webp',
       text: 'Join the raid and help boost visibility by engaging with the post!',
       media: null,
       endsAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
@@ -38,8 +38,8 @@ const Raid: React.FC = () => {
       id: 'r2',
       tweetId: '1975185546201760037',
       tweetUrl: 'https://x.com/img_protocol/status/1975185546201760037',
-      profile: { name: 'IMG Protocol', handle: '@img_protocol', avatar: '/images/avatars/user-02.png' },
-      banner: null,
+      profile: { name: 'Infinite Money Glitch', handle: '@img_protocol', avatar: '/images/raid/IMGlogo.webp' },
+      banner: '/images/raid/raidactive2.webp',
       text: 'Weekly raid—like, reply, retweet to earn XP!',
       media: null,
       endsAt: new Date(Date.now() + 45 * 60 * 1000).toISOString(),
@@ -49,8 +49,8 @@ const Raid: React.FC = () => {
       id: 'r3',
       tweetId: '1974980448028651872',
       tweetUrl: 'https://x.com/img_protocol/status/1974980448028651872',
-      profile: { name: 'IMG Protocol', handle: '@img_protocol', avatar: '/images/avatars/user-03.png' },
-      banner: null,
+      profile: { name: 'Infinite Money Glitch', handle: '@img_protocol', avatar: '/images/raid/IMGlogo.webp' },
+      banner: '/images/raid/raidactive3.webp',
       text: 'Special raid—complete actions and collect XP.',
       media: null,
       endsAt: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(),
@@ -59,7 +59,8 @@ const Raid: React.FC = () => {
   ], []);
 
   const [raids, setRaids] = useState<RaidItem[]>(initialRaids);
-  const [nowTs, setNowTs] = useState<number>(Date.now());
+  // Timestamp state retained for future live timers; currently unused
+  // const [nowTs, setNowTs] = useState<number>(Date.now());
 
   // Local cache stub for tweet/profile (extend with real API)
   const cacheLoadedRef = useRef(false);
@@ -76,36 +77,37 @@ const Raid: React.FC = () => {
   }, []);
 
   // Periodic timer for countdowns
-  useEffect(() => {
-    const t = setInterval(() => setNowTs(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
+  // useEffect(() => {
+  //   const t = setInterval(() => setNowTs(Date.now()), 1000);
+  //   return () => clearInterval(t);
+  // }, []);
 
-  const formatRemaining = (endsAtIso: string) => {
-    const diff = new Date(endsAtIso).getTime() - nowTs;
-    if (diff <= 0) return 'Ended';
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    if (h > 0) return `${h}h ${m}m`;
-    if (m > 0) return `${m}m ${s}s`;
-    return `${s}s`;
-  };
+  // Former countdown kept for future use; currently not used due to fixed expiry display
+  // const formatRemaining = (endsAtIso: string) => {
+  //   const diff = new Date(endsAtIso).getTime() - nowTs;
+  //   if (diff <= 0) return 'Ended';
+  //   const h = Math.floor(diff / 3600000);
+  //   const m = Math.floor((diff % 3600000) / 60000);
+  //   const s = Math.floor((diff % 60000) / 1000);
+  //   if (h > 0) return `${h}h ${m}m`;
+  //   if (m > 0) return `${m}m ${s}s`;
+  //   return `${s}s`;
+  // };
 
-  const tweetIntent = (action: 'like' | 'retweet' | 'reply' | 'view', tweetUrl: string) => {
-    const encoded = encodeURIComponent(tweetUrl);
-    switch (action) {
-      case 'like':
-        // Note: Twitter does not provide a public web intent to auto-like; open tweet instead.
-        return `https://twitter.com/intent/favorite?tweet_id=${tweetUrl.split('/').pop()}`;
-      case 'retweet':
-        return `https://twitter.com/intent/retweet?tweet_id=${tweetUrl.split('/').pop()}`;
-      case 'reply':
-        return `https://twitter.com/intent/tweet?in_reply_to=${tweetUrl.split('/').pop()}`;
-      default:
-        return encoded;
-    }
-  };
+  // Intents removed from UI for now
+  // const tweetIntent = (action: 'like' | 'retweet' | 'reply' | 'view', tweetUrl: string) => {
+  //   const encoded = encodeURIComponent(tweetUrl);
+  //   switch (action) {
+  //     case 'like':
+  //       return `https://twitter.com/intent/favorite?tweet_id=${tweetUrl.split('/').pop()}`;
+  //     case 'retweet':
+  //       return `https://twitter.com/intent/retweet?tweet_id=${tweetUrl.split('/').pop()}`;
+  //     case 'reply':
+  //       return `https://twitter.com/intent/tweet?in_reply_to=${tweetUrl.split('/').pop()}`;
+  //     default:
+  //       return encoded;
+  //   }
+  // };
 
   useEffect(() => {
     const load = async () => {
@@ -163,6 +165,24 @@ const Raid: React.FC = () => {
   }), []);
 
   const currentLeaders = leaderboardData[leaderboardFilter];
+
+  const formatEndsAt = (endsAtIso: string): string => {
+    try {
+      const localized = new Date(endsAtIso).toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      const cleaned = localized.replace(',', ''); // "7/10/2025 15:00"
+      return `Ends in: ${cleaned} EST`;
+    } catch {
+      return 'Ends in: N/A';
+    }
+  };
 
 
   // Handle X connection after OAuth redirect
@@ -234,19 +254,19 @@ const Raid: React.FC = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
-            <div className="relative overflow-hidden rounded-lg p-4 text-center border border-indigo-300/60 dark:border-indigo-500/40 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-900/10">
-              <div className="text-[10px] uppercase font-semibold text-indigo-700 dark:text-indigo-300 tracking-widest">XP</div>
-              <div className="mt-0.5 text-2xl font-black text-indigo-900 dark:text-indigo-100">0</div>
+            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-indigo-300/60 dark:border-indigo-500/40 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-900/10">
+              <div className="text-xs uppercase font-bold text-indigo-700 dark:text-indigo-300 tracking-widest">XP</div>
+              <div className="mt-0.5 text-lg font-bold text-indigo-900 dark:text-indigo-100">0</div>
               <div className="pointer-events-none absolute -inset-1 rounded-xl bg-gradient-to-tr from-indigo-400/0 via-indigo-400/10 to-indigo-400/0" />
             </div>
-            <div className="relative overflow-hidden rounded-lg p-4 text-center border border-emerald-300/60 dark:border-emerald-500/40 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/10">
-              <div className="text-[10px] uppercase font-semibold text-emerald-700 dark:text-emerald-300 tracking-widest">Points</div>
-              <div className="mt-0.5 text-2xl font-black text-emerald-900 dark:text-emerald-100">{points}</div>
+            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-emerald-300/60 dark:border-emerald-500/40 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/10">
+              <div className="text-xs uppercase font-bold text-emerald-700 dark:text-emerald-300 tracking-widest">Points</div>
+              <div className="mt-0.5 text-lg font-bold text-emerald-900 dark:text-emerald-100">{points}</div>
               <div className="pointer-events-none absolute -inset-1 rounded-xl bg-gradient-to-tr from-emerald-400/0 via-emerald-400/10 to-emerald-400/0" />
             </div>
-            <div className="relative overflow-hidden rounded-lg p-4 text-center border border-amber-300/60 dark:border-amber-500/40 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/10">
-              <div className="text-[10px] uppercase font-semibold text-amber-700 dark:text-amber-300 tracking-widest">Rank</div>
-              <div className="mt-0.5 text-2xl font-black text-amber-900 dark:text-amber-100">Rookie</div>
+            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-amber-300/60 dark:border-amber-500/40 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/10">
+              <div className="text-xs uppercase font-bold text-amber-700 dark:text-amber-300 tracking-widest">Rank</div>
+              <div className="mt-0.5 text-lg font-bold text-amber-900 dark:text-amber-100">Rookie</div>
               <div className="pointer-events-none absolute -inset-1 rounded-xl bg-gradient-to-tr from-amber-400/0 via-amber-400/10 to-amber-400/0" />
             </div>
           </div>
@@ -270,77 +290,57 @@ const Raid: React.FC = () => {
         <ComponentCard title="Active Raids" className="h-fit">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {raids.map((raid) => {
-              const remaining = formatRemaining(raid.endsAt);
-              const pct = Math.max(0, Math.min(100, 100 - ((new Date(raid.endsAt).getTime() - nowTs) / (6 * 60 * 60 * 1000)) * 100));
+              const expiryText = formatEndsAt(raid.endsAt);
               return (
-                <div key={raid.id} className="rounded-2xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] overflow-hidden shadow-sm hover:shadow-md transition">
-                  {/* Optional Banner */}
+                <div key={raid.id} className="rounded-2xl border-2 border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] overflow-hidden shadow-lg hover:shadow-xl hover:border-brand-400 dark:hover:border-brand-500 transition-all duration-300 hover:scale-[1.02]">
+                  {/* Banner - larger size */}
                   {raid.banner && (
-                    <div className="h-20 bg-cover bg-center" style={{ backgroundImage: `url(${raid.banner})` }} />
+                    <img src={raid.banner} className="w-full h-40 object-cover" />
                   )}
-                  <div className="p-4 space-y-3">
+                  <div className="p-6 space-y-5">
                     {/* Profile Row */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <img src={raid.profile.avatar} className="w-8 h-8 rounded-full" />
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-4">
+                        <img src={raid.profile.avatar} className="w-12 h-12 rounded-full ring-2 ring-brand-400/30" />
                         <div>
-                          <div className="text-sm font-semibold text-gray-900 dark:text-white">{raid.profile.name}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">{raid.profile.handle}</div>
+                          <div className="text-base font-bold text-gray-900 dark:text-white">{raid.profile.name}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">{raid.profile.handle}</div>
                         </div>
                       </div>
-                      <span className={`text-xs px-2 py-1 rounded-md border ${remaining === 'Ended' ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700' : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'}`}>
-                        {remaining === 'Ended' ? 'Ended' : `Ends in: ${remaining}`}
-                      </span>
+                      <div className="px-3 py-1.5 rounded-lg bg-gradient-to-br from-emerald-500 to-green-600 text-white text-sm font-bold shadow-md">
+                        {raid.totalXp} XP
+                      </div>
                     </div>
 
-                    {/* Tweet Text */}
-                    <div className="text-sm text-gray-800 dark:text-gray-200">
+                    {/* Tweet Text (fixed height ~3 lines) */}
+                    <div className="text-base text-gray-800 dark:text-gray-200 leading-relaxed line-clamp-3 min-h-[4.5rem]">
                       {raid.text}
                     </div>
-                    {raid.media && (
-                      <img src={raid.media} className="w-full rounded-lg border border-gray-200 dark:border-white/10" />
-                    )}
-
-                    {/* XP Rewards */}
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                      <div className="bg-white dark:bg-gray-700 rounded-lg p-2 border border-gray-200 dark:border-gray-600">
-                        <div className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">LIKE</div>
-                        <div className="text-sm font-semibold text-gray-900 dark:text-white">+5 XP</div>
-                      </div>
-                      <div className="bg-white dark:bg-gray-700 rounded-lg p-2 border border-gray-200 dark:border-gray-600">
-                        <div className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">REPLY</div>
-                        <div className="text-sm font-semibold text-gray-900 dark:text-white">+10 XP</div>
-                      </div>
-                      <div className="bg-white dark:bg-gray-700 rounded-lg p-2 border border-gray-200 dark:border-gray-600">
-                        <div className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">RETWEET</div>
-                        <div className="text-sm font-semibold text-gray-900 dark:text-white">+15 XP</div>
-                      </div>
+                    
+                    {/* XP Values - compact and thinner */}
+                    <div className="flex items-center justify-center gap-2">
+                      <a href={raid.tweetUrl} target="_blank" rel="noopener" className="flex-1 rounded-md border border-gray-200 dark:border-white/10 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/50 py-1.5 text-center hover:from-emerald-50 hover:to-emerald-100 dark:hover:from-emerald-900/30 dark:hover:to-emerald-800/30 transition">
+                        <div className="text-[9px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Like</div>
+                        <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400">+5 XP</div>
+                      </a>
+                      <a href={raid.tweetUrl} target="_blank" rel="noopener" className="flex-1 rounded-md border border-gray-200 dark:border-white/10 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/50 py-1.5 text-center hover:from-emerald-50 hover:to-emerald-100 dark:hover:from-emerald-900/30 dark:hover:to-emerald-800/30 transition">
+                        <div className="text-[9px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Reply</div>
+                        <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400">+10 XP</div>
+                      </a>
+                      <a href={raid.tweetUrl} target="_blank" rel="noopener" className="flex-1 rounded-md border border-gray-200 dark:border-white/10 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/50 py-1.5 text-center hover:from-emerald-50 hover:to-emerald-100 dark:hover:from-emerald-900/30 dark:hover:to-emerald-800/30 transition">
+                        <div className="text-[9px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Retweet</div>
+                        <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400">+15 XP</div>
+                      </a>
                     </div>
 
-                    {/* Progress */}
-                    <div className="mt-1">
-                      <div className="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-emerald-500 to-brand-500" style={{ width: `${pct}%` }} />
+                    {/* Actions & Expiry */}
+                    <div className="flex flex-col gap-3 pt-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <button className="flex-1 text-sm px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-[0_6px_14px_rgba(16,185,129,0.35)] hover:shadow-[0_8px_18px_rgba(16,185,129,0.45)] focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all" onClick={() => console.log('Collect XP for', raid.tweetId)}>Collect XP</button>
+                        <a href={raid.tweetUrl} target="_blank" rel="noopener" className="flex-1 text-sm px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-[0_6px_14px_rgba(79,70,229,0.35)] hover:shadow-[0_8px_18px_rgba(79,70,229,0.45)] focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition-all text-center">Join Raid</a>
                       </div>
-                      <div className="mt-1 text-[11px] text-gray-500 dark:text-gray-400 flex items-center justify-between">
-                        <span>Total {raid.totalXp} XP</span>
-                        <span>Active Raid</span>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center justify-between gap-2 pt-1">
-                      <div className="inline-flex gap-1.5">
-                        <a href={tweetIntent('like', raid.tweetUrl)} target="_blank" rel="noopener" className="text-xs px-2.5 py-1.5 rounded-md font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 transition">Like</a>
-                        <a href={tweetIntent('reply', raid.tweetUrl)} target="_blank" rel="noopener" className="text-xs px-2.5 py-1.5 rounded-md font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 transition">Reply</a>
-                        <a href={tweetIntent('retweet', raid.tweetUrl)} target="_blank" rel="noopener" className="text-xs px-2.5 py-1.5 rounded-md font-semibold bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 transition">Retweet</a>
-                      </div>
-                      <div className="inline-flex gap-2">
-                        <a href={raid.tweetUrl} target="_blank" rel="noopener" className="text-xs px-3.5 py-2 rounded-lg font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition">Join Raid</a>
-                        <button className="text-xs px-3.5 py-2 rounded-lg font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition" onClick={() => {
-                          // Stub: verify via API and award XP
-                          console.log('Verify actions for', raid.tweetId);
-                        }}>Collect XP</button>
+                      <div className="text-center text-xs px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                        {expiryText}
                       </div>
                     </div>
                   </div>
@@ -391,30 +391,33 @@ const Raid: React.FC = () => {
         <ComponentCard title="Prize Table" className="h-fit">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { reward: '$5 USD in SOL Tokens', cost: 300 },
-              { reward: '$10 USD in SOL Tokens', cost: 600 },
-              { reward: '$25 USD in SOL Tokens', cost: 1000 },
-              { reward: '$50 USD in SOL Tokens', cost: 3000 },
+              { reward: '$5 USD in SOL Tokens', cost: 300, image: '/images/raid/5usdinsol.webp' },
+              { reward: '$10 USD in SOL Tokens', cost: 600, image: '/images/raid/10usdinsol.webp' },
+              { reward: '$25 USD in SOL Tokens', cost: 1000, image: '/images/raid/25usdinsol.webp' },
+              { reward: '$50 USD in SOL Tokens', cost: 3000, image: '/images/raid/50usdinsol.webp' },
             ].map((row, i) => (
-              <div key={i} className="relative rounded-xl border border-gray-200/70 dark:border-white/10 bg-white dark:bg-white/[0.03] p-4 shadow-[0_0_12px_rgba(34,197,94,0.12)]">
-                <div className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Reward</div>
-                <div className="text-sm font-semibold text-gray-900 dark:text-white mb-3">{row.reward}</div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-[11px] text-gray-500 dark:text-gray-400">Cost</div>
-                    <div className="text-lg font-extrabold text-green-700 dark:text-green-400">{row.cost}</div>
+              <div key={i} className="relative rounded-xl border border-gray-200/70 dark:border-white/10 bg-white dark:bg-white/[0.03] overflow-hidden shadow-[0_0_12px_rgba(34,197,94,0.12)]">
+                <img src={row.image} alt={row.reward} className="w-full h-32 object-cover" />
+                <div className="p-4">
+                  <div className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Reward</div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white mb-3">{row.reward}</div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-[11px] text-gray-500 dark:text-gray-400">Cost</div>
+                      <div className="text-lg font-extrabold text-green-700 dark:text-green-400">{row.cost}</div>
+                    </div>
+                    <button
+                      className="px-3 py-2 rounded-lg text-xs font-semibold bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50"
+                      disabled={points < row.cost}
+                      onClick={() => {
+                        if (points >= row.cost) {
+                          setPoints(points - row.cost);
+                        }
+                      }}
+                    >
+                      {points >= row.cost ? 'Claim' : 'Locked'}
+                    </button>
                   </div>
-                  <button
-                    className="px-3 py-2 rounded-lg text-xs font-semibold bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50"
-                    disabled={points < row.cost}
-                    onClick={() => {
-                      if (points >= row.cost) {
-                        setPoints(points - row.cost);
-                      }
-                    }}
-                  >
-                    {points >= row.cost ? 'Claim' : 'Locked'}
-                  </button>
                 </div>
                 <div className="pointer-events-none absolute -inset-0.5 rounded-xl bg-gradient-to-tr from-brand-500/0 via-brand-500/5 to-brand-500/0" />
               </div>
