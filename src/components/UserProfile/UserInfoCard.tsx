@@ -24,6 +24,7 @@ export default function UserInfoCard() {
     type: 'success' | 'error' | null;
     message: string;
   }>({ type: null, message: '' });
+  const [isDeleteArmed, setIsDeleteArmed] = useState(false);
 
   // Avatar options
   const avatarOptions = [
@@ -499,8 +500,8 @@ export default function UserInfoCard() {
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
               <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                    <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
@@ -535,8 +536,8 @@ export default function UserInfoCard() {
 
               <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-                    <svg className="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
@@ -553,8 +554,8 @@ export default function UserInfoCard() {
 
               <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
-                    <svg className="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                   </div>
@@ -578,9 +579,9 @@ export default function UserInfoCard() {
 
               <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600 lg:col-span-2">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-black dark:bg-gray-600 rounded-lg">
-                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </div>
                   <div className="flex-1">
@@ -676,7 +677,7 @@ export default function UserInfoCard() {
           </div>
           <div className="p-6">
           <form className="flex flex-col">
-            <div className="custom-scrollbar max-h-[500px] overflow-y-auto space-y-8">
+            <div className="custom-scrollbar max-h-[500px] overflow-y-auto space-y-8 pb-8">
               <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6">
                 <h5 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                   <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -758,46 +759,46 @@ export default function UserInfoCard() {
                       onChange={(e) => setUserProfile(prev => ({ ...prev, xHandle: e.target.value }))}
                       className="mt-2"
                     />
-                    <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                      <p className="text-sm text-blue-800 dark:text-blue-200">
-                        <strong>Setup:</strong> Enter your X handle below without @ and click "Save Changes" to connect your account instantly!
-                      </p>
+                    <div className="mt-2 flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Click "Save Changes" to connect your account instantly!</span>
                     </div>
                   </div>
                 </div>
                   </div>
 
               {/* Delete Profile Section */}
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 mb-6">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                    <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h6 className="text-sm font-semibold text-red-800 dark:text-red-200 mb-2">Danger Zone</h6>
-                    <p className="text-sm text-red-700 dark:text-red-300 mb-4">
-                      This will permanently delete your profile and all associated information. This action cannot be undone.
-                    </p>
-                    <button
-                      onClick={() => {
-                        if (window.confirm('⚠️ WARNING: This will permanently delete your profile and all information.\n\nAre you absolutely sure you want to continue? This action cannot be undone.')) {
-                          if (window.confirm('This is your final warning. Click OK to permanently delete your profile.')) {
-                            // Add delete profile logic here
-                            console.log('Delete profile confirmed');
-                          }
-                        }
-                      }}
-                      className="px-4 py-2.5 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/40 rounded-lg transition-colors border border-red-300 dark:border-red-700"
-                    >
-                      <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                      Delete Profile
-                    </button>
-                  </div>
-                </div>
+              <div className="bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700 rounded-xl p-6 mb-12">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!isDeleteArmed) {
+                      setIsDeleteArmed(true);
+                      return;
+                    }
+                    try {
+                      const { error } = await supabase
+                        .from('profiles')
+                        .delete()
+                        .eq('id', user?.id || '');
+                      if (error) throw error;
+                      setNotification({ type: 'success', message: 'Profile deleted.' });
+                      setIsDeleteArmed(false);
+                    } catch (err) {
+                      console.error('Error deleting profile:', err);
+                      setNotification({ type: 'error', message: 'Failed to delete profile. Please try again.' });
+                      setIsDeleteArmed(false);
+                    }
+                  }}
+                  className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-colors border ${isDeleteArmed ? 'bg-red-600 text-white border-red-600 hover:bg-red-700' : 'text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/40 border-red-300 dark:border-red-700'}`}
+                >
+                  {isDeleteArmed ? 'Delete now' : 'Delete Profile'}
+                </button>
+                <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">
+                  This will permanently delete your profile and all associated information. This action cannot be undone.
+                </p>
               </div>
             </div>
             
