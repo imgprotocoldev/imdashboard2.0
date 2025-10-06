@@ -398,12 +398,12 @@ const Raid: React.FC = () => {
             ].map((row, i) => (
               <div key={i} className="relative rounded-xl border border-gray-200/70 dark:border-white/10 bg-white dark:bg-white/[0.03] overflow-hidden shadow-[0_0_12px_rgba(34,197,94,0.12)]">
                 <img src={row.image} alt={row.reward} className="w-full h-32 object-cover" />
-                <div className="p-4">
+                  <div className="p-4">
                   <div className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Reward</div>
                   <div className="text-sm font-semibold text-gray-900 dark:text-white mb-3">{row.reward}</div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-[11px] text-gray-500 dark:text-gray-400">Cost</div>
+                      <div className="text-[11px] text-gray-500 dark:text-gray-400">Points</div>
                       <div className="text-lg font-extrabold text-green-700 dark:text-green-400">{row.cost}</div>
                     </div>
                     <button
@@ -423,7 +423,7 @@ const Raid: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">Manual early stage: earn Points by ranking up; spend them on rewards.</div>
+          <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">Raid to earn Points and unlock the rewards!</div>
         </ComponentCard>
       </div>
     </>
