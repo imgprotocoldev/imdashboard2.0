@@ -397,9 +397,6 @@ export default function UserInfoCard() {
         avatar: userProfile.avatar
       }));
       
-      // Trigger profile update event for other components
-      window.dispatchEvent(new CustomEvent('profileUpdated'));
-      
       // Close modal
     closeModal();
       
@@ -439,6 +436,9 @@ export default function UserInfoCard() {
           }));
           setUserCountry(upserted[0].country || '');
           setSelectedCountry(upserted[0].country || '');
+          
+          // Trigger profile update event for other components AFTER successful save
+          window.dispatchEvent(new CustomEvent('profileUpdated'));
         }
       } catch (supabaseError) {
         console.warn('Supabase sync error:', supabaseError);
@@ -491,115 +491,126 @@ export default function UserInfoCard() {
     }
   };
 
-  const handleSaveXHandle = async () => {
-    if (!user || !userProfile.xHandle.trim()) return;
-    
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ x_handle: userProfile.xHandle.trim() })
-        .eq('id', user.id);
-      
-      if (error) {
-        throw error;
-      }
-      
-      setNotification({
-        type: 'success',
-        message: 'X handle saved successfully!'
-      });
-      setTimeout(() => {
-        setNotification({ type: null, message: '' });
-      }, 3000);
-    } catch (error) {
-      console.error('Error saving X handle:', error);
-      setNotification({
-        type: 'error',
-        message: 'Failed to save X handle. Please try again.'
-      });
-    }
-  };
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm">
       <div className="p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex-1">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  Username
-                </label>
-                <div className="flex items-center">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {loading ? "Loading..." : userProfile.username || "Not set"}
-                  </p>
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                    <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+        <div>
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      Username
+                    </label>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mt-1">
+                      {loading ? "Loading..." : userProfile.username || "Not set"}
+              </p>
+            </div>
                 </div>
             </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  Email Address
-                </label>
-                <div className="flex items-center">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {loading ? "Loading..." : userProfile.email || "Not set"}
-                  </p>
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+            <div>
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      Email Address
+                    </label>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mt-1">
+                      {loading ? "Loading..." : userProfile.email || "Not set"}
+              </p>
+            </div>
                 </div>
             </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  Country
-                </label>
-                <div className="flex items-center">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {userCountry ? countries.find(c => c.code === userCountry)?.name || userCountry : "Not set"}
-                  </p>
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+                    <svg className="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+            <div>
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      Country
+                    </label>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mt-1">
+                      {userCountry ? countries.find(c => c.code === userCountry)?.name || userCountry : "Not set"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
+                    <svg className="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      Login Method
+                    </label>
+                    <div className="mt-1">
+                      <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                        {loading ? "Loading..." : (() => {
+                          if (user?.app_metadata?.provider === 'google') return 'Google';
+                          if (user?.app_metadata?.provider === 'twitter') return 'X (Twitter)';
+                          if (user?.app_metadata?.provider === 'email') return 'Email';
+                          return 'Email'; // Default fallback
+                        })()}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  Login Method
-                </label>
-                <div className="flex items-center">
-                  <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
-                    {loading ? "Loading..." : (() => {
-                      if (user?.app_metadata?.provider === 'google') return 'Google';
-                      if (user?.app_metadata?.provider === 'twitter') return 'X (Twitter)';
-                      if (user?.app_metadata?.provider === 'email') return 'Email';
-                      return 'Email'; // Default fallback
-                    })()}
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600 lg:col-span-2">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-black dark:bg-gray-600 rounded-lg">
+                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
                   </div>
-                </div>
-            </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  X Account
-                </label>
-                <div className="flex items-center">
-                  {userProfile.xHandle ? (
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                        <span className="text-sm font-semibold text-gray-900 dark:text-white">@{userProfile.xHandle}</span>
-                      </div>
-                      <button
-                        onClick={handleDisconnectX}
-                        className="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                      >
-                        Disconnect
-                      </button>
+                  <div className="flex-1">
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      X Account
+                    </label>
+                    <div className="mt-1">
+                      {userProfile.xHandle ? (
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">@{userProfile.xHandle}</span>
+                          </div>
+                          <button
+                            onClick={handleDisconnectX}
+                            className="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          >
+                            Disconnect
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={openModal}
+                          className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                        >
+                          Setup X
+                        </button>
+                      )}
                     </div>
-                  ) : (
-                    <button
-                      onClick={openModal}
-                      className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                    >
-                      Setup X
-                    </button>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -669,45 +680,6 @@ export default function UserInfoCard() {
               <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6">
                 <h5 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                   <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                  </svg>
-                  Social Links
-                </h5>
-
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                  <div>
-                    <Label>Facebook</Label>
-                    <Input
-                      type="text"
-                      value="https://www.facebook.com/PimjoHQ"
-                      className="mt-2"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>X.com</Label>
-                    <Input type="text" value="https://x.com/PimjoHQ" className="mt-2" />
-                  </div>
-
-                  <div>
-                    <Label>LinkedIn</Label>
-                    <Input
-                      type="text"
-                      value="https://www.linkedin.com/company/pimjo"
-                      className="mt-2"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Instagram</Label>
-                    <Input type="text" value="https://instagram.com/PimjoHQ" className="mt-2" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6">
-                <h5 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                   Personal Information
@@ -716,8 +688,8 @@ export default function UserInfoCard() {
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                   <div className="col-span-2">
                     <Label>Username</Label>
-                    <Input 
-                      type="text" 
+                    <Input
+                      type="text"
                       value={userProfile.username}
                       onChange={(e) => setUserProfile(prev => ({ ...prev, username: e.target.value }))}
                       className="mt-2"
@@ -726,8 +698,8 @@ export default function UserInfoCard() {
 
                   <div className="col-span-2">
                     <Label>Email Address</Label>
-                    <Input 
-                      type="text" 
+                    <Input
+                      type="text"
                       value={userProfile.email}
                       disabled
                       className="mt-2 bg-gray-100 dark:bg-gray-700"
@@ -755,9 +727,9 @@ export default function UserInfoCard() {
                           <p className="text-xs text-center mt-2 text-gray-600 dark:text-gray-400 font-medium">
                             {avatar.name}
                           </p>
-                        </div>
+                  </div>
                       ))}
-                    </div>
+              </div>
                   </div>
 
                   <div className="col-span-2">
@@ -777,42 +749,53 @@ export default function UserInfoCard() {
                   </div>
 
                   <div className="col-span-2">
-                    <Label>X Account</Label>
-                    <div className="space-y-4 mt-2">
-                      <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                        <p className="text-sm text-green-800 dark:text-green-200 flex items-center gap-2">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          <strong>Easy Setup:</strong> Enter your X handle below and click "Save X Handle" to connect your account instantly!
-                        </p>
-                      </div>
-                      <Input
-                        id="xHandle"
-                        type="text"
-                        placeholder="Enter your X handle (without @) - e.g., 'elonmusk'"
-                        value={userProfile.xHandle}
-                        onChange={(e) => setUserProfile(prev => ({ ...prev, xHandle: e.target.value }))}
-                        className="w-full"
-                      />
-                      <div className="flex gap-3">
-                        <button
-                          onClick={handleSaveXHandle}
-                          disabled={!userProfile.xHandle.trim()}
-                          className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium transition-colors"
-                        >
-                          Save X Handle
-                        </button>
-                      </div>
-                      {userProfile.xHandle && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          Your X handle will be saved as: <span className="font-medium">@{userProfile.xHandle}</span>
-                        </p>
-                      )}
+                    <Label>X Handle</Label>
+                    <Input
+                      id="xHandle"
+                      type="text"
+                      placeholder="Enter your X handle (without @) - e.g., 'elonmusk'"
+                      value={userProfile.xHandle}
+                      onChange={(e) => setUserProfile(prev => ({ ...prev, xHandle: e.target.value }))}
+                      className="mt-2"
+                    />
+                    <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <p className="text-sm text-blue-800 dark:text-blue-200">
+                        <strong>Setup:</strong> Enter your X handle below without @ and click "Save Changes" to connect your account instantly!
+                      </p>
                     </div>
+                  </div>
+                </div>
+                  </div>
+
+              {/* Delete Profile Section */}
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6 mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                    <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h6 className="text-sm font-semibold text-red-800 dark:text-red-200 mb-2">Danger Zone</h6>
+                    <p className="text-sm text-red-700 dark:text-red-300 mb-4">
+                      This will permanently delete your profile and all associated information. This action cannot be undone.
+                    </p>
+                    <button
+                      onClick={() => {
+                        if (window.confirm('⚠️ WARNING: This will permanently delete your profile and all information.\n\nAre you absolutely sure you want to continue? This action cannot be undone.')) {
+                          if (window.confirm('This is your final warning. Click OK to permanently delete your profile.')) {
+                            // Add delete profile logic here
+                            console.log('Delete profile confirmed');
+                          }
+                        }
+                      }}
+                      className="px-4 py-2.5 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/40 rounded-lg transition-colors border border-red-300 dark:border-red-700"
+                    >
+                      <svg className="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Delete Profile
+                    </button>
                   </div>
                 </div>
               </div>
