@@ -336,8 +336,8 @@ const Raid: React.FC = () => {
                     {/* Actions & Expiry */}
                     <div className="flex flex-col gap-3 pt-2">
                       <div className="flex items-center justify-between gap-3">
-                        <button className="flex-1 text-sm px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-[0_6px_14px_rgba(16,185,129,0.35)] hover:shadow-[0_8px_18px_rgba(16,185,129,0.45)] focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all" onClick={() => console.log('Collect XP for', raid.tweetId)}>Collect XP</button>
-                        <a href={raid.tweetUrl} target="_blank" rel="noopener" className="flex-1 text-sm px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-[0_6px_14px_rgba(79,70,229,0.35)] hover:shadow-[0_8px_18px_rgba(79,70,229,0.45)] focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition-all text-center">Join Raid</a>
+                        <button className="flex-1 text-sm px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-[0_2px_8px_rgba(16,185,129,0.15)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.25)] focus:outline-none transition-all" onClick={() => console.log('Collect XP for', raid.tweetId)}>Collect XP</button>
+                        <a href={raid.tweetUrl} target="_blank" rel="noopener" className="flex-1 text-sm px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-[0_2px_8px_rgba(79,70,229,0.15)] hover:shadow-[0_4px_12px_rgba(79,70,229,0.25)] focus:outline-none transition-all text-center">Join Raid</a>
                       </div>
                       <div className="text-center text-xs px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
                         {expiryText}
@@ -389,41 +389,99 @@ const Raid: React.FC = () => {
 
         {/* Prize Table as Reward Cards */}
         <ComponentCard title="Prize Table" className="h-fit">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { reward: '$5 USD in SOL Tokens', cost: 300, image: '/images/raid/5usdinsol.webp' },
-              { reward: '$10 USD in SOL Tokens', cost: 600, image: '/images/raid/10usdinsol.webp' },
-              { reward: '$25 USD in SOL Tokens', cost: 1000, image: '/images/raid/25usdinsol.webp' },
-              { reward: '$50 USD in SOL Tokens', cost: 3000, image: '/images/raid/50usdinsol.webp' },
-            ].map((row, i) => (
-              <div key={i} className="relative rounded-xl border border-gray-200/70 dark:border-white/10 bg-white dark:bg-white/[0.03] overflow-hidden shadow-[0_0_12px_rgba(34,197,94,0.12)]">
-                <img src={row.image} alt={row.reward} className="w-full h-32 object-cover" />
-                  <div className="p-4">
-                  <div className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Reward</div>
-                  <div className="text-sm font-semibold text-gray-900 dark:text-white mb-3">{row.reward}</div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] text-gray-500 dark:text-gray-400">Points</div>
-                      <div className="text-lg font-extrabold text-green-700 dark:text-green-400">{row.cost}</div>
-                    </div>
-                    <button
-                      className="px-3 py-2 rounded-lg text-xs font-semibold bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-50"
-                      disabled={points < row.cost}
-                      onClick={() => {
-                        if (points >= row.cost) {
-                          setPoints(points - row.cost);
-                        }
-                      }}
-                    >
-                      {points >= row.cost ? 'Claim' : 'Locked'}
-                    </button>
+              { reward: '$5 USD in SOL Tokens', cost: 300, image: '/images/raid/5usdinsol.webp', tier: 'Bronze' },
+              { reward: '$10 USD in SOL Tokens', cost: 600, image: '/images/raid/10usdinsol.webp', tier: 'Silver' },
+              { reward: '$25 USD in SOL Tokens', cost: 1000, image: '/images/raid/25usdinsol.webp', tier: 'Gold' },
+              { reward: '$50 USD in SOL Tokens', cost: 3000, image: '/images/raid/50usdinsol.webp', tier: 'Platinum' },
+            ].map((row, i) => {
+              const isUnlocked = points >= row.cost;
+              const tierColors = {
+                Bronze: 'from-amber-500 to-orange-600',
+                Silver: 'from-gray-400 to-gray-600', 
+                Gold: 'from-yellow-400 to-yellow-600',
+                Platinum: 'from-purple-500 to-indigo-600'
+              };
+              const tierGlow = {
+                Bronze: 'shadow-[0_0_20px_rgba(245,158,11,0.4)]',
+                Silver: 'shadow-[0_0_20px_rgba(156,163,175,0.4)]',
+                Gold: 'shadow-[0_0_20px_rgba(234,179,8,0.4)]',
+                Platinum: 'shadow-[0_0_20px_rgba(147,51,234,0.4)]'
+              };
+              
+              return (
+                <div key={i} className={`group relative rounded-2xl border-2 overflow-hidden transition-all duration-300 hover:scale-[1.02] ${
+                  isUnlocked 
+                    ? `border-brand-400/50 dark:border-brand-500/50 bg-white dark:bg-white/[0.03] ${tierGlow[row.tier as keyof typeof tierGlow]} hover:border-brand-400 dark:hover:border-brand-500` 
+                    : 'border-gray-200/50 dark:border-white/10 bg-gray-50 dark:bg-gray-900/50'
+                }`}>
+                  {/* Tier Badge */}
+                  <div className={`absolute top-3 left-3 z-10 px-2 py-1 rounded-lg text-xs font-bold text-white bg-gradient-to-r ${tierColors[row.tier as keyof typeof tierColors]} shadow-lg`}>
+                    {row.tier}
                   </div>
+                  
+                  {/* Image with overlay */}
+                  <div className="relative h-40 overflow-hidden">
+                    <img src={row.image} alt={row.reward} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${
+                      isUnlocked ? 'from-black/20 to-transparent' : 'from-black/40 to-transparent'
+                    }`} />
+                    {!isUnlocked && (
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <div className="text-white text-sm font-bold bg-black/50 px-3 py-1 rounded-lg backdrop-blur-sm">
+                          LOCKED
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-5 space-y-4">
+                    {/* Reward Info */}
+                    <div className="text-center">
+                      <div className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">Reward</div>
+                      <div className="text-base font-bold text-gray-900 dark:text-white leading-tight">{row.reward}</div>
+                    </div>
+                    
+                    {/* Points & Action */}
+                    <div className="space-y-3">
+                      <div className="text-center">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Required Points</div>
+                        <div className={`text-2xl font-black ${isUnlocked ? 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600' : 'text-gray-400'}`}>
+                          {row.cost}
+                        </div>
+                      </div>
+                      
+                      <button
+                        className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all duration-300 ${
+                          isUnlocked 
+                            ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-[0_6px_20px_rgba(16,185,129,0.4)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.5)] hover:scale-[1.02]' 
+                            : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                        }`}
+                        disabled={!isUnlocked}
+                        onClick={() => {
+                          if (isUnlocked) {
+                            setPoints(points - row.cost);
+                          }
+                        }}
+                      >
+                        {isUnlocked ? '🎁 Claim Reward' : '🔒 Locked'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Glow effect */}
+                  {isUnlocked && (
+                    <div className="pointer-events-none absolute -inset-0.5 rounded-2xl bg-gradient-to-tr from-brand-500/0 via-brand-500/10 to-brand-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  )}
                 </div>
-                <div className="pointer-events-none absolute -inset-0.5 rounded-xl bg-gradient-to-tr from-brand-500/0 via-brand-500/5 to-brand-500/0" />
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">Raid to earn Points and unlock the rewards!</div>
+          <div className="mt-6 text-center">
+            <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">🚀 Raid to earn Points and unlock the rewards!</div>
+            <div className="text-xs text-gray-500 dark:text-gray-500">Current Points: <span className="font-bold text-emerald-600 dark:text-emerald-400">{points}</span></div>
+          </div>
         </ComponentCard>
       </div>
     </>

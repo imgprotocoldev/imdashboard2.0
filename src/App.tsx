@@ -29,6 +29,7 @@ import Distribution from "./pages/Distribution";
 import Earnings from "./pages/Earnings";
 import Voting from "./pages/Voting";
 import Hub from "./pages/Hub";
+import RaidGames from "./pages/RaidGames";
 // Information page currently unused
 import Raid from "./pages/Raid";
 
@@ -50,6 +51,7 @@ export default function App() {
                     <Route path="earnings" element={<Earnings />} />
                     <Route path="voting" element={<Voting />} />
                     <Route path="hub" element={<Hub />} />
+                    <Route path="raidgames" element={<RaidGames />} />
                     <Route path="raid" element={<Raid />} />
 
             {/* Others Page */}
