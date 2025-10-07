@@ -1,37 +1,109 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ComponentCard from '../components/common/ComponentCard';
+import { useSupabaseAuth } from '../hooks/useSupabaseAuth';
 
 const Hub: React.FC = () => {
+  const { user, supabase } = useSupabaseAuth();
+  const [profile, setProfile] = useState<{ username: string; avatar_name: string | null; x_handle?: string | null } | null>(null);
+  const [points] = useState<number>(1250);
+  const [totalXp] = useState<number>(2840);
+  const [rank] = useState<number>(47);
 
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user || !supabase) return;
+      const { data } = await supabase
+        .from('profiles')
+        .select('username, avatar_name, x_handle')
+        .eq('id', user.id)
+        .single();
+      if (data) setProfile(data);
+    };
+    loadProfile();
+  }, [user, supabase]);
+
+  const avatarSrc = profile?.avatar_name
+    ? `/images/avatars/${profile.avatar_name}.webp`
+    : '/images/user/user1.webp';
+  const displayName = profile?.username || 'User';
+
+  // (Reserved for future hub-level state)
 
   return (
     <>
       <div className="space-y-6">
         {/* Raid Games Section */}
         <ComponentCard title="Raid Games" className="h-fit">
-          <div className="relative rounded-xl overflow-hidden">
-            {/* Banner Image */}
-            <div className="relative h-48 w-full">
-              <img
-                src="/images/raid/raidgamesbanner.webp"
-                alt="Raid Games"
-                className="w-full h-full object-cover"
-              />
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-white mb-4">
-                    Use Your Raid Points to Play Games!
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
+            {/* Left: Compact profile, then image/text/button */}
+            <div className="flex flex-col">
+              {/* Compact Profile Stats */}
+              <ComponentCard className="h-fit">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={avatarSrc}
+                    alt="avatar"
+                    className="w-10 h-10 rounded-full object-cover"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/user/user1.webp'; }}
+                  />
+                  <div>
+                    <div className="text-base font-extrabold text-gray-900 dark:text-white leading-5">{displayName}</div>
+                    {profile?.x_handle ? (
+                      <div className="text-xs text-green-600 dark:text-green-400">Connected to X</div>
+                    ) : (
+                      <a href="/profile" className="text-xs text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 underline-offset-2 hover:underline">Connect to X</a>
+                    )}
                   </div>
-                  <a
-                    href="/raidgames"
-                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-lg font-bold shadow-[0_6px_20px_rgba(168,85,247,0.4)] hover:shadow-[0_8px_24px_rgba(168,85,247,0.5)] transition-all"
-                  >
-                    Play Now
-                  </a>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-indigo-300/60 dark:border-indigo-500/40 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-900/10">
+                    <div className="text-[10px] uppercase font-bold text-indigo-700 dark:text-indigo-300 tracking-widest">XP</div>
+                    <div className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">{totalXp.toLocaleString()}</div>
+                  </div>
+                  <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-emerald-300/60 dark:border-emerald-500/40 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/10">
+                    <div className="text-[10px] uppercase font-bold text-emerald-700 dark:text-emerald-300 tracking-widest">Points</div>
+                    <div className="mt-0.5 text-sm font-bold text-emerald-900 dark:text-emerald-100">{points.toLocaleString()}</div>
+                  </div>
+                  <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-amber-300/60 dark:border-amber-500/40 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/10">
+                    <div className="text-[10px] uppercase font-bold text-amber-700 dark:text-amber-300 tracking-widest">Rank</div>
+                    <div className="mt-0.5 text-sm font-bold text-amber-900 dark:text-amber-100">#{rank}</div>
+                  </div>
+                </div>
+              </ComponentCard>
+
+              {/* Promo: small image left, text + button right */}
+              <div className="mt-3 rounded-xl border border-gray-200 dark:border-white/10 p-4 bg-white dark:bg-white/[0.02]">
+                <div className="flex items-center gap-5">
+                  <div className="shrink-0 w-40 md:w-[44%] h-24 md:h-28 lg:h-32 rounded-lg overflow-hidden border border-gray-100 dark:border-white/10">
+                    <img
+                      src="/images/raid/raidgamesbanner.webp"
+                      alt="Raid Games"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-lg md:text-xl font-extrabold text-gray-900 dark:text-white leading-7">
+                      Use Your Raid Points to Play Games!
+                    </div>
+                    <div className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
+                      Spend points to win XP bonuses and prizes.
+                    </div>
+                    <div className="mt-3">
+                      <a
+                        href="/raidgames"
+                        className="inline-flex items-center justify-center px-5 py-2 rounded-md bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-sm md:text-base font-bold shadow-[0_4px_12px_rgba(168,85,247,0.35)] hover:shadow-[0_6px_16px_rgba(168,85,247,0.45)] transition-all"
+                      >
+                        Play Now
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Right: Daily Spin */}
+            <DailySpinCard />
           </div>
         </ComponentCard>
 
@@ -111,3 +183,123 @@ const Hub: React.FC = () => {
 };
 
 export default Hub;
+
+// --- Daily Spin Component (even SVG slices) ---
+const DailySpinCard: React.FC = () => {
+  const [spinning, setSpinning] = useState(false);
+  const [rotation, setRotation] = useState(0);
+  const [winLabel, setWinLabel] = useState<string | null>(null);
+  const prizes = ['1 XP', '5 XP', '10 XP', '15 XP', '20 XP', '25 XP', '30 XP', '50 XP'];
+
+  const onSpin = () => {
+    if (spinning) return;
+    setSpinning(true);
+    setWinLabel(null);
+    const index = Math.floor(Math.random() * prizes.length);
+    const slice = 360 / prizes.length;
+    const base = 360 * 5; // 5 turns
+    const target = base + (360 - (index * slice + slice / 2));
+    setRotation((prev) => prev + target);
+    setTimeout(() => {
+      setWinLabel(`You won ${prizes[index]}!`);
+      setSpinning(false);
+    }, 2000);
+  };
+
+  const size = 220; // px, smaller wheel
+  const r = size / 2;
+
+  return (
+    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-5">
+
+      <div className="mx-auto grid grid-cols-1 md:grid-cols-12 items-center gap-6">
+        {/* Left: title */}
+        <div className="md:col-span-3 w-full text-center md:text-left">
+          <div className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white">Daily Spin</div>
+        </div>
+
+        {/* Middle: Wheel container */}
+        <div className="md:col-span-6 mx-auto" style={{ width: size, height: size, position: 'relative' }}>
+        <div
+          className="absolute inset-0 rounded-full border border-gray-300 bg-white"
+          style={{ transform: `rotate(${rotation}deg)`, transition: spinning ? 'transform 2s cubic-bezier(0.22, 1, 0.36, 1)' : 'none' }}
+        >
+          <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+            <defs>
+              <linearGradient id="sliceBlueLight" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#BFDBFE" />
+                <stop offset="100%" stopColor="#60A5FA" />
+              </linearGradient>
+              <linearGradient id="sliceBlueDark" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#1E3A8A" />
+                <stop offset="100%" stopColor="#0EA5E9" />
+              </linearGradient>
+            </defs>
+            {/* Slices */}
+            {prizes.map((_, i) => {
+              const start = (2 * Math.PI * i) / prizes.length;
+              const end = (2 * Math.PI * (i + 1)) / prizes.length;
+              const x1 = r + r * Math.cos(start);
+              const y1 = r + r * Math.sin(start);
+              const x2 = r + r * Math.cos(end);
+              const y2 = r + r * Math.sin(end);
+              const largeArc = end - start > Math.PI ? 1 : 0;
+              const fill = i % 2 === 0 ? 'url(#sliceBlueLight)' : 'url(#sliceBlueDark)';
+              return (
+                <g key={i}>
+                  <path d={`M ${r} ${r} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`} fill={fill} stroke="#D1D5DB" strokeWidth="1" />
+                </g>
+              );
+            })}
+            {/* Tick marks */}
+            {Array.from({ length: prizes.length }).map((_, i) => {
+              const angle = (2 * Math.PI * i) / prizes.length;
+              const x1t = r + (r - 10) * Math.cos(angle);
+              const y1t = r + (r - 10) * Math.sin(angle);
+              const x2t = r + (r - 2) * Math.cos(angle);
+              const y2t = r + (r - 2) * Math.sin(angle);
+              return <line key={`tick-${i}`} x1={x1t} y1={y1t} x2={x2t} y2={y2t} stroke="#9CA3AF" strokeWidth={1} />;
+            })}
+            {/* Labels */}
+            {prizes.map((label, i) => {
+              const angle = (360 / prizes.length) * (i + 0.5);
+              return (
+                <g key={`t-${i}`} transform={`rotate(${angle} ${r} ${r})`}>
+                  <text x={r} y={r - (size/2 - 34)} textAnchor="middle" fontSize="12" fontWeight={800} fill="#111827">
+                    {label}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+          {/* Hub center: simple black circle, perfectly centered */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-black" />
+          </div>
+        </div>
+        {/* Pointer outside: black arrow (points down) */}
+        <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+          <div className="w-0 h-0 border-l-8 border-r-8 border-t-[16px] border-l-transparent border-r-transparent border-t-black" />
+        </div>
+        </div>
+        {/* Right: Controls side panel */}
+        <div className="md:col-span-3 mt-4 md:mt-0 flex flex-col items-center md:items-start">
+          <div className="flex md:block items-center justify-center md:justify-start">
+            <button
+              onClick={onSpin}
+              disabled={spinning}
+              className={`inline-flex items-center justify-center px-5 py-2.5 rounded-md text-sm font-semibold border border-gray-300 ${spinning ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white hover:bg-gray-50 text-gray-800'}`}
+            >
+              {spinning ? 'Spinning...' : 'Spin Now'}
+            </button>
+          </div>
+          <div className="mt-3 h-9">
+            <div className={`w-full text-left px-3 py-1.5 rounded-lg ${winLabel ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 shadow-sm' : 'bg-transparent'}`}>
+              {winLabel || ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
