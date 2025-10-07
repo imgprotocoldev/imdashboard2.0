@@ -9,9 +9,14 @@ const RaidGames: React.FC = () => {
   const [totalXp, setTotalXp] = useState<number>(0);
   const [rank, setRank] = useState<number>(0);
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
-  const [isScratching, setIsScratching] = useState<boolean>(false);
+  const [isScratching, setIsScratching] = useState<boolean>(false); // active scratch session
   const [spinResult, setSpinResult] = useState<string | null>(null);
   const [scratchResult, setScratchResult] = useState<string | null>(null);
+  const [scratchCoverCleared, setScratchCoverCleared] = useState<boolean>(false);
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const canvasContainerRef = React.useRef<HTMLDivElement | null>(null);
+  const isPointerDownRef = React.useRef<boolean>(false);
+  const lastPosRef = React.useRef<{x:number;y:number}>({x:0,y:0});
   
   // New game states
   const [isPickingCard, setIsPickingCard] = useState<boolean>(false);
@@ -20,8 +25,6 @@ const RaidGames: React.FC = () => {
   const [diceResult, setDiceResult] = useState<number | null>(null);
   const [isSpinningSlots, setIsSpinningSlots] = useState<boolean>(false);
   const [slotsResult, setSlotsResult] = useState<string | null>(null);
-  const [isPlayingMemory, setIsPlayingMemory] = useState<boolean>(false);
-  const [memoryResult, setMemoryResult] = useState<string | null>(null);
   const [isGuessingNumber, setIsGuessingNumber] = useState<boolean>(false);
   const [numberGuess, setNumberGuess] = useState<number | null>(null);
   const [guessResult, setGuessResult] = useState<string | null>(null);
@@ -101,20 +104,110 @@ const RaidGames: React.FC = () => {
     }, 2000);
   };
 
-  const handleScratch = () => {
-    if (isScratching || points < 30) return; // Cost 30 points to scratch
-    setIsScratching(true);
-    setScratchResult(null);
+  // Initialize scratch canvas cover when activating scratch session
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D | null;
+    if (!ctx) return;
+    const ratio = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const cssW = rect.width || 288;
+    const cssH = rect.height || 288;
+    canvas.width = Math.max(1, Math.floor(cssW * ratio));
+    canvas.height = Math.max(1, Math.floor(cssH * ratio));
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(ratio, ratio);
+    // Opaque purple gradient cover (revealed with destination-out while scratching)
+    const grad = ctx.createLinearGradient(0, 0, cssW, cssH);
+    grad.addColorStop(0, '#7c3aed'); // violet-600
+    grad.addColorStop(0.5, '#a78bfa'); // violet-300
+    grad.addColorStop(1, '#6d28d9'); // violet-700
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, cssW, cssH);
+  }, [isScratching]);
 
-    setTimeout(() => {
+  const beginScratch = () => {
+    if (isScratching || points < 30) return;
+    setScratchResult(null);
+    setScratchCoverCleared(false);
+    setIsScratching(true);
+  };
+
+  const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isScratching) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    try { (e.currentTarget as HTMLCanvasElement).setPointerCapture(e.pointerId); } catch {}
+    e.preventDefault();
+    isPointerDownRef.current = true;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    lastPosRef.current = { x, y };
+    // start scratching immediately at press point
+    scratchAt(x, y);
+  };
+  const scratchAt = (x:number, y:number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x, y, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isPointerDownRef.current || !isScratching) return;
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    // interpolate along line for smooth coverage
+    const last = lastPosRef.current;
+    const dx = x - last.x;
+    const dy = y - last.y;
+    const dist = Math.hypot(dx, dy);
+    const step = 8;
+    for (let i = 0; i <= dist; i += step) {
+      const t = i / (dist || 1);
+      scratchAt(last.x + dx * t, last.y + dy * t);
+    }
+    lastPosRef.current = { x, y };
+  };
+  const onPointerUp = () => {
+    if (!isScratching) return;
+    isPointerDownRef.current = false;
+    // Check cleared percentage
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const ratio = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const data = ctx.getImageData(0, 0, Math.max(1, Math.floor(rect.width * ratio)), Math.max(1, Math.floor(rect.height * ratio))).data;
+    let cleared = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      const alpha = data[i + 3];
+      if (alpha === 0) cleared++;
+    }
+    const clearedPct = (cleared / (data.length / 4)) * 100;
+    if (clearedPct >= 45 && !scratchCoverCleared) {
+      setScratchCoverCleared(true);
+      // finalize: deduct points and award prize
       const prize = getRandomPrize();
       setScratchResult(prize.label);
-      setPoints(prev => prev - 30); // Deduct scratch cost
-      if (prize.value > 0) {
-        setTotalXp(prev => prev + prize.value); // Add XP reward
-      }
+      setPoints(prev => prev - 30);
+      if (prize.value > 0) setTotalXp(prev => prev + prize.value);
+      // end session (keep cover hidden)
       setIsScratching(false);
-    }, 1500);
+    }
   };
 
   // Pick a Card Game
@@ -176,23 +269,7 @@ const RaidGames: React.FC = () => {
     }, 3000);
   };
 
-  // Memory Game
-  const handleMemoryGame = () => {
-    if (isPlayingMemory || points < 35) return; // Cost 35 points
-    setIsPlayingMemory(true);
-    setMemoryResult(null);
-
-    setTimeout(() => {
-      const success = Math.random() < 0.3; // 30% success rate
-      setMemoryResult(success ? 'Memory Master!' : 'Try Again');
-      setPoints(prev => prev - 35);
-      
-      if (success) {
-        setTotalXp(prev => prev + 40);
-      }
-      setIsPlayingMemory(false);
-    }, 2000);
-  };
+  // Memory Match game removed per request
 
   // Number Guessing Game
   const handleNumberGuess = () => {
@@ -302,26 +379,33 @@ const RaidGames: React.FC = () => {
         {/* Games Section */}
         <ComponentCard title="Available Games" className="h-fit">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {/* Spin Wheel Game */}
-            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-8 text-center">
-              <div className="mb-6">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Spin Wheel</div>
-                <div className="text-lg text-gray-600 dark:text-gray-400">50 points to play</div>
+            {/* Fortune Spin Game */}
+            <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center flex flex-col min-h-[400px] hover:border-purple-300 dark:hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] dark:hover:shadow-[0_0_20px_rgba(168,85,247,0.25)]">
+              {/* Cost Tag */}
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                50 Points
+              </div>
+
+              {/* Header with Gradient */}
+              <div className="mb-4">
+                <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Fortune Spin</div>
               </div>
 
               {/* Wheel Visual */}
               <div className="relative w-48 h-48 mx-auto mb-6">
                 <div className={`w-full h-full rounded-full border-6 border-brand-500 bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 shadow-[0_0_30px_rgba(168,85,247,0.5)] flex items-center justify-center ${isSpinning ? 'animate-spin' : ''}`}>
-                  <div className="w-36 h-36 rounded-full bg-white dark:bg-gray-900 flex items-center justify-center border-3 border-yellow-400">
-                    {isSpinning ? (
-                      <div className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">SPINNING...</div>
-                    ) : spinResult ? (
+                  <div className="w-36 h-36 rounded-full bg-white dark:bg-gray-900 flex items-center justify-center border-3 border-yellow-400 overflow-hidden">
+                    {spinResult ? (
                       <div className="text-center">
                         <div className="text-sm text-gray-500 dark:text-gray-400 uppercase">You won</div>
                         <div className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600">{spinResult}</div>
                       </div>
                     ) : (
-                      <div className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">SPIN!</div>
+                      <img
+                        src="/images/raidgames/clover.webp"
+                        alt="clover"
+                        className={`w-12 h-12 ${isSpinning ? 'animate-spin' : ''}`}
+                      />
                     )}
                   </div>
                 </div>
@@ -329,71 +413,95 @@ const RaidGames: React.FC = () => {
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-0 h-0 border-l-6 border-r-6 border-t-6 border-transparent border-t-red-600 drop-shadow-lg"></div>
               </div>
 
-              {/* Spin Button */}
+              {/* Play Button */}
               <button
                 onClick={handleSpin}
                 disabled={isSpinning || points < 50}
-                className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all ${
+                className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all ${
                   points >= 50 
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-[0_6px_20px_rgba(168,85,247,0.4)] hover:shadow-[0_8px_24px_rgba(168,85,247,0.5)]' 
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]' 
                     : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {isSpinning ? 'Spinning...' : points >= 50 ? 'Spin Now (50 points)' : 'Need 50 points'}
+                {isSpinning ? 'Spinning...' : points >= 50 ? 'Play Now' : 'Insufficient Points'}
               </button>
             </div>
 
             {/* Scratch Card Game */}
-            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-8 text-center">
-              <div className="mb-6">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Scratch Card</div>
-                <div className="text-lg text-gray-600 dark:text-gray-400">30 points to play</div>
+            <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center flex flex-col min-h-[400px] hover:border-yellow-300 dark:hover:border-yellow-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(234,179,8,0.15)] dark:hover:shadow-[0_0_20px_rgba(234,179,8,0.25)]">
+              {/* Cost Tag */}
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                30 Points
               </div>
 
-              {/* Scratch Card Visual */}
-              <div className="relative w-48 h-48 mx-auto mb-6 rounded-xl overflow-hidden border-3 border-yellow-400 shadow-[0_0_30px_rgba(234,179,8,0.5)]">
-                {isScratching || scratchResult ? (
-                  <div className="w-full h-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                    {isScratching ? (
-                      <div className="text-lg font-black text-white animate-pulse">SCRATCHING...</div>
-                    ) : (
-                      <div className="text-center">
-                        <div className="text-sm text-white/80 uppercase">You won</div>
-                        <div className="text-2xl font-black text-white drop-shadow-lg">{scratchResult}</div>
+              {/* Header with Gradient */}
+              <div className="mb-4">
+                <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Scratch Card</div>
+              </div>
+
+              {/* Scratch Card Visual - real scratch with canvas (200x200) */}
+              <div className="relative w-[200px] h-[200px] mx-auto mb-6 rounded-lg border-4 border-gray-300 bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] overflow-hidden" ref={canvasContainerRef}>
+                {/* Prize layer (below) */}
+                <div className="absolute inset-0 flex items-center justify-center select-none z-0">
+                  {scratchResult ? (
+                    <div className="text-center">
+                      <div className="text-sm text-gray-500 dark:text-gray-300 uppercase">You won</div>
+                      <div className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-500 drop-shadow">{scratchResult}</div>
+                    </div>
+                  ) : (
+                    <img src="/images/raidgames/scratchcard.webp" alt="prize" className="w-full h-full object-cover" />
+                  )}
+                </div>
+                {/* Cover canvas (top) - only visible/interactive when isScratching and not cleared */}
+                {(!scratchCoverCleared) && (
+                  <>
+                    <canvas
+                      ref={canvasRef}
+                      className={`${isScratching ? '' : 'pointer-events-none opacity-95'} absolute inset-0 w-full h-full touch-none select-none cursor-grab active:cursor-grabbing z-10`}
+                      onPointerDown={onPointerDown}
+                      onPointerMove={onPointerMove}
+                      onPointerUp={onPointerUp}
+                      onPointerCancel={onPointerUp}
+                      onPointerLeave={onPointerUp}
+                      onContextMenu={(e)=>{e.preventDefault();}}
+                    />
+                    {!isScratching && (
+                      <div className="absolute inset-0 flex items-center justify-center text-gray-700/70 text-lg font-semibold bg-white/0">
+                        Scratch disabled
                       </div>
                     )}
-                  </div>
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center relative">
-                    <div className="text-2xl font-black text-white/30">SCRATCH ME</div>
-                    <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,rgba(255,255,255,0.1)_8px,rgba(255,255,255,0.1)_16px)]"></div>
-                  </div>
+                  </>
                 )}
               </div>
 
-              {/* Scratch Button */}
+              {/* Play Button */}
               <button
-                onClick={handleScratch}
+                onClick={beginScratch}
                 disabled={isScratching || points < 30}
-                className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all ${
+                className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all ${
                   points >= 30 
-                    ? 'bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white shadow-[0_6px_20px_rgba(234,179,8,0.4)] hover:shadow-[0_8px_24px_rgba(234,179,8,0.5)]' 
+                    ? 'bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]' 
                     : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {isScratching ? 'Scratching...' : points >= 30 ? 'Scratch Now (30 points)' : 'Need 30 points'}
+                {isScratching ? 'Scratching...' : points >= 30 ? 'Play Now' : 'Insufficient Points'}
               </button>
             </div>
 
             {/* Pick a Card Game */}
-            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center">
+            <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center flex flex-col min-h-[400px] hover:border-red-300 dark:hover:border-red-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] dark:hover:shadow-[0_0_20px_rgba(239,68,68,0.25)]">
+              {/* Cost Tag */}
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                25 Points
+              </div>
+
+              {/* Header with Gradient */}
               <div className="mb-4">
-                <div className="text-xl font-bold text-gray-900 dark:text-white mb-2">Pick a Card</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">25 points to play</div>
+                <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Pick a Card</div>
               </div>
 
               {/* Card Visual */}
-              <div className="relative w-32 h-40 mx-auto mb-4">
+              <div className="relative w-32 h-40 mx-auto mb-6">
                 <div className={`w-full h-full rounded-lg border-2 border-red-500 bg-gradient-to-br from-red-500 to-pink-600 shadow-lg flex items-center justify-center ${isPickingCard ? 'animate-pulse' : ''}`}>
                   {isPickingCard ? (
                     <div className="text-white font-bold text-sm">PICKING...</div>
@@ -408,28 +516,34 @@ const RaidGames: React.FC = () => {
                 </div>
               </div>
 
+              {/* Play Button */}
               <button
                 onClick={handlePickCard}
                 disabled={isPickingCard || points < 25}
                 className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all ${
                   points >= 25 
-                    ? 'bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white shadow-lg hover:shadow-xl' 
+                    ? 'bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]' 
                     : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {isPickingCard ? 'Picking...' : points >= 25 ? 'Pick Card (25 points)' : 'Need 25 points'}
+                {isPickingCard ? 'Picking...' : points >= 25 ? 'Play Now' : 'Insufficient Points'}
               </button>
             </div>
 
             {/* Dice Roll Game */}
-            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center">
+            <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center flex flex-col min-h-[400px] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.25)]">
+              {/* Cost Tag */}
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                20 Points
+              </div>
+
+              {/* Header with Gradient */}
               <div className="mb-4">
-                <div className="text-xl font-bold text-gray-900 dark:text-white mb-2">Dice Roll</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">20 points to play</div>
+                <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Dice Roll</div>
               </div>
 
               {/* Dice Visual */}
-              <div className="relative w-20 h-20 mx-auto mb-4">
+              <div className="relative w-20 h-20 mx-auto mb-6">
                 <div className={`w-full h-full rounded-lg border-2 border-blue-500 bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg flex items-center justify-center ${isRollingDice ? 'animate-bounce' : ''}`}>
                   {isRollingDice ? (
                     <div className="text-white font-bold text-2xl animate-spin">🎲</div>
@@ -441,28 +555,34 @@ const RaidGames: React.FC = () => {
                 </div>
               </div>
 
+              {/* Play Button */}
               <button
                 onClick={handleDiceRoll}
                 disabled={isRollingDice || points < 20}
                 className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all ${
                   points >= 20 
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg hover:shadow-xl' 
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]' 
                     : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {isRollingDice ? 'Rolling...' : points >= 20 ? 'Roll Dice (20 points)' : 'Need 20 points'}
+                {isRollingDice ? 'Rolling...' : points >= 20 ? 'Play Now' : 'Insufficient Points'}
               </button>
             </div>
 
             {/* Slot Machine Game */}
-            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center">
+            <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center flex flex-col min-h-[400px] hover:border-purple-300 dark:hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] dark:hover:shadow-[0_0_20px_rgba(168,85,247,0.25)]">
+              {/* Cost Tag */}
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                40 Points
+              </div>
+
+              {/* Header with Gradient */}
               <div className="mb-4">
-                <div className="text-xl font-bold text-gray-900 dark:text-white mb-2">Slot Machine</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">40 points to play</div>
+                <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Slot Machine</div>
               </div>
 
               {/* Slot Visual */}
-              <div className="relative w-32 h-16 mx-auto mb-4 rounded-lg border-2 border-purple-500 bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg flex items-center justify-center">
+              <div className="relative w-32 h-16 mx-auto mb-6 rounded-lg border-2 border-purple-500 bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg flex items-center justify-center">
                 {isSpinningSlots ? (
                   <div className="text-white font-bold text-2xl animate-pulse">🎰</div>
                 ) : slotsResult ? (
@@ -472,62 +592,34 @@ const RaidGames: React.FC = () => {
                 )}
               </div>
 
+              {/* Play Button */}
               <button
                 onClick={handleSlotMachine}
                 disabled={isSpinningSlots || points < 40}
                 className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all ${
                   points >= 40 
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg hover:shadow-xl' 
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]' 
                     : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {isSpinningSlots ? 'Spinning...' : points >= 40 ? 'Spin Slots (40 points)' : 'Need 40 points'}
-              </button>
-            </div>
-
-            {/* Memory Game */}
-            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center">
-              <div className="mb-4">
-                <div className="text-xl font-bold text-gray-900 dark:text-white mb-2">Memory Match</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">35 points to play</div>
-              </div>
-
-              {/* Memory Visual */}
-              <div className="relative w-24 h-24 mx-auto mb-4 rounded-lg border-2 border-green-500 bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg flex items-center justify-center">
-                {isPlayingMemory ? (
-                  <div className="text-white font-bold text-sm animate-pulse">🧠</div>
-                ) : memoryResult ? (
-                  <div className="text-center text-white">
-                    <div className="text-xs mb-1">{memoryResult}</div>
-                    <div className="text-lg">🧠</div>
-                  </div>
-                ) : (
-                  <div className="text-white font-bold text-lg">🧠</div>
-                )}
-              </div>
-
-              <button
-                onClick={handleMemoryGame}
-                disabled={isPlayingMemory || points < 35}
-                className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all ${
-                  points >= 35 
-                    ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white shadow-lg hover:shadow-xl' 
-                    : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                {isPlayingMemory ? 'Playing...' : points >= 35 ? 'Play Memory (35 points)' : 'Need 35 points'}
+                {isSpinningSlots ? 'Spinning...' : points >= 40 ? 'Play Now' : 'Insufficient Points'}
               </button>
             </div>
 
             {/* Number Guessing Game */}
-            <div className="bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center">
+            <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 p-6 text-center flex flex-col min-h-[400px] hover:border-orange-300 dark:hover:border-orange-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] dark:hover:shadow-[0_0_20px_rgba(249,115,22,0.25)]">
+              {/* Cost Tag */}
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-600 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                15 Points
+              </div>
+
+              {/* Header with Gradient */}
               <div className="mb-4">
-                <div className="text-xl font-bold text-gray-900 dark:text-white mb-2">Number Guess</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">15 points to play</div>
+                <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Number Guess</div>
               </div>
 
               {/* Number Visual */}
-              <div className="relative w-20 h-20 mx-auto mb-4 rounded-lg border-2 border-orange-500 bg-gradient-to-br from-orange-500 to-red-600 shadow-lg flex items-center justify-center">
+              <div className="relative w-20 h-20 mx-auto mb-6 rounded-lg border-2 border-orange-500 bg-gradient-to-br from-orange-500 to-red-600 shadow-lg flex items-center justify-center">
                 {isGuessingNumber ? (
                   <div className="text-white font-bold text-2xl animate-pulse">?</div>
                 ) : numberGuess ? (
@@ -540,16 +632,17 @@ const RaidGames: React.FC = () => {
                 )}
               </div>
 
+              {/* Play Button */}
               <button
                 onClick={handleNumberGuess}
                 disabled={isGuessingNumber || points < 15}
                 className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all ${
                   points >= 15 
-                    ? 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white shadow-lg hover:shadow-xl' 
+                    ? 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]' 
                     : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {isGuessingNumber ? 'Guessing...' : points >= 15 ? 'Guess Number (15 points)' : 'Need 15 points'}
+                {isGuessingNumber ? 'Guessing...' : points >= 15 ? 'Play Now' : 'Insufficient Points'}
               </button>
             </div>
           </div>
