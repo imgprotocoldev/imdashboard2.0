@@ -293,9 +293,7 @@ const AppSidebar: React.FC = () => {
     >
       {!isMobileOpen && (
         <div
-          className={`py-8 flex ${
-            !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
-          }`}
+          className={`py-8 flex justify-center`}
         >
           <Link to="/">
             {isExpanded || isHovered ? (
