@@ -197,29 +197,46 @@ const DailySpinCard: React.FC = () => {
     setWinLabel(null);
     const index = Math.floor(Math.random() * prizes.length);
     const slice = 360 / prizes.length;
-    const base = 360 * 5; // 5 turns
-    const target = base + (360 - (index * slice + slice / 2));
-    setRotation((prev) => prev + target);
-    setTimeout(() => {
-      setWinLabel(`You won ${prizes[index]}!`);
-      setSpinning(false);
-    }, 2000);
+    const base = 360 * 5; // full turns for animation
+    setRotation((prev) => {
+      const currentMod = ((prev % 360) + 360) % 360;
+      const targetMod = (360 - (index * slice + slice / 2) + 360) % 360; // align slice center to top pointer
+      const offset = (targetMod - currentMod + 360) % 360; // minimal positive offset to reach target
+      const delta = base + offset;
+      // Schedule label update exactly when animation completes
+      setTimeout(() => {
+        // Store just the prize label (e.g., "10 XP") for display formatting
+        setWinLabel(prizes[index]);
+        setSpinning(false);
+      }, 2000);
+      return prev + delta;
+    });
   };
 
   const size = 220; // px, smaller wheel
   const r = size / 2;
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] p-5">
+    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] px-5 py-4">
 
       <div className="mx-auto grid grid-cols-1 md:grid-cols-12 items-center gap-6">
-        {/* Left: title */}
+        {/* Left: title + button */}
         <div className="md:col-span-3 w-full text-center md:text-left">
-          <div className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white">Daily Spin</div>
+          <div className="text-4xl md:text-5xl leading-tight font-extrabold bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent mb-4 md:mb-6">Daily Spin</div>
+          <div className="mt-5 md:mt-6 flex md:block items-center justify-center md:justify-start">
+            <button
+              onClick={onSpin}
+              disabled={spinning}
+              className={`inline-flex items-center justify-center px-5 py-2.5 rounded-md text-sm font-semibold border border-gray-300 ${spinning ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white hover:bg-gray-50 text-gray-800'}`}
+            >
+              {spinning ? 'Spinning...' : 'Spin Now'}
+            </button>
+          </div>
         </div>
 
-        {/* Middle: Wheel container */}
-        <div className="md:col-span-6 mx-auto" style={{ width: size, height: size, position: 'relative' }}>
+        {/* Middle: Wheel container (centered) */}
+        <div className="md:col-span-6 flex items-center justify-center" style={{ minHeight: size + 40 }}>
+          <div className="relative mt-4" style={{ width: size, height: size }}>
         <div
           className="absolute inset-0 rounded-full border border-gray-300 bg-white"
           style={{ transform: `rotate(${rotation}deg)`, transition: spinning ? 'transform 2s cubic-bezier(0.22, 1, 0.36, 1)' : 'none' }}
@@ -282,20 +299,23 @@ const DailySpinCard: React.FC = () => {
           <div className="w-0 h-0 border-l-8 border-r-8 border-t-[16px] border-l-transparent border-r-transparent border-t-black" />
         </div>
         </div>
-        {/* Right: Controls side panel */}
+        </div>
+        {/* Right: Success message side panel */}
         <div className="md:col-span-3 mt-4 md:mt-0 flex flex-col items-center md:items-start">
-          <div className="flex md:block items-center justify-center md:justify-start">
-            <button
-              onClick={onSpin}
-              disabled={spinning}
-              className={`inline-flex items-center justify-center px-5 py-2.5 rounded-md text-sm font-semibold border border-gray-300 ${spinning ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white hover:bg-gray-50 text-gray-800'}`}
-            >
-              {spinning ? 'Spinning...' : 'Spin Now'}
-            </button>
-          </div>
-          <div className="mt-3 h-9">
-            <div className={`w-full text-left px-3 py-1.5 rounded-lg ${winLabel ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 shadow-sm' : 'bg-transparent'}`}>
-              {winLabel || ''}
+          <div className="mt-2 min-h-[2.25rem] w-full">
+            <div className="relative">
+              {/* Glow ring */}
+              <div className={`absolute -inset-[1px] rounded-lg blur-md transition-all duration-300 ${winLabel ? 'bg-gradient-to-r from-fuchsia-500/30 via-indigo-500/30 to-cyan-500/30' : 'bg-gradient-to-r from-slate-300/10 to-slate-600/10'}`} aria-hidden />
+              {/* Message container */}
+              <div className={`relative w-full rounded-lg px-4 py-2 backdrop-blur-sm border transition-all duration-300 flex items-center ${
+                winLabel
+                  ? 'bg-white/5 border-white/15 text-white shadow-[0_0_24px_rgba(168,85,247,0.25)]'
+                  : 'bg-white/3 dark:bg-white/5 border-white/10 text-gray-300'
+              }`}>
+                <span className="font-semibold tracking-wide">
+                  {winLabel ? `Won ${winLabel}` : 'Spin & Win!'}
+                </span>
+              </div>
             </div>
           </div>
         </div>
