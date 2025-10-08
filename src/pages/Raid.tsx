@@ -19,7 +19,6 @@ const Raid: React.FC = () => {
   } = useRaidProfile();
   const [profile, setProfile] = useState<{ username: string; avatar_name: string | null; x_handle?: string | null } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [leaderboardFilter, setLeaderboardFilter] = useState<'all' | 'weekly' | 'monthly'>('all');
   const [completedActions, setCompletedActions] = useState<Record<string, { like: boolean; reply: boolean; retweet: boolean }>>({});
   // Custom Raid Card source data (would come from API)
   type RaidItem = {
@@ -209,13 +208,74 @@ const Raid: React.FC = () => {
     return `/images/user/${name}.webp`;
   }, [profile]);
 
-  const leaderboardData: Record<'all' | 'weekly' | 'monthly', Array<{ handle: string; xp: number }>> = useMemo(() => ({
-    all: Array.from({ length: 10 }, (_, i) => ({ handle: `topuser${i + 1}`, xp: 5000 - i * 250 })),
-    weekly: Array.from({ length: 10 }, (_, i) => ({ handle: `week${i + 1}`, xp: 1200 - i * 50 })),
-    monthly: Array.from({ length: 10 }, (_, i) => ({ handle: `month${i + 1}`, xp: 3000 - i * 120 })),
-  }), []);
+  const [leaderboardData, setLeaderboardData] = useState<Array<{ 
+    id: string;
+    username: string; 
+    avatar_name: string | null;
+    raid_points: number;
+    rank_name: string;
+    rank_id: number;
+  }>>([]);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(true);
 
-  const currentLeaders = leaderboardData[leaderboardFilter];
+  // Fetch leaderboard data from Supabase
+  useEffect(() => {
+    const loadLeaderboard = async () => {
+      setLeaderboardLoading(true);
+      try {
+        // Fetch profiles with their ranks
+        const { data: profiles, error } = await supabase
+          .from('profiles')
+          .select(`
+            id,
+            username,
+            avatar_name,
+            raid_points,
+            current_rank
+          `)
+          .order('raid_points', { ascending: false })
+          .limit(10);
+
+        if (error) {
+          console.error('Error loading leaderboard:', error);
+          setLeaderboardLoading(false);
+          return;
+        }
+
+        if (profiles) {
+          // Fetch rank definitions to get rank names
+          const { data: ranks, error: ranksError } = await supabase
+            .from('rank_definitions')
+            .select('rank_id, rank_name');
+
+          if (ranksError) {
+            console.error('Error loading ranks:', ranksError);
+          }
+
+          // Map rank IDs to rank names
+          const rankMap = new Map(ranks?.map(r => [r.rank_id, r.rank_name]) || []);
+
+          const leaderboardWithRanks = profiles.map(p => ({
+            id: p.id,
+            username: p.username,
+            avatar_name: p.avatar_name,
+            raid_points: p.raid_points,
+            rank_name: rankMap.get(p.current_rank) || 'Unranked',
+            rank_id: p.current_rank
+          }));
+
+          setLeaderboardData(leaderboardWithRanks);
+        }
+      } catch (error) {
+        console.error('Error loading leaderboard:', error);
+      }
+      setLeaderboardLoading(false);
+    };
+
+    loadLeaderboard();
+  }, [supabase]);
+
+  const currentLeaders = leaderboardData;
 
   const formatEndsAt = (endsAtIso: string): string => {
     try {
@@ -374,11 +434,6 @@ const Raid: React.FC = () => {
                       <div className="px-3 py-1.5 rounded-lg bg-gradient-to-br from-emerald-500 to-green-600 text-white text-sm font-bold shadow-md">
                         {raid.totalXp} XP
                       </div>
-                    </div>
-
-                    {/* Tweet Text (fixed height ~3 lines) */}
-                    <div className="text-base text-gray-800 dark:text-gray-200 leading-relaxed line-clamp-3 min-h-[4.5rem]">
-                      {raid.text}
                     </div>
                     
                     {/* XP Values - compact and thinner */}
@@ -545,38 +600,45 @@ const Raid: React.FC = () => {
         {/* Leaderboard */}
         <ComponentCard title="Leaderboard" className="h-fit">
           <div className="flex items-center justify-between mb-4">
-            <div className="text-xs text-gray-500 dark:text-gray-400">Tracks Top XP Earners and Top Ranks</div>
-            <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-              {([
-                { key: 'all', label: 'All-Time' },
-                { key: 'weekly', label: 'Weekly' },
-                { key: 'monthly', label: 'Monthly' },
-              ] as Array<{key: 'all'|'weekly'|'monthly'; label: string}>).map(({ key, label }) => (
-                <button
-                  key={key}
-                  onClick={() => setLeaderboardFilter(key)}
-                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${leaderboardFilter === key ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60'}`}
-                >
-                  {label}
-                </button>
-              ))}
+            <div className="text-xs text-gray-500 dark:text-gray-400">Top Players by Points</div>
+          </div>
+          {leaderboardLoading ? (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading leaderboard...</div>
+          ) : currentLeaders.length === 0 ? (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">No players yet. Be the first!</div>
+          ) : (
+            <div className="space-y-3">
+              {currentLeaders.map((item, idx) => {
+                const avatarSrc = item.avatar_name 
+                  ? `/images/avatars/${item.avatar_name}.webp` 
+                  : '/images/user/user1.webp';
+                
+                return (
+                  <div
+                    key={item.id}
+                    className={`flex items-center justify-between rounded-lg border bg-white dark:bg-white/[0.03] px-4 py-3 ${idx < 3 ? 'border-amber-300 dark:border-amber-600 shadow-[0_0_14px_rgba(251,191,36,0.45)] dark:shadow-[0_0_16px_rgba(245,158,11,0.35)]' : 'border-gray-200 dark:border-white/[0.06]'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-semibold w-6 text-gray-700 dark:text-gray-300">#{idx + 1}</span>
+                      <img 
+                        src={avatarSrc} 
+                        className="w-8 h-8 rounded-full object-cover" 
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/user/user1.webp'; }}
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">{item.username}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{item.rank_name}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{item.raid_points.toLocaleString()}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Points</div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </div>
-          <div className="space-y-3">
-            {currentLeaders.map((item, idx) => (
-              <div
-                key={`${leaderboardFilter}-${idx}`}
-                className={`flex items-center justify-between rounded-lg border bg-white dark:bg-white/[0.03] px-4 py-3 ${idx < 3 ? 'border-amber-300 dark:border-amber-600 shadow-[0_0_14px_rgba(251,191,36,0.45)] dark:shadow-[0_0_16px_rgba(245,158,11,0.35)]' : 'border-gray-200 dark:border-white/[0.06]'}`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold w-6 text-gray-700 dark:text-gray-300">#{idx + 1}</span>
-                  <img src="/images/avatars/user-01.png" className="w-8 h-8 rounded-full" />
-                  <span className="text-sm text-gray-900 dark:text-white">@{item.handle}</span>
-                </div>
-                <div className="text-sm font-semibold text-gray-900 dark:text-white">{item.xp} XP</div>
-              </div>
-            ))}
-          </div>
+          )}
         </ComponentCard>
 
         {/* Prize Table as Reward Cards */}

@@ -49,13 +49,13 @@ export interface RaidAction {
   created_at: string
 }
 
-// Add XP to user profile (simplified version without RPC)
+// Add XP to user profile with rank-up handling
 export const addXP = async (userId: string, xpAmount: number) => {
   try {
     // First, get current profile
     const { data: profile, error: fetchError } = await supabase
       .from('profiles')
-      .select('current_xp')
+      .select('current_xp, current_rank, raid_points')
       .eq('id', userId)
       .single();
     
@@ -68,14 +68,61 @@ export const addXP = async (userId: string, xpAmount: number) => {
       throw new Error('Profile not found');
     }
     
-    // Update XP
-    const newCurrentXp = (profile.current_xp || 0) + xpAmount;
+    // Get all rank definitions
+    const { data: ranks, error: ranksError } = await supabase
+      .from('rank_definitions')
+      .select('*')
+      .order('rank_id', { ascending: true });
+    
+    if (ranksError) {
+      console.error('Error fetching ranks:', ranksError);
+      throw ranksError;
+    }
+    
+    if (!ranks || ranks.length === 0) {
+      throw new Error('No rank definitions found');
+    }
+    
+    // Calculate new XP and check for rank-ups
+    let currentXp = (profile.current_xp || 0) + xpAmount;
+    let currentRankId = profile.current_rank || 1;
+    let totalPointsEarned = 0;
+    
+    // Check for rank-ups
+    let rankedUp = false;
+    while (true) {
+      const nextRank = ranks.find(r => r.rank_id === currentRankId + 1);
+      
+      if (!nextRank) {
+        // Max rank reached
+        break;
+      }
+      
+      if (currentXp >= nextRank.xp_required) {
+        // Rank up!
+        console.log(`Ranking up from ${currentRankId} to ${nextRank.rank_id}!`);
+        currentXp -= nextRank.xp_required; // Carry over excess XP
+        currentRankId = nextRank.rank_id;
+        totalPointsEarned += nextRank.points_reward || 0;
+        rankedUp = true;
+      } else {
+        break;
+      }
+    }
+    
+    // Update profile with new XP, rank, and points
+    const updateData: any = { 
+      current_xp: currentXp,
+      current_rank: currentRankId
+    };
+    
+    if (totalPointsEarned > 0) {
+      updateData.raid_points = (profile.raid_points || 0) + totalPointsEarned;
+    }
     
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({ 
-        current_xp: newCurrentXp
-      })
+      .update(updateData)
       .eq('id', userId);
     
     if (updateError) {
@@ -83,8 +130,12 @@ export const addXP = async (userId: string, xpAmount: number) => {
       throw updateError;
     }
     
-    console.log(`Successfully added ${xpAmount} XP. New total: ${newCurrentXp}`);
-    return { success: true };
+    console.log(`Successfully added ${xpAmount} XP. New total: ${currentXp} XP at rank ${currentRankId}`);
+    if (rankedUp) {
+      console.log(`Ranked up! Earned ${totalPointsEarned} points.`);
+    }
+    
+    return { success: true, rankedUp, pointsEarned: totalPointsEarned };
   } catch (error) {
     console.error('Error in addXP:', error);
     throw error;
