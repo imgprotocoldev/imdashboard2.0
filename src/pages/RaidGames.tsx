@@ -564,7 +564,7 @@ const RaidGames: React.FC = () => {
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-600 dark:text-gray-400">Level Progress</span>
               <span className="text-sm font-medium text-gray-900 dark:text-white">
-                {raidProfile?.current_xp?.toLocaleString() || 0} / {nextRank?.xp_required?.toLocaleString() || '1,000'} XP
+                {raidProfile?.current_xp?.toLocaleString() || 0} / {currentRank?.xp_required?.toLocaleString() || '1,000'} XP
               </span>
             </div>
             <div className="w-full h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner">

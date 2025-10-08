@@ -208,12 +208,12 @@ export const useRaidProfile = () => {
 
   // Calculate progress to next rank
   const getProgressToNextRank = () => {
-    if (!profile || !nextRank) return 100;
+    if (!profile || !currentRank) return 100;
 
     const xpInCurrentRank = profile.current_xp;
-    const xpRequiredForNextRank = nextRank.xp_required;
+    const xpRequiredToCompleteCurrentRank = currentRank.xp_required;
 
-    const progress = (xpInCurrentRank / xpRequiredForNextRank) * 100;
+    const progress = (xpInCurrentRank / xpRequiredToCompleteCurrentRank) * 100;
     return Math.min(Math.max(progress, 0), 100);
   };
 

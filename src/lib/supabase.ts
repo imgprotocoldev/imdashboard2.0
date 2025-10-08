@@ -36,7 +36,6 @@ export interface RankDefinition {
   rank_name: string
   xp_required: number
   reward_points: number
-  lifetime_xp: number
   notes?: string
   created_at: string
 }
