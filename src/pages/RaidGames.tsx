@@ -20,7 +20,6 @@ const RaidGames: React.FC = () => {
   
   // New game states
   const [isPickingCard, setIsPickingCard] = useState<boolean>(false);
-  const [cardResult, setCardResult] = useState<string | null>(null);
   const [isRollingDice, setIsRollingDice] = useState<boolean>(false);
   const [diceResult, setDiceResult] = useState<number | null>(null);
   const [isSpinningSlots, setIsSpinningSlots] = useState<boolean>(false);
@@ -32,11 +31,57 @@ const RaidGames: React.FC = () => {
   // Purchase states for each game
   const [purchasedGames, setPurchasedGames] = useState<Set<string>>(new Set());
 
+  // Pick a Card - XP randomization with probability
+  const [cardXpValues, setCardXpValues] = useState<number[]>([]);
+  
+  const getRandomPrizeByProbability = () => {
+    const random = Math.random() * 100;
+    let cumulative = 0;
+    
+    const prizes = [
+      { xp: 1, probability: 35 },
+      { xp: 5, probability: 25 },
+      { xp: 10, probability: 15 },
+      { xp: 15, probability: 10 },
+      { xp: 20, probability: 7 },
+      { xp: 25, probability: 4 },
+      { xp: 30, probability: 3 },
+      { xp: 50, probability: 1 },
+    ];
+    
+    for (const prize of prizes) {
+      cumulative += prize.probability;
+      if (random <= cumulative) {
+        return prize.xp;
+      }
+    }
+    return 1; // Fallback
+  };
+  
+  const initializeCardXp = () => {
+    // One card is always "No Luck" (0 XP)
+    // Two other cards have prizes based on probability
+    const prize1 = getRandomPrizeByProbability();
+    const prize2 = getRandomPrizeByProbability();
+    
+    // Create array with one "No Luck" and two prizes
+    const prizes = [0, prize1, prize2];
+    
+    // Shuffle the array to randomize positions
+    const shuffled = prizes.sort(() => Math.random() - 0.5);
+    setCardXpValues(shuffled);
+  };
+
   // Purchase function
   const purchaseGame = (gameId: string, cost: number) => {
     if (points >= cost) {
       setPoints(prev => prev - cost);
       setPurchasedGames(prev => new Set([...prev, gameId]));
+      
+      // Initialize card XP values when Pick a Card is purchased
+      if (gameId === 'pick-card') {
+        initializeCardXp();
+      }
     }
   };
 
@@ -234,23 +279,44 @@ const RaidGames: React.FC = () => {
     }
   };
 
-  // Pick a Card Game
-  const handlePickCard = () => {
-    if (isPickingCard || points < 25) return; // Cost 25 points
-    setIsPickingCard(true);
-    setCardResult(null);
+  // Pick a Card Game - Interactive card flipping (3 cards)
+  const [selectedCard, setSelectedCard] = useState<number | null>(null);
+  const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set());
+  
+  const cardDefinitions = [
+    { symbol: '♠', value: 'A', color: 'black' }, // Ace of Spades (black)
+    { symbol: '♥', value: 'Q', color: 'red' },   // Queen of Hearts (red)
+    { symbol: '♦', value: 'K', color: 'green' }, // King of Diamonds (green)
+  ];
 
+  const handleCardClick = (cardIndex: number) => {
+    if (!purchasedGames.has('pick-card') || isPickingCard || selectedCard !== null) return;
+    
+    setIsPickingCard(true);
+    setSelectedCard(cardIndex);
+    
+    // Flip the selected card after a short delay
     setTimeout(() => {
-      const prize = getRandomPrize();
-      setCardResult(prize.label);
-      setPoints(prev => prev - 25);
-      if (prize.value > 0) {
-        setTotalXp(prev => prev + prize.value);
+      setFlippedCards(new Set([cardIndex]));
+      
+      // Reveal prize
+      const xpWon = cardXpValues[cardIndex];
+      if (xpWon > 0) {
+        setTotalXp(prev => prev + xpWon);
       }
-      setIsPickingCard(false);
-      // Reset game after playing
-      resetGameAfterPlay('pick-card');
-    }, 2000);
+      setPoints(prev => prev - 25);
+      
+      // Reset after showing result
+      setTimeout(() => {
+        setFlippedCards(new Set());
+        setSelectedCard(null);
+        setIsPickingCard(false);
+        // Randomize card positions for next round
+        initializeCardXp();
+        // Reset game after playing
+        resetGameAfterPlay('pick-card');
+      }, 3000);
+    }, 400);
   };
 
   // Dice Roll Game
@@ -560,24 +626,103 @@ const RaidGames: React.FC = () => {
               {/* Card Content */}
               <div className="p-6 flex-1 flex flex-col">
                 {/* Header with Gradient */}
-                <div className="mb-4">
+                <div className="mb-3">
                   <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Pick a Card</div>
                 </div>
 
-                {/* Card Visual */}
-                <div className="relative w-32 h-40 mx-auto mb-6">
-                  <div className={`w-full h-full rounded-lg border-2 border-red-500 bg-gradient-to-br from-red-500 to-pink-600 shadow-lg flex items-center justify-center ${isPickingCard ? 'animate-pulse' : ''}`}>
-                    {isPickingCard ? (
-                      <div className="text-white font-bold text-sm">PICKING...</div>
-                    ) : cardResult ? (
-                      <div className="text-center text-white">
-                        <div className="text-xs mb-1">You got</div>
-                        <div className="text-lg font-bold">{cardResult}</div>
+                {/* Interactive Cards - 3 Cards Horizontal */}
+                <div className="flex justify-center gap-5 flex-1 items-start pt-4">
+                  {[0, 1, 2].map((index) => (
+                    <div
+                      key={index}
+                      onClick={() => purchasedGames.has('pick-card') && !isPickingCard && handleCardClick(index)}
+                      className={`relative w-32 h-48 cursor-pointer transition-all duration-700 ${
+                        !purchasedGames.has('pick-card') ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'
+                      } ${selectedCard === index ? 'scale-110' : ''}`}
+                      style={{
+                        transformStyle: 'preserve-3d',
+                        transform: flippedCards.has(index) ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                        perspective: '1000px',
+                      }}
+                    >
+                      {/* Card Front (Shows playing card face) */}
+                      <div
+                        className="absolute inset-0 rounded-lg border-2 shadow-xl flex flex-col items-center justify-center p-3"
+                        style={{
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                          background: index === 0 
+                            ? 'linear-gradient(145deg, #1a1a1a, #2a2a2a)' 
+                            : index === 1 
+                            ? 'linear-gradient(145deg, #350617, #8b0000)'
+                            : 'linear-gradient(145deg, #0a3b0a, #1a5d1a)',
+                          borderColor: index === 0 ? '#444' : index === 1 ? '#c0392b' : '#2a782a',
+                        }}
+                      >
+                        {/* Card pattern overlay */}
+                        <div className="absolute inset-0 opacity-15 rounded-lg"
+                          style={{
+                            backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8) 1px, transparent 1px), radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.8) 1px, transparent 1px)',
+                            backgroundSize: '20px 20px',
+                          }}
+                        ></div>
+                        
+                        {/* Playing card symbol and value */}
+                        <div className="text-white text-5xl mb-2" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))' }}>
+                          {cardDefinitions[index].symbol}
+                        </div>
+                        <div className="text-white text-4xl font-bold" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))' }}>
+                          {cardDefinitions[index].value}
+                        </div>
+
+                        {/* Card edges effect */}
+                        <div className="absolute inset-0 rounded-lg border-2 border-black/30"
+                          style={{
+                            boxShadow: 'inset 0 0 15px rgba(0, 0, 0, 0.5), 0 0 5px rgba(255, 255, 255, 0.1)',
+                          }}
+                        ></div>
                       </div>
-                    ) : (
-                      <div className="text-white font-bold text-sm">🎴 PICK</div>
-                    )}
-                  </div>
+
+                      {/* Card Back (Shows XP prize when flipped) */}
+                      <div
+                        className="absolute inset-0 rounded-lg border-2 shadow-xl flex flex-col items-center justify-center p-3"
+                        style={{
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                          transform: 'rotateY(180deg)',
+                          background: cardXpValues[index] === 0 
+                            ? 'linear-gradient(145deg, #3a3a3a, #1a1a1a)' 
+                            : 'linear-gradient(145deg, #1a5d1a, #2a782a)',
+                          borderColor: cardXpValues[index] === 0 ? '#6b7280' : '#4ade80',
+                        }}
+                      >
+                        {/* Card pattern overlay */}
+                        <div className="absolute inset-0 opacity-15 rounded-lg"
+                          style={{
+                            backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8) 1px, transparent 1px), radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.8) 1px, transparent 1px)',
+                            backgroundSize: '20px 20px',
+                          }}
+                        ></div>
+
+                        {/* XP Prize Display */}
+                        <div className="text-center">
+                          <div className="text-white text-4xl font-bold mb-1" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))' }}>
+                            {cardXpValues[index] === 0 ? 'No Luck' : cardXpValues[index] ? `+${cardXpValues[index]} XP` : ''}
+                          </div>
+                          <div className="text-white text-sm opacity-80">
+                            {cardXpValues[index] === 0 ? 'Try Again!' : 'You Won!'}
+                          </div>
+                        </div>
+
+                        {/* Card edges effect */}
+                        <div className="absolute inset-0 rounded-lg border-2 border-black/30"
+                          style={{
+                            boxShadow: 'inset 0 0 15px rgba(0, 0, 0, 0.5), 0 0 5px rgba(255, 255, 255, 0.1)',
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -585,24 +730,20 @@ const RaidGames: React.FC = () => {
               <div
                 onClick={
                   purchasedGames.has('pick-card') 
-                    ? (isPickingCard ? undefined : handlePickCard)
+                    ? undefined
                     : (points >= 25 ? () => purchaseGame('pick-card', 25) : undefined)
                 }
                 className={`w-full py-4 px-6 font-bold text-base transition-all cursor-pointer ${
                   purchasedGames.has('pick-card') 
-                    ? (points >= 25 
-                        ? 'bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white' 
-                        : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
+                    ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white cursor-default' 
                     : (points >= 25 
                         ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white' 
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
-                } ${isPickingCard ? 'opacity-50 cursor-not-allowed' : ''}`}
+                }`}
               >
-                {isPickingCard 
-                  ? 'Picking...' 
-                  : purchasedGames.has('pick-card') 
-                    ? (points >= 25 ? 'Play Now' : 'Insufficient Points')
-                    : (points >= 25 ? 'Purchase' : 'Insufficient Points')
+                {purchasedGames.has('pick-card') 
+                  ? 'Pick a Card Above'
+                  : (points >= 25 ? 'Purchase' : 'Insufficient Points')
                 }
               </div>
             </div>
