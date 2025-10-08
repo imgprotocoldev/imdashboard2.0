@@ -24,9 +24,10 @@ const RaidGames: React.FC = () => {
   const [diceResult, setDiceResult] = useState<number | null>(null);
   const [isSpinningSlots, setIsSpinningSlots] = useState<boolean>(false);
   const [slotsResult, setSlotsResult] = useState<string | null>(null);
-  const [isGuessingNumber, setIsGuessingNumber] = useState<boolean>(false);
-  const [numberGuess, setNumberGuess] = useState<number | null>(null);
-  const [guessResult, setGuessResult] = useState<string | null>(null);
+  const [isFlippingCoin, setIsFlippingCoin] = useState<boolean>(false);
+  const [coinChoice, setCoinChoice] = useState<'heads' | 'tails' | null>(null);
+  const [coinResult, setCoinResult] = useState<'heads' | 'tails' | null>(null);
+  const [coinWinAmount, setCoinWinAmount] = useState<number | null>(null);
   
   // Purchase states for each game
   const [purchasedGames, setPurchasedGames] = useState<Set<string>>(new Set());
@@ -319,25 +320,51 @@ const RaidGames: React.FC = () => {
     }, 400);
   };
 
-  // Dice Roll Game
-  const handleDiceRoll = () => {
-    if (isRollingDice || points < 20) return; // Cost 20 points
+  // Dice Roll Game - Pick a number and roll
+  const [pickedNumber, setPickedNumber] = useState<number | null>(null);
+  const [diceRollClass, setDiceRollClass] = useState<string>('');
+  const [diceResultMessage, setDiceResultMessage] = useState<string>('');
+
+  const handleNumberPick = (num: number) => {
+    if (!purchasedGames.has('dice-roll') || isRollingDice || points < 20) return;
+    
+    setPickedNumber(num);
     setIsRollingDice(true);
     setDiceResult(null);
+    setDiceResultMessage('');
+    
+    // Toggle roll class for animation
+    setDiceRollClass(prev => prev === 'reRoll' ? '' : 'reRoll');
 
     setTimeout(() => {
       const roll = Math.floor(Math.random() * 6) + 1;
       setDiceResult(roll);
       setPoints(prev => prev - 20);
-      
-      // Higher numbers give more XP
-      const xpReward = roll * 5; // 5-30 XP based on roll
-      setTotalXp(prev => prev + xpReward);
       setIsRollingDice(false);
-      // Reset game after playing
-      resetGameAfterPlay('dice-roll');
+      
+      // Delay the message to appear after dice stops rolling
+      setTimeout(() => {
+        // Check if player won (compare with the picked number directly)
+        if (roll === num) {
+          setDiceResultMessage(`You won! Rolled ${roll}`);
+          setTotalXp(prev => prev + 100); // Big win for guessing correctly!
+        } else {
+          setDiceResultMessage(`You rolled ${roll}. Better luck next time!`);
+        }
+      }, 700);
+      
+      // Reset after showing result
+      setTimeout(() => {
+        setDiceResult(null);
+        setPickedNumber(null);
+        setDiceResultMessage('');
+        setDiceRollClass('');
+        // Reset game after playing
+        resetGameAfterPlay('dice-roll');
+      }, 3700);
     }, 1500);
   };
+
 
   // Slot Machine Game
   const handleSlotMachine = () => {
@@ -367,32 +394,57 @@ const RaidGames: React.FC = () => {
 
   // Memory Match game removed per request
 
-  // Number Guessing Game
-  const handleNumberGuess = () => {
-    if (isGuessingNumber || points < 15) return; // Cost 15 points
-    setIsGuessingNumber(true);
-    setGuessResult(null);
+  // Coin Flip Game - Helper function to get random XP based on probability
+  const getCoinFlipXp = (): number => {
+    const rand = Math.random() * 100;
+    if (rand < 35) return 1;      // 35%
+    if (rand < 60) return 5;      // 25% (35 + 25 = 60)
+    if (rand < 75) return 10;     // 15% (60 + 15 = 75)
+    if (rand < 85) return 15;     // 10% (75 + 10 = 85)
+    if (rand < 92) return 20;     // 7%  (85 + 7 = 92)
+    if (rand < 96) return 25;     // 4%  (92 + 4 = 96)
+    if (rand < 99) return 30;     // 3%  (96 + 3 = 99)
+    return 50;                    // 1%  (99 + 1 = 100)
+  };
+
+  // Coin Flip Game
+  const handleCoinFlip = (choice: 'heads' | 'tails') => {
+    if (isFlippingCoin || !purchasedGames.has('coin-flip') || points < 15) return;
+    
+    setCoinChoice(choice);
+    setIsFlippingCoin(true);
+    setCoinResult(null);
+    setCoinWinAmount(null);
+    setPoints(prev => prev - 15);
 
     setTimeout(() => {
-      const targetNumber = Math.floor(Math.random() * 10) + 1;
-      const userGuess = Math.floor(Math.random() * 10) + 1; // Simulated user guess
-      setNumberGuess(userGuess);
+      // Randomly determine the coin result
+      const result: 'heads' | 'tails' = Math.random() < 0.5 ? 'heads' : 'tails';
+      setCoinResult(result);
       
-      if (userGuess === targetNumber) {
-        setGuessResult('Perfect Match!');
-        setTotalXp(prev => prev + 60);
-      } else if (Math.abs(userGuess - targetNumber) <= 1) {
-        setGuessResult('Close!');
-        setTotalXp(prev => prev + 20);
-      } else {
-        setGuessResult('Not quite');
-      }
-      
-      setPoints(prev => prev - 15);
-      setIsGuessingNumber(false);
-      // Reset game after playing
-      resetGameAfterPlay('number-guess');
-    }, 1800);
+      // Delay showing the win amount
+      setTimeout(() => {
+        if (result === choice) {
+          // Player won! Get random XP
+          const xpWon = getCoinFlipXp();
+          setCoinWinAmount(xpWon);
+          setTotalXp(prev => prev + xpWon);
+        } else {
+          // Player lost
+          setCoinWinAmount(0);
+        }
+        
+        setIsFlippingCoin(false);
+        
+        // Reset after showing result
+        setTimeout(() => {
+          setCoinChoice(null);
+          setCoinResult(null);
+          setCoinWinAmount(null);
+          resetGameAfterPlay('coin-flip');
+        }, 3000);
+      }, 700);
+    }, 1500);
   };
 
   return (
@@ -758,46 +810,123 @@ const RaidGames: React.FC = () => {
               {/* Card Content */}
               <div className="p-6 flex-1 flex flex-col">
                 {/* Header with Gradient */}
-                <div className="mb-4">
+                <div className="mb-3">
                   <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Dice Roll</div>
                 </div>
 
-                {/* Dice Visual */}
-                <div className="relative w-20 h-20 mx-auto mb-6">
-                  <div className={`w-full h-full rounded-lg border-2 border-blue-500 bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg flex items-center justify-center ${isRollingDice ? 'animate-bounce' : ''}`}>
-                    {isRollingDice ? (
-                      <div className="text-white font-bold text-2xl animate-spin">🎲</div>
-                    ) : diceResult ? (
-                      <div className="text-white font-bold text-3xl">{diceResult}</div>
-                    ) : (
-                      <div className="text-white font-bold text-2xl">🎲</div>
-                    )}
+                {/* Number Selection */}
+                {purchasedGames.has('dice-roll') && !isRollingDice && !diceResult && (
+                  <div className="mb-4">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Pick your number (1-6):</div>
+                    <div className="flex justify-center gap-2">
+                      {[1, 2, 3, 4, 5, 6].map((num) => (
+                        <button
+                          key={num}
+                          onClick={() => handleNumberPick(num)}
+                          className={`w-10 h-10 rounded-lg font-bold text-lg transition-all ${
+                            pickedNumber === num
+                              ? 'bg-blue-600 text-white scale-110 shadow-lg'
+                              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-blue-400 hover:text-white'
+                          }`}
+                        >
+                          {num}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 3D Dice */}
+                <div className="flex-1 flex items-center justify-center" style={{ perspective: '1000px' }}>
+                  <div
+                    className="relative pointer-events-none"
+                    style={{
+                      width: '90px',
+                      height: '90px',
+                      transformStyle: 'preserve-3d',
+                      transition: 'transform 1.5s ease-out',
+                      transform: diceResult 
+                        ? `rotateX(${diceResult === 1 ? 360 : diceResult === 2 ? 360 : diceResult === 3 ? 360 : diceResult === 4 ? 360 : diceResult === 5 ? 630 : 450}deg) rotateY(${diceResult === 1 ? 360 : diceResult === 2 ? 540 : diceResult === 3 ? 630 : diceResult === 4 ? 450 : diceResult === 5 ? 360 : 360}deg) rotateZ(720deg)${diceRollClass === 'reRoll' ? ' rotateX(0deg) rotateY(0deg) rotateZ(0deg)' : ''}`
+                        : 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)',
+                    }}
+                  >
+                    {/* Side 1 */}
+                    <div className="absolute w-full h-full rounded-lg" style={{ transform: 'translateZ(45px)', boxShadow: 'inset 0 0 5px rgba(0,0,0,0.25)', background: 'linear-gradient(145deg, #60a5fa, #3b82f6)' }}>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></span>
+                    </div>
+
+                    {/* Side 2 */}
+                    <div className="absolute w-full h-full rounded-lg" style={{ transform: 'rotateX(-180deg) translateZ(45px)', boxShadow: 'inset 0 0 5px rgba(0,0,0,0.25)', background: 'linear-gradient(145deg, #60a5fa, #3b82f6)' }}>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '25%', left: '25%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '75%', left: '75%', transform: 'translate(-50%, -50%)' }}></span>
+                    </div>
+
+                    {/* Side 3 */}
+                    <div className="absolute w-full h-full rounded-lg" style={{ transform: 'rotateY(90deg) translateZ(45px)', boxShadow: 'inset 0 0 5px rgba(0,0,0,0.25)', background: 'linear-gradient(145deg, #60a5fa, #3b82f6)' }}>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '25%', left: '25%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '75%', left: '75%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></span>
+                    </div>
+
+                    {/* Side 4 */}
+                    <div className="absolute w-full h-full rounded-lg" style={{ transform: 'rotateY(-90deg) translateZ(45px)', boxShadow: 'inset 0 0 5px rgba(0,0,0,0.25)', background: 'linear-gradient(145deg, #60a5fa, #3b82f6)' }}>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '25%', left: '25%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '25%', left: '75%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '75%', left: '25%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '75%', left: '75%', transform: 'translate(-50%, -50%)' }}></span>
+                    </div>
+
+                    {/* Side 5 */}
+                    <div className="absolute w-full h-full rounded-lg" style={{ transform: 'rotateX(90deg) translateZ(45px)', boxShadow: 'inset 0 0 5px rgba(0,0,0,0.25)', background: 'linear-gradient(145deg, #60a5fa, #3b82f6)' }}>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '25%', left: '25%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '25%', left: '75%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '75%', left: '25%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '75%', left: '75%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></span>
+                    </div>
+
+                    {/* Side 6 */}
+                    <div className="absolute w-full h-full rounded-lg" style={{ transform: 'rotateX(-90deg) translateZ(45px)', boxShadow: 'inset 0 0 5px rgba(0,0,0,0.25)', background: 'linear-gradient(145deg, #60a5fa, #3b82f6)' }}>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '25%', left: '25%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '25%', left: '75%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '75%', left: '25%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '75%', left: '75%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '50%', left: '25%', transform: 'translate(-50%, -50%)' }}></span>
+                      <span className="absolute w-4 h-4 bg-white rounded-full shadow-lg" style={{ top: '50%', left: '75%', transform: 'translate(-50%, -50%)' }}></span>
+                    </div>
                   </div>
                 </div>
+
+                {/* Result Message */}
+                {diceResultMessage && (
+                  <div className={`mt-4 font-bold text-lg ${
+                    diceResultMessage.includes('won') 
+                      ? 'text-green-500 dark:text-green-400' 
+                      : 'text-red-500 dark:text-red-400'
+                  } animate-pulse`}>
+                    {diceResultMessage}
+                  </div>
+                )}
               </div>
 
               {/* Purchase/Play Tab */}
               <div
                 onClick={
                   purchasedGames.has('dice-roll') 
-                    ? (isRollingDice ? undefined : handleDiceRoll)
+                    ? undefined
                     : (points >= 20 ? () => purchaseGame('dice-roll', 20) : undefined)
                 }
                 className={`w-full py-4 px-6 font-bold text-base transition-all cursor-pointer ${
                   purchasedGames.has('dice-roll') 
-                    ? (points >= 20 
-                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white' 
-                        : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white cursor-default' 
                     : (points >= 20 
                         ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white' 
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
-                } ${isRollingDice ? 'opacity-50 cursor-not-allowed' : ''}`}
+                }`}
               >
-                {isRollingDice 
-                  ? 'Rolling...' 
-                  : purchasedGames.has('dice-roll') 
-                    ? (points >= 20 ? 'Play Now' : 'Insufficient Points')
-                    : (points >= 20 ? 'Purchase' : 'Insufficient Points')
+                {purchasedGames.has('dice-roll') 
+                  ? (pickedNumber ? 'Rolling...' : 'Pick Your Number')
+                  : (points >= 20 ? 'Purchase' : 'Insufficient Points')
                 }
               </div>
             </div>
@@ -854,31 +983,99 @@ const RaidGames: React.FC = () => {
               </div>
             </div>
 
-            {/* Number Guessing Game */}
-            <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-orange-300 dark:hover:border-orange-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] dark:hover:shadow-[0_0_20px_rgba(249,115,22,0.25)] overflow-hidden">
+            {/* Coin Flip Game */}
+            <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-yellow-300 dark:hover:border-yellow-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(234,179,8,0.15)] dark:hover:shadow-[0_0_20px_rgba(234,179,8,0.25)] overflow-hidden">
               {/* Cost Tag */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-600 to-red-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
+              <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
                 15 Points
               </div>
 
               {/* Card Content */}
               <div className="p-6 flex-1 flex flex-col">
                 {/* Header with Gradient */}
-                <div className="mb-4">
-                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Number Guess</div>
+                <div className="mb-3">
+                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Coin Flip</div>
                 </div>
 
-                {/* Number Visual */}
-                <div className="relative w-20 h-20 mx-auto mb-6 rounded-lg border-2 border-orange-500 bg-gradient-to-br from-orange-500 to-red-600 shadow-lg flex items-center justify-center">
-                  {isGuessingNumber ? (
-                    <div className="text-white font-bold text-2xl animate-pulse">?</div>
-                  ) : numberGuess ? (
-                    <div className="text-center text-white">
-                      <div className="text-2xl font-bold">{numberGuess}</div>
-                      <div className="text-xs">{guessResult}</div>
+                {/* Side Selection - Similar to Dice Roll */}
+                {!coinChoice && !isFlippingCoin && purchasedGames.has('coin-flip') && (
+                  <div className="flex gap-2 justify-center mb-4">
+                    <button
+                      onClick={() => handleCoinFlip('heads')}
+                      className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg transition-all text-lg"
+                    >
+                      IMG
+                    </button>
+                    <button
+                      onClick={() => handleCoinFlip('tails')}
+                      className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg transition-all text-lg"
+                    >
+                      SOL
+                    </button>
+                  </div>
+                )}
+
+                {/* Coin Visual */}
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="w-32 h-32 mx-auto flex items-center justify-center" style={{ perspective: '1000px' }}>
+                    {isFlippingCoin ? (
+                      <div 
+                        className="relative w-32 h-32"
+                        style={{
+                          animation: 'coinFlip 1.5s ease-in-out',
+                          transformStyle: 'preserve-3d'
+                        }}
+                      >
+                        {/* Front side - Heads */}
+                        <img
+                          src="/images/raidgames/coinflipheads.webp"
+                          alt="heads"
+                          className="absolute w-32 h-32 object-contain"
+                          style={{
+                            backfaceVisibility: 'hidden',
+                            WebkitBackfaceVisibility: 'hidden'
+                          }}
+                        />
+                        {/* Back side - Tails */}
+                        <img
+                          src="/images/raidgames/coinfliptails.webp"
+                          alt="tails"
+                          className="absolute w-32 h-32 object-contain"
+                          style={{
+                            backfaceVisibility: 'hidden',
+                            WebkitBackfaceVisibility: 'hidden',
+                            transform: 'rotateY(180deg)'
+                          }}
+                        />
+                      </div>
+                    ) : coinResult ? (
+                      <img
+                        src={coinResult === 'heads' ? '/images/raidgames/coinflipheads.webp' : '/images/raidgames/coinfliptails.webp'}
+                        alt={coinResult}
+                        className="w-32 h-32 object-contain"
+                      />
+                    ) : coinChoice ? (
+                      <img
+                        src={coinChoice === 'heads' ? '/images/raidgames/coinflipheads.webp' : '/images/raidgames/coinfliptails.webp'}
+                        alt={coinChoice}
+                        className="w-32 h-32 object-contain"
+                      />
+                    ) : (
+                      <img
+                        src="/images/raidgames/coinflipheads.webp"
+                        alt="coin"
+                        className="w-32 h-32 object-contain opacity-50"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {/* Result Message - Fixed at bottom like Dice Roll */}
+                <div className="min-h-[2rem] flex items-center justify-center">
+                  {coinWinAmount !== null && (
+                    <div className={`text-base font-bold ${coinWinAmount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {coinWinAmount > 0 ? `Won ${coinWinAmount} XP!` : 'Better luck next time!'}
                     </div>
-                  ) : (
-                    <div className="text-white font-bold text-2xl">?</div>
                   )}
                 </div>
               </div>
@@ -886,30 +1083,38 @@ const RaidGames: React.FC = () => {
               {/* Purchase/Play Tab */}
               <div
                 onClick={
-                  purchasedGames.has('number-guess') 
-                    ? (isGuessingNumber ? undefined : handleNumberGuess)
-                    : (points >= 15 ? () => purchaseGame('number-guess', 15) : undefined)
+                  purchasedGames.has('coin-flip') 
+                    ? undefined
+                    : (points >= 15 ? () => purchaseGame('coin-flip', 15) : undefined)
                 }
-                className={`w-full py-4 px-6 font-bold text-base transition-all cursor-pointer ${
-                  purchasedGames.has('number-guess') 
-                    ? (points >= 15 
-                        ? 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white' 
-                        : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
+                className={`w-full py-4 px-6 font-bold text-base transition-all ${
+                  purchasedGames.has('coin-flip') 
+                    ? 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white cursor-default'
                     : (points >= 15 
-                        ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white' 
+                        ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white cursor-pointer' 
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
-                } ${isGuessingNumber ? 'opacity-50 cursor-not-allowed' : ''}`}
+                }`}
               >
-                {isGuessingNumber 
-                  ? 'Guessing...' 
-                  : purchasedGames.has('number-guess') 
-                    ? (points >= 15 ? 'Play Now' : 'Insufficient Points')
-                    : (points >= 15 ? 'Purchase' : 'Insufficient Points')
+                {purchasedGames.has('coin-flip') 
+                  ? 'Pick a Side Above'
+                  : (points >= 15 ? 'Purchase' : 'Insufficient Points')
                 }
               </div>
             </div>
           </div>
         </ComponentCard>
+
+        {/* Coin Flip Animation Styles */}
+        <style>{`
+          @keyframes coinFlip {
+            0% {
+              transform: rotateY(0deg);
+            }
+            100% {
+              transform: rotateY(1800deg);
+            }
+          }
+        `}</style>
       </div>
     </>
   );
