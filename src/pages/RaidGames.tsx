@@ -385,8 +385,11 @@ const RaidGames: React.FC = () => {
     const innerDiv = slotReelRef.current?.querySelector('div[class*="relative"]') as HTMLElement;
     if (!innerDiv) return;
 
-    // Reset to starting position (50 XP = index 6, which is 480px down)
-    innerDiv.style.transform = 'translateY(-480px)';
+    // 50 XP is at index 6, which is 6 * 80 = 480px
+    const startPosition = 480; // Start at 50 XP
+    
+    // Reset to starting position (50 XP)
+    innerDiv.style.transform = `translateY(-${startPosition}px)`;
 
     let start: number | undefined;
     
@@ -398,17 +401,19 @@ const RaidGames: React.FC = () => {
         // Easing function for smooth deceleration
         const progress = Math.min(t / tMax, 1);
         const eased = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
-        // Start from 480px (50 XP position) and spin from there
-        const position = 480 + (eased * (height * 2 + targetPosition));
+        // Spin through values, landing back on first set
+        const spinDistance = height + targetPosition;
+        const position = startPosition + (eased * spinDistance);
         innerDiv.style.transform = `translateY(-${position}px)`;
       }
 
       if (t < tMax) {
         requestAnimationFrame(animate);
       } else {
-        // Animation complete - ensure exact alignment
-        // Final position needs to account for the starting offset
-        const finalPosition = 480 + (height * 2 + targetPosition);
+        // Animation complete - land on target in the first set
+        // Since we start at 480 (50 XP), we spin one full loop (560) + target
+        // This brings us back to the first set at the target position
+        const finalPosition = targetPosition;
         if (innerDiv) {
           innerDiv.style.transform = `translateY(-${finalPosition}px)`;
         }
@@ -421,7 +426,7 @@ const RaidGames: React.FC = () => {
           setSlotResult(null);
           // Reset position for next spin (back to 50 XP)
           if (innerDiv) {
-            innerDiv.style.transform = 'translateY(-480px)';
+            innerDiv.style.transform = `translateY(-${startPosition}px)`;
           }
           resetGameAfterPlay('slot-machine');
         }, 3000);
@@ -1007,7 +1012,7 @@ const RaidGames: React.FC = () => {
                       {/* Bottom fade overlay - complete block */}
                       <div className="absolute bottom-0 left-0 right-0 h-4 pointer-events-none z-10" style={{ background: 'linear-gradient(to top, rgba(255,255,255,1), transparent)' }}></div>
                       
-                      <div className="relative" style={{ top: '-480px' }}>
+                      <div className="relative" style={{ transform: 'translateY(-480px)' }}>
                         {/* Duplicate XP values for seamless loop - larger spacing */}
                         <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">5 XP</p>
                         <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">10 XP</p>
