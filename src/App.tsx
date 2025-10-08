@@ -41,7 +41,7 @@ export default function App() {
         <Routes>
           {/* Dashboard Layout */}
           <Route path="/" element={<AppLayout />}>
-            <Route index element={<Home />} />
+            <Route index element={<Terminal />} />
             <Route path="terminal" element={<Terminal />} />
             <Route path="mainscreen" element={<Home />} />
             <Route path="events" element={<Events />} />
