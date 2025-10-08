@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import ComponentCard from '../components/common/ComponentCard';
 import { useSupabaseAuth } from '../hooks/useSupabaseAuth';
+import { useRaidProfile } from '../hooks/useRaidProfile';
 
 const Hub: React.FC = () => {
   const { user, supabase } = useSupabaseAuth();
+  const { 
+    profile: raidProfile, 
+    currentRank
+  } = useRaidProfile();
   const [profile, setProfile] = useState<{ username: string; avatar_name: string | null; x_handle?: string | null } | null>(null);
-  const [points] = useState<number>(1250);
-  const [totalXp] = useState<number>(2840);
-  const [rank] = useState<number>(47);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -59,15 +61,21 @@ const Hub: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2 mt-3">
                   <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-indigo-300/60 dark:border-indigo-500/40 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-900/10">
                     <div className="text-[10px] uppercase font-bold text-indigo-700 dark:text-indigo-300 tracking-widest">XP</div>
-                    <div className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">{totalXp.toLocaleString()}</div>
+                    <div className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                      {(raidProfile?.current_xp || 0).toLocaleString()}
+                    </div>
                   </div>
                   <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-emerald-300/60 dark:border-emerald-500/40 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/10">
                     <div className="text-[10px] uppercase font-bold text-emerald-700 dark:text-emerald-300 tracking-widest">Points</div>
-                    <div className="mt-0.5 text-sm font-bold text-emerald-900 dark:text-emerald-100">{points.toLocaleString()}</div>
+                    <div className="mt-0.5 text-sm font-bold text-emerald-900 dark:text-emerald-100">
+                      {(raidProfile?.raid_points || 0).toLocaleString()}
+                    </div>
                   </div>
                   <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-amber-300/60 dark:border-amber-500/40 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/10">
                     <div className="text-[10px] uppercase font-bold text-amber-700 dark:text-amber-300 tracking-widest">Rank</div>
-                    <div className="mt-0.5 text-sm font-bold text-amber-900 dark:text-amber-100">#{rank}</div>
+                    <div className="mt-0.5 text-sm font-bold text-amber-900 dark:text-amber-100">
+                      {currentRank?.rank_name || 'Unranked'}
+                    </div>
                   </div>
                 </div>
               </ComponentCard>
@@ -186,16 +194,69 @@ export default Hub;
 
 // --- Daily Spin Component (even SVG slices) ---
 const DailySpinCard: React.FC = () => {
+  const { user } = useSupabaseAuth();
+  const { addUserXP } = useRaidProfile();
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [winLabel, setWinLabel] = useState<string | null>(null);
-  const prizes = ['1 XP', '5 XP', '10 XP', '15 XP', '20 XP', '25 XP', '30 XP', '50 XP'];
+  const [canSpin, setCanSpin] = useState(true);
+  
+  const prizes = [
+    { label: '1 XP', value: 1, probability: 0.35 },
+    { label: '5 XP', value: 5, probability: 0.25 },
+    { label: '10 XP', value: 10, probability: 0.15 },
+    { label: '15 XP', value: 15, probability: 0.10 },
+    { label: '20 XP', value: 20, probability: 0.07 },
+    { label: '25 XP', value: 25, probability: 0.04 },
+    { label: '30 XP', value: 30, probability: 0.03 },
+    { label: '50 XP', value: 50, probability: 0.01 },
+  ];
 
-  const onSpin = () => {
-    if (spinning) return;
+  // Check if user can spin today
+  useEffect(() => {
+    if (!user?.id) return;
+    
+    const checkLastSpin = () => {
+      const lastSpin = localStorage.getItem(`daily_spin_${user.id}`);
+      if (lastSpin) {
+        const lastSpinDate = new Date(lastSpin);
+        const today = new Date();
+        
+        // Check if last spin was today
+        const isSameDay = lastSpinDate.toDateString() === today.toDateString();
+        setCanSpin(!isSameDay);
+      } else {
+        setCanSpin(true);
+      }
+    };
+    
+    checkLastSpin();
+  }, [user?.id]);
+
+  const getRandomPrize = () => {
+    const rand = Math.random();
+    let cumulative = 0;
+    
+    for (const prize of prizes) {
+      cumulative += prize.probability;
+      if (rand <= cumulative) {
+        return prize;
+      }
+    }
+    
+    return prizes[0]; // fallback
+  };
+
+  const onSpin = async () => {
+    if (spinning || !canSpin || !user?.id) return;
+    
     setSpinning(true);
     setWinLabel(null);
-    const index = Math.floor(Math.random() * prizes.length);
+    
+    const wonPrize = getRandomPrize();
+    const prizeLabels = prizes.map(p => p.label);
+    const index = prizeLabels.indexOf(wonPrize.label);
+    
     const slice = 360 / prizes.length;
     const base = 360 * 5; // full turns for animation
     setRotation((prev) => {
@@ -203,12 +264,23 @@ const DailySpinCard: React.FC = () => {
       const targetMod = (360 - (index * slice + slice / 2) + 360) % 360; // align slice center to top pointer
       const offset = (targetMod - currentMod + 360) % 360; // minimal positive offset to reach target
       const delta = base + offset;
-      // Schedule label update exactly when animation completes
-      setTimeout(() => {
-        // Store just the prize label (e.g., "10 XP") for display formatting
-        setWinLabel(prizes[index]);
+      
+      // Schedule label update and XP award when animation completes
+      setTimeout(async () => {
+        setWinLabel(wonPrize.label);
+        
+        // Award XP to user
+        if (wonPrize.value > 0) {
+          await addUserXP(wonPrize.value);
+        }
+        
+        // Mark spin as used for today
+        const now = new Date().toISOString();
+        localStorage.setItem(`daily_spin_${user.id}`, now);
+        setCanSpin(false);
         setSpinning(false);
       }, 2000);
+      
       return prev + delta;
     });
   };
@@ -226,10 +298,14 @@ const DailySpinCard: React.FC = () => {
           <div className="mt-5 md:mt-6 flex md:block items-center justify-center md:justify-start">
             <button
               onClick={onSpin}
-              disabled={spinning}
-              className={`inline-flex items-center justify-center px-5 py-2.5 rounded-md text-sm font-semibold border border-gray-300 ${spinning ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white hover:bg-gray-50 text-gray-800'}`}
+              disabled={spinning || !canSpin || !user?.id}
+              className={`inline-flex items-center justify-center px-5 py-2.5 rounded-md text-sm font-semibold border border-gray-300 ${
+                spinning || !canSpin || !user?.id
+                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                  : 'bg-white hover:bg-gray-50 text-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white'
+              }`}
             >
-              {spinning ? 'Spinning...' : 'Spin Now'}
+              {!user?.id ? 'Sign In to Spin' : spinning ? 'Spinning...' : !canSpin ? 'Come Back Tomorrow' : 'Spin Now'}
             </button>
           </div>
         </div>
@@ -278,12 +354,12 @@ const DailySpinCard: React.FC = () => {
               return <line key={`tick-${i}`} x1={x1t} y1={y1t} x2={x2t} y2={y2t} stroke="#9CA3AF" strokeWidth={1} />;
             })}
             {/* Labels */}
-            {prizes.map((label, i) => {
+            {prizes.map((prize, i) => {
               const angle = (360 / prizes.length) * (i + 0.5);
               return (
                 <g key={`t-${i}`} transform={`rotate(${angle} ${r} ${r})`}>
                   <text x={r} y={r - (size/2 - 34)} textAnchor="middle" fontSize="12" fontWeight={800} fill="#111827">
-                    {label}
+                    {prize.label}
                   </text>
                 </g>
               );
