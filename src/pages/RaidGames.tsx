@@ -575,7 +575,7 @@ const RaidGames: React.FC = () => {
             </div>
             <div className="flex items-center justify-end mt-2 text-xs text-green-700 dark:text-green-400">
               <span className="font-semibold">
-                Next Rank: {nextRank?.rank_name || 'Max Rank'} (+{nextRank?.points_reward || 0} Points)
+                Next Rank: {nextRank?.rank_name || 'Max Rank'} (+{nextRank?.reward_points || 0} Points)
               </span>
             </div>
           </div>
