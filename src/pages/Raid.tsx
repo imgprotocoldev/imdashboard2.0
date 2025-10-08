@@ -649,6 +649,14 @@ const Raid: React.FC = () => {
               { reward: '$10 USD in SOL Tokens', cost: 600, image: '/images/raid/10usdinsol.webp', tier: 'Silver' },
               { reward: '$25 USD in SOL Tokens', cost: 1000, image: '/images/raid/25usdinsol.webp', tier: 'Gold' },
               { reward: '$50 USD in SOL Tokens', cost: 3000, image: '/images/raid/50usdinsol.webp', tier: 'Platinum' },
+              { reward: '$5 USD IMG Tokens', cost: 300, image: '/images/raid/imgprizeclaim.webp', tier: 'Bronze' },
+              { reward: '$10 USD IMG Tokens', cost: 600, image: '/images/raid/imgprizeclaim.webp', tier: 'Silver' },
+              { reward: '$25 USD IMG Tokens', cost: 1000, image: '/images/raid/imgprizeclaim.webp', tier: 'Gold' },
+              { reward: '$50 USD IMG Tokens', cost: 3000, image: '/images/raid/imgprizeclaim.webp', tier: 'Platinum' },
+              { reward: '$5 USD IMG Burn', cost: 300, image: '/images/raid/burngimgtokens.webp', tier: 'Bronze' },
+              { reward: '$10 USD IMG Burn', cost: 600, image: '/images/raid/burngimgtokens.webp', tier: 'Silver' },
+              { reward: '$25 USD IMG Burn', cost: 1000, image: '/images/raid/burngimgtokens.webp', tier: 'Gold' },
+              { reward: '$50 USD IMG Burn', cost: 3000, image: '/images/raid/burngimgtokens.webp', tier: 'Platinum' },
             ].map((row, i) => {
               const isUnlocked = (raidProfile?.raid_points || 0) >= row.cost;
               const tierColors = {
