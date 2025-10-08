@@ -35,7 +35,9 @@ export interface RankDefinition {
   rank_id: number
   rank_name: string
   xp_required: number
-  points_reward: number
+  reward_points: number
+  lifetime_xp: number
+  notes?: string
   created_at: string
 }
 
@@ -103,7 +105,7 @@ export const addXP = async (userId: string, xpAmount: number) => {
         console.log(`Ranking up from ${currentRankId} to ${nextRank.rank_id}!`);
         currentXp -= nextRank.xp_required; // Carry over excess XP
         currentRankId = nextRank.rank_id;
-        totalPointsEarned += nextRank.points_reward || 0;
+        totalPointsEarned += nextRank.reward_points || 0;
         rankedUp = true;
       } else {
         break;

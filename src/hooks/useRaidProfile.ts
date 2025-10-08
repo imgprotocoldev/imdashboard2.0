@@ -83,7 +83,7 @@ export const useRaidProfile = () => {
             if (newRankDef) {
               setRankUpReward({
                 rank: newRankDef.rank_name,
-                points: newRankDef.points_reward
+                points: newRankDef.reward_points
               });
               setShowRankUpModal(true);
               
