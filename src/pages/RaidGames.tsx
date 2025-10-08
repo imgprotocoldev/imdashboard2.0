@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import ComponentCard from '../components/common/ComponentCard';
 import { useSupabaseAuth } from '../hooks/useSupabaseAuth';
 
@@ -23,7 +23,6 @@ const RaidGames: React.FC = () => {
   const [isRollingDice, setIsRollingDice] = useState<boolean>(false);
   const [diceResult, setDiceResult] = useState<number | null>(null);
   const [isSpinningSlots, setIsSpinningSlots] = useState<boolean>(false);
-  const [slotsResult, setSlotsResult] = useState<string | null>(null);
   const [isFlippingCoin, setIsFlippingCoin] = useState<boolean>(false);
   const [coinChoice, setCoinChoice] = useState<'heads' | 'tails' | null>(null);
   const [coinResult, setCoinResult] = useState<'heads' | 'tails' | null>(null);
@@ -367,29 +366,69 @@ const RaidGames: React.FC = () => {
 
 
   // Slot Machine Game
-  const handleSlotMachine = () => {
-    if (isSpinningSlots || points < 40) return; // Cost 40 points
-    setIsSpinningSlots(true);
-    setSlotsResult(null);
+  const slotReelRef = useRef<HTMLDivElement>(null);
+  const [slotResult, setSlotResult] = useState<number | null>(null);
 
-    setTimeout(() => {
-      const symbols = ['🍒', '🍋', '🍊', '🍇', '⭐', '💎'];
-      const result = Array.from({ length: 3 }, () => symbols[Math.floor(Math.random() * symbols.length)]).join(' ');
-      setSlotsResult(result);
-      setPoints(prev => prev - 40);
-      
-      // Check for matches
-      const symbolsArray = result.split(' ');
-      if (symbolsArray[0] === symbolsArray[1] && symbolsArray[1] === symbolsArray[2]) {
-        const xpReward = symbolsArray[0] === '💎' ? 100 : 50; // Diamond jackpot!
-        setTotalXp(prev => prev + xpReward);
-      } else if (symbolsArray[0] === symbolsArray[1] || symbolsArray[1] === symbolsArray[2] || symbolsArray[0] === symbolsArray[2]) {
-        setTotalXp(prev => prev + 20); // Partial match
+  const handleSlotMachine = () => {
+    if (isSpinningSlots || points < 40 || !purchasedGames.has('slot-machine')) return;
+    setIsSpinningSlots(true);
+    setSlotResult(null);
+    setPoints(prev => prev - 40);
+
+    const xpValues = [5, 10, 15, 20, 25, 30, 50]; // XP prizes
+    const finalResult = Math.floor(Math.random() * xpValues.length);
+    const tMax = 2000; // 2 seconds animation
+    const height = 560; // 7 items * 80px (h-20)
+    const targetPosition = finalResult * 80;
+
+    // Get the inner div that contains all the XP values
+    const innerDiv = slotReelRef.current?.querySelector('div[class*="relative"]') as HTMLElement;
+    if (!innerDiv) return;
+
+    // Reset to starting position (50 XP = index 6, which is 480px down)
+    innerDiv.style.transform = 'translateY(-480px)';
+
+    let start: number | undefined;
+    
+    const animate = (now: number) => {
+      if (!start) start = now;
+      const t = now - start;
+
+      if (innerDiv) {
+        // Easing function for smooth deceleration
+        const progress = Math.min(t / tMax, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
+        // Start from 480px (50 XP position) and spin from there
+        const position = 480 + (eased * (height * 2 + targetPosition));
+        innerDiv.style.transform = `translateY(-${position}px)`;
       }
-      setIsSpinningSlots(false);
-      // Reset game after playing
-      resetGameAfterPlay('slot-machine');
-    }, 3000);
+
+      if (t < tMax) {
+        requestAnimationFrame(animate);
+      } else {
+        // Animation complete - ensure exact alignment
+        // Final position needs to account for the starting offset
+        const finalPosition = 480 + (height * 2 + targetPosition);
+        if (innerDiv) {
+          innerDiv.style.transform = `translateY(-${finalPosition}px)`;
+        }
+        setSlotResult(finalResult);
+        setTotalXp(prev => prev + xpValues[finalResult]);
+        setIsSpinningSlots(false);
+        
+        // Reset game after showing result
+        setTimeout(() => {
+          setSlotResult(null);
+          // Reset position for next spin (back to 50 XP)
+          if (innerDiv) {
+            innerDiv.style.transform = 'translateY(-480px)';
+          }
+          resetGameAfterPlay('slot-machine');
+        }, 3000);
+      }
+    };
+
+    requestAnimationFrame(animate);
   };
 
   // Memory Match game removed per request
@@ -941,18 +980,61 @@ const RaidGames: React.FC = () => {
               {/* Card Content */}
               <div className="p-6 flex-1 flex flex-col">
                 {/* Header with Gradient */}
-                <div className="mb-4">
+                <div className="mb-3">
                   <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Slot Machine</div>
                 </div>
 
-                {/* Slot Visual */}
-                <div className="relative w-32 h-16 mx-auto mb-6 rounded-lg border-2 border-purple-500 bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg flex items-center justify-center">
-                  {isSpinningSlots ? (
-                    <div className="text-white font-bold text-2xl animate-pulse">🎰</div>
-                  ) : slotsResult ? (
-                    <div className="text-white font-bold text-xl">{slotsResult}</div>
-                  ) : (
-                    <div className="text-white font-bold text-lg">🎰 🎰 🎰</div>
+                {/* Slot Machine Container */}
+                <div className="flex-1 flex items-center justify-center">
+                  {/* Slot Reel */}
+                  <div 
+                    className="rounded-xl p-5"
+                    style={{
+                      background: 'linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%)',
+                      boxShadow: '0 3px 9px rgba(0,0,0,0.25)',
+                    }}
+                  >
+                    <div 
+                      ref={slotReelRef}
+                      className="w-32 h-20 overflow-hidden rounded-lg relative"
+                      style={{
+                        background: 'linear-gradient(to bottom, #ffffff 0%, #f1f1f1 50%, #e1e1e1 51%, #f6f6f6 100%)',
+                        boxShadow: '0 2px 7px rgba(0,0,0,0.3) inset, 0 0px 1px rgba(0,0,0,0.2) inset',
+                      }}
+                    >
+                      {/* Top fade overlay - complete block */}
+                      <div className="absolute top-0 left-0 right-0 h-4 pointer-events-none z-10" style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,1), transparent)' }}></div>
+                      {/* Bottom fade overlay - complete block */}
+                      <div className="absolute bottom-0 left-0 right-0 h-4 pointer-events-none z-10" style={{ background: 'linear-gradient(to top, rgba(255,255,255,1), transparent)' }}></div>
+                      
+                      <div className="relative" style={{ top: '-480px' }}>
+                        {/* Duplicate XP values for seamless loop - larger spacing */}
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">5 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">10 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">15 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">20 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">25 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">30 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">50 XP</p>
+                        {/* Duplicate for seamless scrolling */}
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">5 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">10 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">15 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">20 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">25 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">30 XP</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">50 XP</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Result Message */}
+                <div className="min-h-[2rem] flex items-center justify-center">
+                  {slotResult !== null && (
+                    <div className="text-base font-bold text-green-600 dark:text-green-400">
+                      Won {[5, 10, 15, 20, 25, 30, 50][slotResult]} XP!
+                    </div>
                   )}
                 </div>
               </div>
@@ -966,18 +1048,18 @@ const RaidGames: React.FC = () => {
                 }
                 className={`w-full py-4 px-6 font-bold text-base transition-all cursor-pointer ${
                   purchasedGames.has('slot-machine') 
-                    ? (points >= 40 
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white' 
-                        : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
+                    ? (isSpinningSlots 
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white cursor-not-allowed opacity-50'
+                        : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white')
                     : (points >= 40 
                         ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white' 
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
-                } ${isSpinningSlots ? 'opacity-50 cursor-not-allowed' : ''}`}
+                }`}
               >
                 {isSpinningSlots 
-                  ? 'Spinning...' 
+                  ? 'Spinning...'
                   : purchasedGames.has('slot-machine') 
-                    ? (points >= 40 ? 'Play Now' : 'Insufficient Points')
+                    ? 'Spin Now'
                     : (points >= 40 ? 'Purchase' : 'Insufficient Points')
                 }
               </div>
@@ -1017,12 +1099,16 @@ const RaidGames: React.FC = () => {
 
                 {/* Coin Visual */}
                 <div className="flex-1 flex items-center justify-center">
-                  <div className="w-32 h-32 mx-auto flex items-center justify-center">
+                  <div className="w-32 h-32 mx-auto flex items-center justify-center" style={{ perspective: '1000px' }}>
                     {isFlippingCoin ? (
                       <img
                         src="/images/raidgames/coinflipspin.webp"
                         alt="flipping"
-                        className="w-32 h-32 object-contain animate-spin"
+                        className="w-32 h-32 object-contain"
+                        style={{
+                          animation: 'coinFlip 1.5s ease-in-out',
+                          transformStyle: 'preserve-3d'
+                        }}
                       />
                     ) : coinResult ? (
                       <img
@@ -1073,6 +1159,18 @@ const RaidGames: React.FC = () => {
             </div>
           </div>
         </ComponentCard>
+
+        {/* Coin Flip Animation Styles */}
+        <style>{`
+          @keyframes coinFlip {
+            0% {
+              transform: rotateY(0deg);
+            }
+            100% {
+              transform: rotateY(1800deg);
+            }
+          }
+        `}</style>
       </div>
     </>
   );
