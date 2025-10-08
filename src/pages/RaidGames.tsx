@@ -1017,47 +1017,17 @@ const RaidGames: React.FC = () => {
 
                 {/* Coin Visual */}
                 <div className="flex-1 flex items-center justify-center">
-                  <div className="w-32 h-32 mx-auto flex items-center justify-center" style={{ perspective: '1000px' }}>
+                  <div className="w-32 h-32 mx-auto flex items-center justify-center">
                     {isFlippingCoin ? (
-                      <div 
-                        className="relative w-32 h-32"
-                        style={{
-                          animation: 'coinFlip 1.5s ease-in-out',
-                          transformStyle: 'preserve-3d'
-                        }}
-                      >
-                        {/* Front side - Heads */}
-                        <img
-                          src="/images/raidgames/coinflipheads.webp"
-                          alt="heads"
-                          className="absolute w-32 h-32 object-contain"
-                          style={{
-                            backfaceVisibility: 'hidden',
-                            WebkitBackfaceVisibility: 'hidden'
-                          }}
-                        />
-                        {/* Back side - Tails */}
-                        <img
-                          src="/images/raidgames/coinfliptails.webp"
-                          alt="tails"
-                          className="absolute w-32 h-32 object-contain"
-                          style={{
-                            backfaceVisibility: 'hidden',
-                            WebkitBackfaceVisibility: 'hidden',
-                            transform: 'rotateY(180deg)'
-                          }}
-                        />
-                      </div>
+                      <img
+                        src="/images/raidgames/coinflipspin.webp"
+                        alt="flipping"
+                        className="w-32 h-32 object-contain animate-spin"
+                      />
                     ) : coinResult ? (
                       <img
                         src={coinResult === 'heads' ? '/images/raidgames/coinflipheads.webp' : '/images/raidgames/coinfliptails.webp'}
                         alt={coinResult}
-                        className="w-32 h-32 object-contain"
-                      />
-                    ) : coinChoice ? (
-                      <img
-                        src={coinChoice === 'heads' ? '/images/raidgames/coinflipheads.webp' : '/images/raidgames/coinfliptails.webp'}
-                        alt={coinChoice}
                         className="w-32 h-32 object-contain"
                       />
                     ) : (
@@ -1103,18 +1073,6 @@ const RaidGames: React.FC = () => {
             </div>
           </div>
         </ComponentCard>
-
-        {/* Coin Flip Animation Styles */}
-        <style>{`
-          @keyframes coinFlip {
-            0% {
-              transform: rotateY(0deg);
-            }
-            100% {
-              transform: rotateY(1800deg);
-            }
-          }
-        `}</style>
       </div>
     </>
   );
