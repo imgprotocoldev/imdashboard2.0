@@ -62,21 +62,21 @@ const Hub: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 mt-3">
-                  <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-indigo-300/60 dark:border-indigo-500/40 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-900/10">
-                    <div className="text-[10px] uppercase font-bold text-indigo-700 dark:text-indigo-300 tracking-widest">XP</div>
-                    <div className="mt-0.5 text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                  <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+                    <div className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">XP</div>
+                    <div className="mt-0.5 text-sm font-bold text-blue-900 dark:text-blue-100">
                       {(raidProfile?.current_xp || 0).toLocaleString()}
                     </div>
                   </div>
-                  <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-emerald-300/60 dark:border-emerald-500/40 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/10">
-                    <div className="text-[10px] uppercase font-bold text-emerald-700 dark:text-emerald-300 tracking-widest">Points</div>
-                    <div className="mt-0.5 text-sm font-bold text-emerald-900 dark:text-emerald-100">
+                  <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+                    <div className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Points</div>
+                    <div className="mt-0.5 text-sm font-bold text-blue-900 dark:text-blue-100">
                       {(raidProfile?.raid_points || 0).toLocaleString()}
                     </div>
                   </div>
-                  <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-amber-300/60 dark:border-amber-500/40 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/10">
-                    <div className="text-[10px] uppercase font-bold text-amber-700 dark:text-amber-300 tracking-widest">Rank</div>
-                    <div className="mt-0.5 text-sm font-bold text-amber-900 dark:text-amber-100">
+                  <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+                    <div className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Rank</div>
+                    <div className="mt-0.5 text-sm font-bold text-blue-900 dark:text-blue-100">
                       {currentRank?.rank_name || 'Unranked'}
                     </div>
                   </div>
