@@ -22,10 +22,10 @@ const Raid: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [completedActions, setCompletedActions] = useState<Record<string, { like: boolean; reply: boolean; retweet: boolean }>>({});
   const [selectedRewards, setSelectedRewards] = useState<Record<string, string>>({
-    sol: '',
-    img: '',
-    burn: '',
-    usdc: ''
+    sol: '5',
+    img: '5',
+    burn: '5',
+    usdc: '5'
   });
   // Custom Raid Card source data (would come from API)
   type RaidItem = {
@@ -673,7 +673,7 @@ const Raid: React.FC = () => {
               { 
                 id: 'usdc',
                 name: 'USDC', 
-                image: '/images/raids/usdcrewards.webp',
+                image: '/images/raid/usdcrewards.webp',
                 description: 'Claim USDC as your reward'
               },
             ].map((reward) => {
@@ -735,7 +735,7 @@ const Raid: React.FC = () => {
                     <div className={`absolute inset-0 bg-gradient-to-t ${
                       isUnlocked ? 'from-black/20 to-transparent' : 'from-black/40 to-transparent'
                     }`} />
-                    {selectedAmount && !isUnlocked && (
+                    {!isUnlocked && (
                       <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                         <div className="text-white text-sm font-bold bg-black/50 px-3 py-1 rounded-lg backdrop-blur-sm">
                           LOCKED
@@ -745,53 +745,55 @@ const Raid: React.FC = () => {
                   </div>
                   
                   <div className="p-5 space-y-4">
-                    {/* Reward Info */}
-                    <div className="text-center">
-                      <div className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">Reward Type</div>
-                      <div className="text-base font-bold text-gray-900 dark:text-white leading-tight mb-1">{reward.name}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{reward.description}</div>
-                    </div>
-                    
-                    {/* Select Amount */}
-                    <div className="space-y-2">
-                      <label className="text-xs text-gray-600 dark:text-gray-400 font-medium">Select Amount</label>
-                      <Select
-                        options={rewardOptions}
-                        placeholder="Choose reward amount"
-                        onChange={(value) => setSelectedRewards(prev => ({ ...prev, [reward.id]: value }))}
-                        defaultValue={selectedAmount}
-                      />
-                    </div>
-                    
-                    {/* Points & Action */}
-                    {selectedAmount && (
-                      <div className="space-y-3">
-                        <div className="text-center">
-                          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Required Points</div>
-                          <div className={`text-2xl font-black ${isUnlocked ? 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600' : 'text-gray-400'}`}>
-                            {requiredPoints.toLocaleString()}
-                          </div>
+                    {/* Info Row: Left side text, Right side points */}
+                    <div className="flex items-start justify-between gap-4">
+                      {/* Left: Reward Info & Select */}
+                      <div className="flex-1 space-y-3">
+                        <div>
+                          <div className="text-base font-bold text-gray-900 dark:text-white leading-tight mb-1">{reward.name}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{reward.description}</div>
                         </div>
                         
-                        <button
-                          className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all duration-300 ${
-                            isUnlocked 
-                              ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-[0_6px_20px_rgba(16,185,129,0.4)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.5)] hover:scale-[1.02]' 
-                              : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                          }`}
-                          disabled={!isUnlocked}
-                          onClick={async () => {
-                            if (isUnlocked) {
-                              await spendPoints(requiredPoints);
-                              alert(`Claimed $${selectedAmount} USD in ${reward.name}!`);
-                              setSelectedRewards(prev => ({ ...prev, [reward.id]: '' }));
-                            }
-                          }}
-                        >
-                          {isUnlocked ? '🎁 Claim Reward' : '🔒 Locked'}
-                        </button>
+                        {/* Select Amount */}
+                        <div className="space-y-1">
+                          <label className="text-xs text-gray-600 dark:text-gray-400 font-medium">Amount</label>
+                          <Select
+                            options={rewardOptions}
+                            placeholder="Choose amount"
+                            onChange={(value) => setSelectedRewards(prev => ({ ...prev, [reward.id]: value }))}
+                            defaultValue={selectedAmount}
+                          />
+                        </div>
                       </div>
-                    )}
+                      
+                      {/* Right: Required Points */}
+                      <div className="text-right">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Required</div>
+                        <div className={`text-2xl font-black ${isUnlocked ? 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600' : 'text-gray-400'}`}>
+                          {requiredPoints.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Points</div>
+                      </div>
+                    </div>
+                    
+                    {/* Claim Button */}
+                    <button
+                      className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all duration-300 ${
+                        isUnlocked 
+                          ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-[0_6px_20px_rgba(16,185,129,0.4)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.5)] hover:scale-[1.02]' 
+                          : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                      }`}
+                      disabled={!isUnlocked}
+                      onClick={async () => {
+                        if (isUnlocked) {
+                          await spendPoints(requiredPoints);
+                          alert(`Claimed $${selectedAmount} USD in ${reward.name}!`);
+                          setSelectedRewards(prev => ({ ...prev, [reward.id]: '5' }));
+                        }
+                      }}
+                    >
+                      {isUnlocked ? '🎁 Claim Reward' : '🔒 Locked'}
+                    </button>
                   </div>
                   
                   {/* Glow effect */}
