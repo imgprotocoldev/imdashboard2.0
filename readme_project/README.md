@@ -151,3 +151,7 @@ Tracks SOL balance changes via blockchain transactions for the rewards wallet.
 ---
 
 *This system ensures transparent, secure, and efficient distribution of IMG token rewards while maintaining complete audit trails and preventing double-spending.*
+
+<div align="center">
+  <img src="readmebanner.jpg" alt="IMG Rewards Distribution Banner" width="800"/>
+</div>
