@@ -47,6 +47,10 @@ A comprehensive rewards distribution system for the IMG token ecosystem, designe
    - Any extra signatures must be marked as SPAM_AIRDROP or flagged for evaluation
    - Update reward ledgers to track double-spending
 
+<div align="center">
+  <img src="architectureboxes.png" alt="Architecture Overview" width="600"/>
+</div>
+
 ## Database Schema
 
 ### Snapshot
@@ -134,6 +138,10 @@ Tracks SOL balance changes via blockchain transactions for the rewards wallet.
 
 **Chain Validation:** Process all transactions to ensure valid chain-of-calculation using before/after SOL balances.
 
+<div align="center">
+  <img src="architecturediagram.png" alt="Architecture Diagram" width="700"/>
+</div>
+
 ## Data Integrity
 
 - **Atomic Operations:** All database updates within single transactions
@@ -151,7 +159,3 @@ Tracks SOL balance changes via blockchain transactions for the rewards wallet.
 ---
 
 *This system ensures transparent, secure, and efficient distribution of IMG token rewards while maintaining complete audit trails and preventing double-spending.*
-
-<div align="center">
-  <img src="readmebanner.jpg" alt="IMG Rewards Distribution Banner" width="800"/>
-</div>
