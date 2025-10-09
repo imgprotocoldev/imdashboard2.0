@@ -2,12 +2,12 @@
 
 A comprehensive rewards distribution system for the IMG token ecosystem, designed to automatically harvest fees, distribute rewards, and maintain transparent ledger records.
 
-## 📋 Requirements
+## Requirements
 
 - **Harvests run every 1 hour**
 - **Distributions run at 2AM, 8AM, 2PM, 8PM EST**
 
-## 🔄 Rewards Procedure
+## Rewards Procedure
 
 ### 1. Gather all IMG related accounts
    - Filter accounts with withdrawn IMG
@@ -43,7 +43,7 @@ A comprehensive rewards distribution system for the IMG token ecosystem, designe
    - Any extra signatures must be marked as SPAM_AIRDROP or flagged for evaluation
    - Update reward ledgers to track double-spending
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### Snapshot
 The hourly "execution header" for the rewards pipeline - a single row that summarizes the run's timing, state, and roll-up totals.
@@ -130,14 +130,14 @@ Tracks SOL balance changes via blockchain transactions for the rewards wallet.
 
 **Chain Validation:** Process all transactions to ensure valid chain-of-calculation using before/after SOL balances.
 
-## 🔍 Data Integrity
+## Data Integrity
 
 - **Atomic Operations:** All database updates within single transactions
 - **Balance Validation:** Before/after balance chains prevent double-spending
 - **Idempotent Runs:** Unique execution windows prevent duplicate processing
 - **Audit Trail:** Complete transaction history with blockchain signatures
 
-## 📊 Monitoring & Reporting
+## Monitoring & Reporting
 
 - Real-time pipeline status tracking via Snapshot status
 - Comprehensive audit capabilities through linked ledger entries
