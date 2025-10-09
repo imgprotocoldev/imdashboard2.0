@@ -372,26 +372,23 @@ const Raid: React.FC = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-indigo-300/60 dark:border-indigo-500/40 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-900/10">
-              <div className="text-xs uppercase font-bold text-indigo-700 dark:text-indigo-300 tracking-widest">XP</div>
-              <div className="mt-0.5 text-lg font-bold text-indigo-900 dark:text-indigo-100">
+            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10">
+              <div className="text-xs uppercase font-bold text-emerald-700 dark:text-emerald-300 tracking-widest">XP</div>
+              <div className="mt-0.5 text-lg font-bold text-emerald-900 dark:text-emerald-100">
                 {raidProfile?.current_xp?.toLocaleString() || 0}
               </div>
-              <div className="pointer-events-none absolute -inset-1 rounded-xl bg-gradient-to-tr from-indigo-400/0 via-indigo-400/10 to-indigo-400/0" />
             </div>
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-emerald-300/60 dark:border-emerald-500/40 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/10">
+            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10">
               <div className="text-xs uppercase font-bold text-emerald-700 dark:text-emerald-300 tracking-widest">Points</div>
               <div className="mt-0.5 text-lg font-bold text-emerald-900 dark:text-emerald-100">
                 {raidProfile?.raid_points?.toLocaleString() || 0}
               </div>
-              <div className="pointer-events-none absolute -inset-1 rounded-xl bg-gradient-to-tr from-emerald-400/0 via-emerald-400/10 to-emerald-400/0" />
             </div>
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-amber-300/60 dark:border-amber-500/40 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/10">
-              <div className="text-xs uppercase font-bold text-amber-700 dark:text-amber-300 tracking-widest">Rank</div>
-              <div className="mt-0.5 text-lg font-bold text-amber-900 dark:text-amber-100">
+            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10">
+              <div className="text-xs uppercase font-bold text-emerald-700 dark:text-emerald-300 tracking-widest">Rank</div>
+              <div className="mt-0.5 text-lg font-bold text-emerald-900 dark:text-emerald-100">
                 {currentRank?.rank_name || 'Rookie'}
               </div>
-              <div className="pointer-events-none absolute -inset-1 rounded-xl bg-gradient-to-tr from-amber-400/0 via-amber-400/10 to-amber-400/0" />
             </div>
           </div>
 
@@ -405,11 +402,11 @@ const Raid: React.FC = () => {
             </div>
             <div className="w-full h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner">
               <div 
-                className="h-full bg-gradient-to-r from-green-500 via-brand-500 to-purple-500 rounded-full transition-all duration-500" 
+                className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-500" 
                 style={{ width: `${getProgressToNextRank()}%` }}
               ></div>
             </div>
-            <div className="flex items-center justify-end mt-2 text-xs text-green-700 dark:text-green-400">
+            <div className="flex items-center justify-end mt-2 text-xs text-gray-600 dark:text-gray-400">
               <span className="font-semibold">
                 Next Rank: {nextRank?.rank_name || 'Max Rank'} (+{nextRank?.reward_points || 0} Points)
               </span>
