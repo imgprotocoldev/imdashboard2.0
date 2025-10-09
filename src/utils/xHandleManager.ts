@@ -86,22 +86,42 @@ export class XHandleManager {
    */
   static async connectXToExistingProfile(user: User): Promise<boolean> {
     try {
-      // Check if this is a Twitter login
-      const isTwitterLogin = user.app_metadata?.provider === 'twitter' || 
-                            user.user_metadata?.provider === 'twitter';
+      // Check if user has linked identities
+      const hasTwitterIdentity = user.identities?.some(
+        identity => identity.provider === 'twitter'
+      );
       
-      if (!isTwitterLogin) {
-        return false;
+      if (!hasTwitterIdentity) {
+        // Check old method - app_metadata
+        const isTwitterLogin = user.app_metadata?.provider === 'twitter' || 
+                              user.user_metadata?.provider === 'twitter';
+        
+        if (!isTwitterLogin) {
+          return false;
+        }
       }
 
-      // Extract Twitter handle
-      const twitterHandle = user.user_metadata?.preferred_username || 
-                           user.user_metadata?.user_name || 
-                           user.user_metadata?.twitter_username ||
-                           user.user_metadata?.screen_name;
+      // Extract Twitter handle from identities or metadata
+      let twitterHandle = null;
+      
+      // Try to get from identities first
+      const twitterIdentity = user.identities?.find(id => id.provider === 'twitter');
+      if (twitterIdentity) {
+        twitterHandle = twitterIdentity.identity_data?.preferred_username ||
+                       twitterIdentity.identity_data?.user_name ||
+                       twitterIdentity.identity_data?.screen_name;
+      }
+      
+      // Fallback to user_metadata
+      if (!twitterHandle) {
+        twitterHandle = user.user_metadata?.preferred_username || 
+                       user.user_metadata?.user_name || 
+                       user.user_metadata?.twitter_username ||
+                       user.user_metadata?.screen_name;
+      }
 
       if (!twitterHandle) {
-        console.warn('Twitter login detected but no handle found in metadata:', user.user_metadata);
+        console.warn('Twitter login detected but no handle found:', user);
         return false;
       }
 

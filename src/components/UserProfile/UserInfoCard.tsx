@@ -607,7 +607,7 @@ export default function UserInfoCard() {
                           onClick={openModal}
                           className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                         >
-                          Setup X
+                          Connect X Account
                         </button>
                       )}
                     </div>
@@ -754,17 +754,11 @@ export default function UserInfoCard() {
                     <Input
                       id="xHandle"
                       type="text"
-                      placeholder="Enter your X handle (without @) - e.g., 'elonmusk'"
+                      placeholder="Enter your X handle (without @)"
                       value={userProfile.xHandle}
                       onChange={(e) => setUserProfile(prev => ({ ...prev, xHandle: e.target.value }))}
                       className="mt-2"
                     />
-                    <div className="mt-2 flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>Click "Save Changes" to connect your account instantly!</span>
-                    </div>
                   </div>
                 </div>
                   </div>
@@ -779,65 +773,29 @@ export default function UserInfoCard() {
                       return;
                     }
                     try {
-                      // Get current user
-                      const { data: { user: currentUser } } = await supabase.auth.getUser();
-                      if (!currentUser) {
-                        setNotification({ type: 'error', message: 'No user found. Please sign in again.' });
-                        setIsDeleteArmed(false);
-                        return;
-                      }
-
-                      console.log('Deleting profile for user:', currentUser.id);
-
-                      // Step 1: Delete profile from profiles table
-                      const { error: profileError } = await supabase
+                      // Delete profile data and sign out - simple and effective
+                      const { error } = await supabase
                         .from('profiles')
                         .delete()
-                        .eq('id', currentUser.id);
+                        .eq('id', user?.id || '');
                       
-                      if (profileError) {
-                        console.error('Error deleting profile:', profileError);
-                        setNotification({ type: 'error', message: `Failed to delete profile: ${profileError.message}` });
+                      if (error) {
+                        console.error('Error deleting profile:', error);
+                        setNotification({ type: 'error', message: 'Failed to delete profile. Please try again.' });
                         setIsDeleteArmed(false);
                         return;
                       }
 
-                      console.log('Profile deleted successfully');
-
-                      // Step 2: Try to call backend API to delete user from auth (optional)
-                      try {
-                        const apiUrl = window.location.hostname === 'localhost' 
-                          ? 'http://localhost:3001/api/deleteUser'
-                          : 'https://app.imgsolana.com/api/deleteUser';
-                        
-                        const response = await fetch(apiUrl, {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ user_id: currentUser.id }),
-                        });
-
-                        if (response.ok) {
-                          console.log('User deleted from auth successfully');
-                        } else {
-                          console.log('Backend API not available, profile data deleted but auth user remains');
-                        }
-                      } catch (apiErr) {
-                        // Backend API not available - that's okay, profile data is deleted
-                        console.log('Backend API not reachable:', apiErr);
-                      }
-
-                      // Step 3: Show success message
-                      setNotification({ type: 'success', message: 'Your account has been deleted.' });
-                      
-                      // Step 4: Sign out and redirect to home
+                      // Success - sign out and redirect
+                      setNotification({ type: 'success', message: 'Profile deleted successfully.' });
                       setTimeout(async () => {
                         await supabase.auth.signOut();
                         window.location.href = '/';
-                      }, 2000);
+                      }, 1500);
 
                     } catch (err) {
-                      console.error('Error deleting account:', err);
-                      setNotification({ type: 'error', message: 'Failed to delete account. Please try again or contact support.' });
+                      console.error('Error deleting profile:', err);
+                      setNotification({ type: 'error', message: 'Failed to delete profile. Please try again.' });
                       setIsDeleteArmed(false);
                     }
                   }}

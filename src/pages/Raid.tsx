@@ -21,6 +21,7 @@ const Raid: React.FC = () => {
   const [profile, setProfile] = useState<{ username: string; avatar_name: string | null; x_handle?: string | null } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [completedActions, setCompletedActions] = useState<Record<string, { like: boolean; reply: boolean; retweet: boolean }>>({});
+  const [joinedRaids, setJoinedRaids] = useState<Record<string, boolean>>({});
   const [selectedRewards, setSelectedRewards] = useState<Record<string, string>>({
     sol: '5',
     img: '5',
@@ -264,7 +265,7 @@ const Raid: React.FC = () => {
 
           const leaderboardWithRanks = profiles.map(p => ({
             id: p.id,
-            username: p.username,
+            username: p.username || 'Anonymous User',
             avatar_name: p.avatar_name,
             raid_points: p.raid_points,
             rank_name: rankMap.get(p.current_rank) || 'Unranked',
@@ -443,16 +444,11 @@ const Raid: React.FC = () => {
                     {/* XP Values - compact and thinner */}
                     <div className="flex items-center justify-center gap-2">
                       {/* Like */}
-                      <a 
-                        href={raid.tweetUrl} 
-                        target="_blank" 
-                        rel="noopener" 
-                        className={`flex-1 rounded-md border py-1.5 text-center transition relative ${
-                          completedActions[raid.tweetId]?.like
-                            ? 'border-emerald-500 dark:border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/50 dark:to-emerald-800/50'
-                            : 'border-gray-200 dark:border-white/10 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/50 hover:from-emerald-50 hover:to-emerald-100 dark:hover:from-emerald-900/30 dark:hover:to-emerald-800/30'
-                        }`}
-                      >
+                      <div className={`flex-1 rounded-md border py-1.5 text-center transition relative ${
+                        completedActions[raid.tweetId]?.like
+                          ? 'border-emerald-500 dark:border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/50 dark:to-emerald-800/50'
+                          : 'border-gray-200 dark:border-white/10 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/50'
+                      }`}>
                         {completedActions[raid.tweetId]?.like && (
                           <div className="absolute top-0.5 right-0.5 w-3 h-3 rounded-full bg-emerald-500 flex items-center justify-center">
                             <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -462,19 +458,14 @@ const Raid: React.FC = () => {
                         )}
                         <div className={`text-[9px] uppercase tracking-wide ${completedActions[raid.tweetId]?.like ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-500 dark:text-gray-400'}`}>Like</div>
                         <div className={`text-xs font-bold ${completedActions[raid.tweetId]?.like ? 'text-emerald-700 dark:text-emerald-300' : 'text-emerald-600 dark:text-emerald-400'}`}>+5 XP</div>
-                      </a>
+                      </div>
                       
                       {/* Reply */}
-                      <a 
-                        href={raid.tweetUrl} 
-                        target="_blank" 
-                        rel="noopener" 
-                        className={`flex-1 rounded-md border py-1.5 text-center transition relative ${
-                          completedActions[raid.tweetId]?.reply
-                            ? 'border-emerald-500 dark:border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/50 dark:to-emerald-800/50'
-                            : 'border-gray-200 dark:border-white/10 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/50 hover:from-emerald-50 hover:to-emerald-100 dark:hover:from-emerald-900/30 dark:hover:to-emerald-800/30'
-                        }`}
-                      >
+                      <div className={`flex-1 rounded-md border py-1.5 text-center transition relative ${
+                        completedActions[raid.tweetId]?.reply
+                          ? 'border-emerald-500 dark:border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/50 dark:to-emerald-800/50'
+                          : 'border-gray-200 dark:border-white/10 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/50'
+                      }`}>
                         {completedActions[raid.tweetId]?.reply && (
                           <div className="absolute top-0.5 right-0.5 w-3 h-3 rounded-full bg-emerald-500 flex items-center justify-center">
                             <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -484,19 +475,14 @@ const Raid: React.FC = () => {
                         )}
                         <div className={`text-[9px] uppercase tracking-wide ${completedActions[raid.tweetId]?.reply ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-500 dark:text-gray-400'}`}>Reply</div>
                         <div className={`text-xs font-bold ${completedActions[raid.tweetId]?.reply ? 'text-emerald-700 dark:text-emerald-300' : 'text-emerald-600 dark:text-emerald-400'}`}>+10 XP</div>
-                      </a>
+                      </div>
                       
                       {/* Retweet */}
-                      <a 
-                        href={raid.tweetUrl} 
-                        target="_blank" 
-                        rel="noopener" 
-                        className={`flex-1 rounded-md border py-1.5 text-center transition relative ${
-                          completedActions[raid.tweetId]?.retweet
-                            ? 'border-emerald-500 dark:border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/50 dark:to-emerald-800/50'
-                            : 'border-gray-200 dark:border-white/10 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/50 hover:from-emerald-50 hover:to-emerald-100 dark:hover:from-emerald-900/30 dark:hover:to-emerald-800/30'
-                        }`}
-                      >
+                      <div className={`flex-1 rounded-md border py-1.5 text-center transition relative ${
+                        completedActions[raid.tweetId]?.retweet
+                          ? 'border-emerald-500 dark:border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/50 dark:to-emerald-800/50'
+                          : 'border-gray-200 dark:border-white/10 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/50'
+                      }`}>
                         {completedActions[raid.tweetId]?.retweet && (
                           <div className="absolute top-0.5 right-0.5 w-3 h-3 rounded-full bg-emerald-500 flex items-center justify-center">
                             <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -506,17 +492,28 @@ const Raid: React.FC = () => {
                         )}
                         <div className={`text-[9px] uppercase tracking-wide ${completedActions[raid.tweetId]?.retweet ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-500 dark:text-gray-400'}`}>Retweet</div>
                         <div className={`text-xs font-bold ${completedActions[raid.tweetId]?.retweet ? 'text-emerald-700 dark:text-emerald-300' : 'text-emerald-600 dark:text-emerald-400'}`}>+15 XP</div>
-                      </a>
+                      </div>
                     </div>
 
                     {/* Actions & Expiry */}
                     <div className="flex flex-col gap-3 pt-2">
                       <div className="flex items-center justify-between gap-3">
-                        <button 
-                          className="flex-1 text-sm px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-[0_2px_8px_rgba(16,185,129,0.15)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.25)] focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed" 
-                          onClick={async () => {
+                        {(joinedRaids[raid.tweetId] || (completedActions[raid.tweetId]?.like && completedActions[raid.tweetId]?.reply && completedActions[raid.tweetId]?.retweet)) && (
+                          <button 
+                            className="flex-1 text-sm px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-[0_2px_8px_rgba(16,185,129,0.15)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.25)] focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed" 
+                            onClick={async () => {
                             if (!user?.id) {
                               alert('Please sign in to collect XP');
+                              return;
+                            }
+
+                            if (!profile?.x_handle) {
+                              alert('Please connect your X account in your profile page to participate in raids!');
+                              return;
+                            }
+
+                            if (!joinedRaids[raid.tweetId]) {
+                              alert('Please click "Join Raid" first to visit the tweet!');
                               return;
                             }
                             
@@ -582,13 +579,31 @@ const Raid: React.FC = () => {
                               alert(`Failed to collect XP: ${error?.message || 'Unknown error'}`);
                             }
                           }}
-                          disabled={!user?.id || (completedActions[raid.tweetId]?.like && completedActions[raid.tweetId]?.reply && completedActions[raid.tweetId]?.retweet)}
-                        >
-                          {completedActions[raid.tweetId]?.like && completedActions[raid.tweetId]?.reply && completedActions[raid.tweetId]?.retweet 
-                            ? 'All XP Collected' 
-                            : 'Collect XP'}
-                        </button>
-                        <a href={raid.tweetUrl} target="_blank" rel="noopener" className="flex-1 text-sm px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-[0_2px_8px_rgba(79,70,229,0.15)] hover:shadow-[0_4px_12px_rgba(79,70,229,0.25)] focus:outline-none transition-all text-center">Join Raid</a>
+                            disabled={!user?.id || !profile?.x_handle || (completedActions[raid.tweetId]?.like && completedActions[raid.tweetId]?.reply && completedActions[raid.tweetId]?.retweet)}
+                          >
+                            {completedActions[raid.tweetId]?.like && completedActions[raid.tweetId]?.reply && completedActions[raid.tweetId]?.retweet 
+                              ? 'All XP Collected' 
+                              : 'Collect XP'}
+                          </button>
+                        )}
+                        {!joinedRaids[raid.tweetId] && !(completedActions[raid.tweetId]?.like && completedActions[raid.tweetId]?.reply && completedActions[raid.tweetId]?.retweet) && (
+                          <a 
+                            href={raid.tweetUrl} 
+                            target="_blank" 
+                            rel="noopener" 
+                            className="w-full text-sm px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-[0_2px_8px_rgba(79,70,229,0.15)] hover:shadow-[0_4px_12px_rgba(79,70,229,0.25)] focus:outline-none transition-all text-center"
+                            onClick={() => {
+                              if (!profile?.x_handle) {
+                                alert('Please connect your X account in your profile page to participate in raids!');
+                                return;
+                              }
+                              // Mark this raid as joined when user clicks the link
+                              setJoinedRaids(prev => ({ ...prev, [raid.tweetId]: true }));
+                            }}
+                          >
+                            Join Raid
+                          </a>
+                        )}
                       </div>
                       <div className="text-center text-xs px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
                         {expiryText}

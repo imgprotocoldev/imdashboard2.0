@@ -24,7 +24,7 @@ export default function SignUpForm() {
   const [successMessage] = useState('');
 
   // Create user profile function
-  const createUserProfile = async (user: any) => {
+  const createUserProfile = async (user: any, signupUsername?: string) => {
     try {
       // Check if profile already exists
       const { data: existingProfile } = await supabase
@@ -34,19 +34,31 @@ export default function SignUpForm() {
         .single();
 
       if (!existingProfile) {
+        // Determine username: use signup form username, or metadata, or email
+        const profileUsername = signupUsername || user.user_metadata?.username || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+        
+        console.log('Creating profile with username:', profileUsername);
+        
         // Create new profile
-        const { error } = await supabase
+        const { data: insertedProfile, error } = await supabase
           .from('profiles')
           .insert({
             id: user.id,
-            username: username,
-            full_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+            username: profileUsername,
+            avatar_name: 'user1', // Default avatar
             created_at: new Date().toISOString(),
-          });
+          })
+          .select()
+          .single();
 
         if (error) {
           console.error('Error creating profile:', error);
+          throw error; // Throw error to prevent redirect
+        } else {
+          console.log('Profile created successfully:', insertedProfile);
         }
+      } else {
+        console.log('Profile already exists for user:', user.id);
       }
     } catch (err) {
       console.error('Profile creation error:', err);
@@ -138,11 +150,17 @@ export default function SignUpForm() {
           localStorage.setItem('sessionDuration', 'session');
         }
         
-        // Create user profile
-        await createUserProfile(data.user);
-        
-        // Redirect to dashboard
-        window.location.href = 'https://app.imgsolana.com';
+        // Create user profile with the username from the form
+        try {
+          await createUserProfile(data.user, username);
+          console.log('Profile creation completed, redirecting...');
+          
+          // Redirect to dashboard
+          window.location.href = 'https://app.imgsolana.com';
+        } catch (profileError) {
+          console.error('Failed to create profile:', profileError);
+          setError('Account created but profile setup failed. Please try signing in.');
+        }
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again later.');
