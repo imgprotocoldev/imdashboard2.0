@@ -20,6 +20,7 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import Home from "./pages/Dashboard/Home";
 import Terminal from "./pages/Dashboard/Terminal";
 import Events from "./pages/Events";
@@ -39,8 +40,12 @@ export default function App() {
       <Router>
         <ScrollToTop />
         <Routes>
-          {/* Dashboard Layout */}
-          <Route path="/" element={<AppLayout />}>
+          {/* Auth Layout - Public Routes */}
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+
+          {/* Dashboard Layout - Protected Routes */}
+          <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
             <Route index element={<Terminal />} />
             <Route path="terminal" element={<Terminal />} />
             <Route path="mainscreen" element={<Home />} />
@@ -79,10 +84,6 @@ export default function App() {
             <Route path="line-chart" element={<LineChart />} />
             <Route path="bar-chart" element={<BarChart />} />
           </Route>
-
-          {/* Auth Layout */}
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
 
           {/* Error Routes */}
           <Route path="error-404" element={<NotFound />} />

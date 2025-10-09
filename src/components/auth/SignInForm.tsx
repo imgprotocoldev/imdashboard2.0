@@ -1,19 +1,14 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
-import Button from "../ui/button/Button";
-import { createClient } from "@supabase/supabase-js";
-
-// Supabase configuration
-const supabaseUrl = 'https://bxnkvezalchegmulbkwo.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4bmt2ZXphbGNoZWdtdWxia3dvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODcxOTUsImV4cCI6MjA3NDQ2MzE5NX0.tT3h83AKp_wsWDEahYTfYPot0fxFpgk_4fKOaonq5Qo';
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from "../../hooks/useSupabaseAuth";
 
 export default function SignInForm() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState('');
@@ -21,8 +16,6 @@ export default function SignInForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
-  const [resetEmailSent, setResetEmailSent] = useState(false);
 
   // Create user profile function
   const createUserProfile = async (user: any) => {
@@ -53,6 +46,20 @@ export default function SignInForm() {
     }
   };
 
+  // Check if user is already logged in and redirect to dashboard
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        // User is already logged in, redirect to where they came from or dashboard
+        const from = (location.state as any)?.from?.pathname || '/';
+        navigate(from, { replace: true });
+      }
+    };
+
+    checkSession();
+  }, [navigate, location]);
+
   // Handle OAuth redirects and session detection
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -73,14 +80,15 @@ export default function SignInForm() {
             setError('Authentication failed: ' + error.message);
           } else if (data.user) {
             await createUserProfile(data.user);
-            window.location.href = 'https://app.imgsolana.com';
+            const from = (location.state as any)?.from?.pathname || '/';
+            navigate(from, { replace: true });
           }
         }
       }
     };
 
     handleAuthCallback();
-  }, []);
+  }, [navigate, location]);
 
   // Handle email/password login
   const handleLogin = async (e: React.FormEvent) => {
@@ -123,8 +131,9 @@ export default function SignInForm() {
         // Create user profile if first time login
         await createUserProfile(data.user);
         
-        // Redirect to dashboard
-        window.location.href = 'https://app.imgsolana.com';
+        // Redirect to where they came from or dashboard
+        const from = (location.state as any)?.from?.pathname || '/';
+        navigate(from, { replace: true });
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again later.');
@@ -139,7 +148,7 @@ export default function SignInForm() {
       setLoading(true);
       setError('');
       
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: 'https://app.imgsolana.com',
@@ -168,7 +177,7 @@ export default function SignInForm() {
       setLoading(true);
       setError('');
       
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
         options: {
           redirectTo: 'https://app.imgsolana.com',
@@ -216,10 +225,8 @@ export default function SignInForm() {
           setError('Failed to send reset email. Please try again.');
         }
       } else {
-        setResetEmailSent(true);
         setSuccessMessage('Password reset email sent! Please check your inbox and follow the link to reset your password.');
         setTimeout(() => {
-          setResetEmailSent(false);
           setSuccessMessage('');
         }, 5000);
       }
@@ -228,11 +235,6 @@ export default function SignInForm() {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Handle reset email mode
-  const handleSendForgotEmail = async () => {
-    await handleForgotPassword();
   };
 
   return (
@@ -360,7 +362,6 @@ export default function SignInForm() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={loading}
-                    required
                   />
                 </div>
                 <div>
@@ -374,7 +375,6 @@ export default function SignInForm() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       disabled={loading}
-                      required
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -405,14 +405,12 @@ export default function SignInForm() {
                   </button>
                 </div>
                 <div>
-                  <Button 
-                    className="w-full" 
-                    size="sm"
-                    type="submit"
+                  <button
+                    className="w-full py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-300 bg-brand-500 hover:bg-brand-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={loading}
                   >
                     {loading ? 'Signing in...' : 'Sign in'}
-                  </Button>
+                  </button>
                 </div>
               </div>
             </form>
