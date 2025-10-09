@@ -198,21 +198,21 @@ export default Hub;
 // --- Daily Spin Component (even SVG slices) ---
 const DailySpinCard: React.FC = () => {
   const { user } = useSupabaseAuth();
-  const { addUserXP } = useRaidProfile();
+  const { addUserPoints } = useRaidProfile();
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [winLabel, setWinLabel] = useState<string | null>(null);
   const [canSpin, setCanSpin] = useState(true);
   
   const prizes = [
-    { label: '1 XP', value: 1, probability: 0.35 },
-    { label: '5 XP', value: 5, probability: 0.25 },
-    { label: '10 XP', value: 10, probability: 0.15 },
-    { label: '15 XP', value: 15, probability: 0.10 },
-    { label: '20 XP', value: 20, probability: 0.07 },
-    { label: '25 XP', value: 25, probability: 0.04 },
-    { label: '30 XP', value: 30, probability: 0.03 },
-    { label: '50 XP', value: 50, probability: 0.01 },
+    { label: '10 Points', value: 10, probability: 0.35 },
+    { label: '25 Points', value: 25, probability: 0.25 },
+    { label: '50 Points', value: 50, probability: 0.15 },
+    { label: '75 Points', value: 75, probability: 0.10 },
+    { label: '100 Points', value: 100, probability: 0.07 },
+    { label: '150 Points', value: 150, probability: 0.04 },
+    { label: '200 Points', value: 200, probability: 0.03 },
+    { label: '500 Points', value: 500, probability: 0.01 },
   ];
 
   // Check if user can spin today
@@ -268,13 +268,13 @@ const DailySpinCard: React.FC = () => {
       const offset = (targetMod - currentMod + 360) % 360; // minimal positive offset to reach target
       const delta = base + offset;
       
-      // Schedule label update and XP award when animation completes
+      // Schedule label update and Points award when animation completes
       setTimeout(async () => {
         setWinLabel(wonPrize.label);
         
-        // Award XP to user
+        // Award Points to user
         if (wonPrize.value > 0) {
-          await addUserXP(wonPrize.value);
+          await addUserPoints(wonPrize.value);
         }
         
         // Mark spin as used for today

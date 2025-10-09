@@ -182,6 +182,25 @@ export const useRaidProfile = () => {
     }
   };
 
+  // Add raid points
+  const addUserPoints = async (amount: number) => {
+    if (!user?.id || !profile) return false;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ raid_points: (profile.raid_points || 0) + amount })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      return true;
+    } catch (error) {
+      console.error('Error adding points:', error);
+      return false;
+    }
+  };
+
   // Spend raid points
   const spendPoints = async (amount: number) => {
     if (!user?.id || !profile) return false;
@@ -226,6 +245,7 @@ export const useRaidProfile = () => {
     rankUpReward,
     setShowRankUpModal,
     addUserXP,
+    addUserPoints,
     logRaidAction,
     spendPoints,
     getProgressToNextRank,
