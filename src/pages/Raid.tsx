@@ -358,7 +358,7 @@ const Raid: React.FC = () => {
                 {profile?.x_handle ? (
                   <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
                     <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                    Connected to X
+                    Connected
                   </div>
                 ) : (
                   <a

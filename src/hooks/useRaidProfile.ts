@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, Profile, RankDefinition, addXP, checkAndProcessRankUps } from '../lib/supabase';
+import { supabase, Profile, RankDefinition, addXP } from '../lib/supabase';
 import { useSupabaseAuth } from './useSupabaseAuth';
 
 export const useRaidProfile = () => {
@@ -42,15 +42,6 @@ export const useRaidProfile = () => {
 
     const loadProfile = async () => {
       setLoading(true);
-      
-      // First, check and process any pending rank-ups
-      try {
-        await checkAndProcessRankUps(user.id);
-      } catch (error) {
-        console.error('Error checking rank-ups:', error);
-      }
-      
-      // Then load the profile
       const { data, error } = await supabase
         .from('profiles')
         .select('*')

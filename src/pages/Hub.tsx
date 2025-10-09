@@ -51,7 +51,10 @@ const Hub: React.FC = () => {
                   <div>
                     <div className="text-base font-extrabold text-gray-900 dark:text-white leading-5">{displayName}</div>
                     {profile?.x_handle ? (
-                      <div className="text-xs text-green-600 dark:text-green-400">Connected to X</div>
+                      <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+                        <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                        Connected
+                      </div>
                     ) : (
                       <a href="/profile" className="text-xs text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 underline-offset-2 hover:underline">Connect to X</a>
                     )}
