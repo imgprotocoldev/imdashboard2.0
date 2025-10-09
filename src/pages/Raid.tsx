@@ -372,21 +372,21 @@ const Raid: React.FC = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10">
-              <div className="text-xs uppercase font-bold text-emerald-700 dark:text-emerald-300 tracking-widest">XP</div>
-              <div className="mt-0.5 text-lg font-bold text-emerald-900 dark:text-emerald-100">
+            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+              <div className="text-xs uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">XP</div>
+              <div className="mt-0.5 text-lg font-bold text-blue-900 dark:text-blue-100">
                 {raidProfile?.current_xp?.toLocaleString() || 0}
               </div>
             </div>
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10">
-              <div className="text-xs uppercase font-bold text-emerald-700 dark:text-emerald-300 tracking-widest">Points</div>
-              <div className="mt-0.5 text-lg font-bold text-emerald-900 dark:text-emerald-100">
+            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+              <div className="text-xs uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Points</div>
+              <div className="mt-0.5 text-lg font-bold text-blue-900 dark:text-blue-100">
                 {raidProfile?.raid_points?.toLocaleString() || 0}
               </div>
             </div>
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-emerald-300/30 dark:border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10">
-              <div className="text-xs uppercase font-bold text-emerald-700 dark:text-emerald-300 tracking-widest">Rank</div>
-              <div className="mt-0.5 text-lg font-bold text-emerald-900 dark:text-emerald-100">
+            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+              <div className="text-xs uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Rank</div>
+              <div className="mt-0.5 text-lg font-bold text-blue-900 dark:text-blue-100">
                 {currentRank?.rank_name || 'Rookie'}
               </div>
             </div>
@@ -402,7 +402,7 @@ const Raid: React.FC = () => {
             </div>
             <div className="w-full h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner">
               <div 
-                className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-500" 
+                className="h-full bg-gradient-to-r from-blue-400/70 to-blue-600/70 rounded-full transition-all duration-500" 
                 style={{ width: `${getProgressToNextRank()}%` }}
               ></div>
             </div>
