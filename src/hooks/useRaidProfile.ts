@@ -75,7 +75,7 @@ export const useRaidProfile = () => {
         },
         (payload) => {
           const newProfile = payload.new as Profile;
-          const oldProfile = profile;
+          const oldProfile = payload.old as Profile;
 
           // Check if rank increased (rank up!)
           if (oldProfile && newProfile.current_rank > oldProfile.current_rank) {
@@ -100,7 +100,7 @@ export const useRaidProfile = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, ranks, profile]);
+  }, [user?.id, ranks]);
 
   // Calculate current and next rank
   useEffect(() => {
