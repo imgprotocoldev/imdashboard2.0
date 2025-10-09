@@ -3,6 +3,7 @@ import ComponentCard from '../components/common/ComponentCard';
 import { useSupabaseAuth } from '../hooks/useSupabaseAuth';
 import { useRaidProfile } from '../hooks/useRaidProfile';
 import { XHandleManager } from '../utils/xHandleManager';
+import Select from '../components/form/Select';
 
 const Raid: React.FC = () => {
   const { user, supabase } = useSupabaseAuth();
@@ -20,6 +21,12 @@ const Raid: React.FC = () => {
   const [profile, setProfile] = useState<{ username: string; avatar_name: string | null; x_handle?: string | null } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [completedActions, setCompletedActions] = useState<Record<string, { like: boolean; reply: boolean; retweet: boolean }>>({});
+  const [selectedRewards, setSelectedRewards] = useState<Record<string, string>>({
+    sol: '',
+    img: '',
+    burn: '',
+    usdc: ''
+  });
   // Custom Raid Card source data (would come from API)
   type RaidItem = {
     id: string;
@@ -645,20 +652,57 @@ const Raid: React.FC = () => {
         <ComponentCard title="Prize Table" className="h-fit">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { reward: '$5 USD in SOL Tokens', cost: 300, image: '/images/raid/5usdinsol.webp', tier: 'Bronze' },
-              { reward: '$10 USD in SOL Tokens', cost: 600, image: '/images/raid/10usdinsol.webp', tier: 'Silver' },
-              { reward: '$25 USD in SOL Tokens', cost: 1000, image: '/images/raid/25usdinsol.webp', tier: 'Gold' },
-              { reward: '$50 USD in SOL Tokens', cost: 3000, image: '/images/raid/50usdinsol.webp', tier: 'Platinum' },
-              { reward: '$5 USD IMG Tokens', cost: 300, image: '/images/raid/imgprizeclaim.webp', tier: 'Bronze' },
-              { reward: '$10 USD IMG Tokens', cost: 600, image: '/images/raid/imgprizeclaim.webp', tier: 'Silver' },
-              { reward: '$25 USD IMG Tokens', cost: 1000, image: '/images/raid/imgprizeclaim.webp', tier: 'Gold' },
-              { reward: '$50 USD IMG Tokens', cost: 3000, image: '/images/raid/imgprizeclaim.webp', tier: 'Platinum' },
-              { reward: '$5 USD IMG Burn', cost: 300, image: '/images/raid/burngimgtokens.webp', tier: 'Bronze' },
-              { reward: '$10 USD IMG Burn', cost: 600, image: '/images/raid/burngimgtokens.webp', tier: 'Silver' },
-              { reward: '$25 USD IMG Burn', cost: 1000, image: '/images/raid/burngimgtokens.webp', tier: 'Gold' },
-              { reward: '$50 USD IMG Burn', cost: 3000, image: '/images/raid/burngimgtokens.webp', tier: 'Platinum' },
-            ].map((row, i) => {
-              const isUnlocked = (raidProfile?.raid_points || 0) >= row.cost;
+              { 
+                id: 'sol',
+                name: 'SOL Tokens', 
+                image: '/images/raid/5usdinsol.webp',
+                description: 'Claim SOL tokens as your reward'
+              },
+              { 
+                id: 'img',
+                name: 'IMG Tokens', 
+                image: '/images/raid/imgprizeclaim.webp',
+                description: 'Claim IMG tokens as your reward'
+              },
+              { 
+                id: 'burn',
+                name: 'IMG Burn', 
+                image: '/images/raid/burngimgtokens.webp',
+                description: 'Burn IMG tokens for rewards'
+              },
+              { 
+                id: 'usdc',
+                name: 'USDC', 
+                image: '/images/raids/usdcrewards.webp',
+                description: 'Claim USDC as your reward'
+              },
+            ].map((reward) => {
+              const rewardOptions = [
+                { value: '5', label: '$5 USD' },
+                { value: '10', label: '$10 USD' },
+                { value: '25', label: '$25 USD' },
+                { value: '50', label: '$50 USD' },
+              ];
+              
+              const pointsMap: Record<string, number> = {
+                '5': 300,
+                '10': 600,
+                '25': 1000,
+                '50': 3000
+              };
+              
+              const tierMap: Record<string, string> = {
+                '5': 'Bronze',
+                '10': 'Silver',
+                '25': 'Gold',
+                '50': 'Platinum'
+              };
+              
+              const selectedAmount = selectedRewards[reward.id];
+              const requiredPoints = selectedAmount ? pointsMap[selectedAmount] : 0;
+              const tier = selectedAmount ? tierMap[selectedAmount] : '';
+              const isUnlocked = selectedAmount && (raidProfile?.raid_points || 0) >= requiredPoints;
+              
               const tierColors = {
                 Bronze: 'from-amber-500 to-orange-600',
                 Silver: 'from-gray-400 to-gray-600', 
@@ -673,23 +717,25 @@ const Raid: React.FC = () => {
               };
               
               return (
-                <div key={i} className={`group relative rounded-2xl border-2 overflow-hidden transition-all duration-300 hover:scale-[1.02] ${
+                <div key={reward.id} className={`group relative rounded-2xl border-2 overflow-hidden transition-all duration-300 hover:scale-[1.02] ${
                   isUnlocked 
-                    ? `border-brand-400/50 dark:border-brand-500/50 bg-white dark:bg-white/[0.03] ${tierGlow[row.tier as keyof typeof tierGlow]} hover:border-brand-400 dark:hover:border-brand-500` 
-                    : 'border-gray-200/50 dark:border-white/10 bg-gray-50 dark:bg-gray-900/50'
+                    ? `border-brand-400/50 dark:border-brand-500/50 bg-white dark:bg-white/[0.03] ${tierGlow[tier as keyof typeof tierGlow]} hover:border-brand-400 dark:hover:border-brand-500` 
+                    : 'border-gray-200/50 dark:border-white/10 bg-white dark:bg-white/[0.03]'
                 }`}>
                   {/* Tier Badge */}
-                  <div className={`absolute top-3 left-3 z-10 px-2 py-1 rounded-lg text-xs font-bold text-white bg-gradient-to-r ${tierColors[row.tier as keyof typeof tierColors]} shadow-lg`}>
-                    {row.tier}
-                  </div>
+                  {tier && (
+                    <div className={`absolute top-3 left-3 z-10 px-2 py-1 rounded-lg text-xs font-bold text-white bg-gradient-to-r ${tierColors[tier as keyof typeof tierColors]} shadow-lg`}>
+                      {tier}
+                    </div>
+                  )}
                   
                   {/* Image with overlay */}
                   <div className="relative h-40 overflow-hidden">
-                    <img src={row.image} alt={row.reward} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                    <img src={reward.image} alt={reward.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                     <div className={`absolute inset-0 bg-gradient-to-t ${
                       isUnlocked ? 'from-black/20 to-transparent' : 'from-black/40 to-transparent'
                     }`} />
-                    {!isUnlocked && (
+                    {selectedAmount && !isUnlocked && (
                       <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                         <div className="text-white text-sm font-bold bg-black/50 px-3 py-1 rounded-lg backdrop-blur-sm">
                           LOCKED
@@ -701,36 +747,51 @@ const Raid: React.FC = () => {
                   <div className="p-5 space-y-4">
                     {/* Reward Info */}
                     <div className="text-center">
-                      <div className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">Reward</div>
-                      <div className="text-base font-bold text-gray-900 dark:text-white leading-tight">{row.reward}</div>
+                      <div className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">Reward Type</div>
+                      <div className="text-base font-bold text-gray-900 dark:text-white leading-tight mb-1">{reward.name}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{reward.description}</div>
+                    </div>
+                    
+                    {/* Select Amount */}
+                    <div className="space-y-2">
+                      <label className="text-xs text-gray-600 dark:text-gray-400 font-medium">Select Amount</label>
+                      <Select
+                        options={rewardOptions}
+                        placeholder="Choose reward amount"
+                        onChange={(value) => setSelectedRewards(prev => ({ ...prev, [reward.id]: value }))}
+                        defaultValue={selectedAmount}
+                      />
                     </div>
                     
                     {/* Points & Action */}
-                    <div className="space-y-3">
-                      <div className="text-center">
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Required Points</div>
-                        <div className={`text-2xl font-black ${isUnlocked ? 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600' : 'text-gray-400'}`}>
-                          {row.cost}
+                    {selectedAmount && (
+                      <div className="space-y-3">
+                        <div className="text-center">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Required Points</div>
+                          <div className={`text-2xl font-black ${isUnlocked ? 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600' : 'text-gray-400'}`}>
+                            {requiredPoints.toLocaleString()}
+                          </div>
                         </div>
+                        
+                        <button
+                          className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all duration-300 ${
+                            isUnlocked 
+                              ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-[0_6px_20px_rgba(16,185,129,0.4)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.5)] hover:scale-[1.02]' 
+                              : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                          }`}
+                          disabled={!isUnlocked}
+                          onClick={async () => {
+                            if (isUnlocked) {
+                              await spendPoints(requiredPoints);
+                              alert(`Claimed $${selectedAmount} USD in ${reward.name}!`);
+                              setSelectedRewards(prev => ({ ...prev, [reward.id]: '' }));
+                            }
+                          }}
+                        >
+                          {isUnlocked ? '🎁 Claim Reward' : '🔒 Locked'}
+                        </button>
                       </div>
-                      
-                      <button
-                        className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all duration-300 ${
-                          isUnlocked 
-                            ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-[0_6px_20px_rgba(16,185,129,0.4)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.5)] hover:scale-[1.02]' 
-                            : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                        }`}
-                        disabled={!isUnlocked}
-                        onClick={async () => {
-                          if (isUnlocked) {
-                            await spendPoints(row.cost);
-                            alert(`Claimed ${row.reward}!`);
-                          }
-                        }}
-                      >
-                        {isUnlocked ? '🎁 Claim Reward' : '🔒 Locked'}
-                      </button>
-                    </div>
+                    )}
                   </div>
                   
                   {/* Glow effect */}
