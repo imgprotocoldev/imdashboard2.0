@@ -1,5 +1,9 @@
 # Infinite Money Glitch Rewards Distribution Platform
 
+<div align="center">
+  <img src="imglogo.png" alt="IMG Logo" width="200"/>
+</div>
+
 A comprehensive rewards distribution system for the IMG token ecosystem, designed to automatically harvest fees, distribute rewards, and maintain transparent ledger records.
 
 ## Requirements
