@@ -11,7 +11,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false, // Set to false for Vite
+    detectSessionInUrl: true, // Enable to detect OAuth callback
     flowType: 'pkce'
   },
   global: {
