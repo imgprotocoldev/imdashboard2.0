@@ -616,15 +616,15 @@ const RaidGames: React.FC = () => {
             {/* Fortune Spin Game */}
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-purple-300 dark:hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] dark:hover:shadow-[0_0_20px_rgba(168,85,247,0.25)] overflow-hidden">
               {/* Cost Tag */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
+              <div className="absolute top-3 right-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg z-10">
                 5 Points
               </div>
 
               {/* Card Content */}
-              <div className="p-6 flex-1 flex flex-col">
+              <div className="p-4 sm:p-6 flex-1 flex flex-col">
                 {/* Header with Gradient */}
-                <div className="mb-4">
-                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Fortune Spin</div>
+                <div className="mb-4 mt-8 sm:mt-0 text-center sm:text-center">
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Fortune Spin</div>
                 </div>
 
                 {/* Wheel Visual */}
@@ -677,15 +677,15 @@ const RaidGames: React.FC = () => {
             {/* Scratch Card Game */}
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-yellow-300 dark:hover:border-yellow-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(234,179,8,0.15)] dark:hover:shadow-[0_0_20px_rgba(234,179,8,0.25)] overflow-hidden">
               {/* Cost Tag */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
+              <div className="absolute top-3 right-3 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-xs sm:text-sm font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg z-10">
                 5 Points
               </div>
 
               {/* Card Content */}
-              <div className="p-6 flex-1 flex flex-col">
+              <div className="p-4 sm:p-6 flex-1 flex flex-col">
                 {/* Header with Gradient */}
-                <div className="mb-4">
-                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Scratch Card</div>
+                <div className="mb-4 mt-8 sm:mt-0 text-center sm:text-center">
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Scratch Card</div>
                 </div>
 
                 {/* Scratch Card Visual - real scratch with canvas (200x200) */}
@@ -746,15 +746,15 @@ const RaidGames: React.FC = () => {
             {/* Pick a Card Game */}
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-red-300 dark:hover:border-red-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] dark:hover:shadow-[0_0_20px_rgba(239,68,68,0.25)] overflow-hidden">
               {/* Cost Tag */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-pink-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
+              <div className="absolute top-3 right-3 bg-gradient-to-r from-red-600 to-pink-600 text-white text-xs sm:text-sm font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg z-10">
                 5 Points
               </div>
 
               {/* Card Content */}
-              <div className="p-6 flex-1 flex flex-col">
+              <div className="p-4 sm:p-6 flex-1 flex flex-col">
                 {/* Header with Gradient */}
-                <div className="mb-3">
-                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Pick a Card</div>
+                <div className="mb-3 mt-8 sm:mt-0 text-center sm:text-center">
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Pick a Card</div>
                 </div>
 
                 {/* Interactive Cards - 3 Cards Horizontal */}
@@ -878,15 +878,15 @@ const RaidGames: React.FC = () => {
             {/* Dice Roll Game */}
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.25)] overflow-hidden">
               {/* Cost Tag */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
+              <div className="absolute top-3 right-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs sm:text-sm font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg z-10">
                 5 Points
               </div>
 
               {/* Card Content */}
-              <div className="p-6 flex-1 flex flex-col">
+              <div className="p-4 sm:p-6 flex-1 flex flex-col">
                 {/* Header with Gradient */}
-                <div className="mb-3">
-                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Dice Roll</div>
+                <div className="mb-3 mt-8 sm:mt-0 text-center sm:text-center">
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Dice Roll</div>
                 </div>
 
                 {/* Number Selection */}
@@ -1009,15 +1009,15 @@ const RaidGames: React.FC = () => {
             {/* Slot Machine Game */}
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-purple-300 dark:hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] dark:hover:shadow-[0_0_20px_rgba(168,85,247,0.25)] overflow-hidden">
               {/* Cost Tag */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
+              <div className="absolute top-3 right-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs sm:text-sm font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg z-10">
                 5 Points
               </div>
 
               {/* Card Content */}
-              <div className="p-6 flex-1 flex flex-col">
+              <div className="p-4 sm:p-6 flex-1 flex flex-col">
                 {/* Header with Gradient */}
-                <div className="mb-3">
-                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Slot Machine</div>
+                <div className="mb-3 mt-8 sm:mt-0 text-center sm:text-center">
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Slot Machine</div>
                 </div>
 
                 {/* Slot Machine Container */}
@@ -1100,15 +1100,15 @@ const RaidGames: React.FC = () => {
             {/* Coin Flip Game */}
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-yellow-300 dark:hover:border-yellow-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(234,179,8,0.15)] dark:hover:shadow-[0_0_20px_rgba(234,179,8,0.25)] overflow-hidden">
               {/* Cost Tag */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
+              <div className="absolute top-3 right-3 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-xs sm:text-sm font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg z-10">
                 5 Points
               </div>
 
               {/* Card Content */}
-              <div className="p-6 flex-1 flex flex-col">
+              <div className="p-4 sm:p-6 flex-1 flex flex-col">
                 {/* Header with Gradient */}
-                <div className="mb-3">
-                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Coin Flip</div>
+                <div className="mb-3 mt-8 sm:mt-0 text-center sm:text-center">
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 dark:from-white dark:via-gray-300 dark:to-white bg-clip-text text-transparent mb-2">Coin Flip</div>
                 </div>
 
                 {/* Side Selection - Similar to Dice Roll */}
