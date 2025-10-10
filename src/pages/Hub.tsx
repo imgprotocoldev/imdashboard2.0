@@ -84,26 +84,26 @@ const Hub: React.FC = () => {
               </ComponentCard>
 
               {/* Promo: small image left, text + button right */}
-              <div className="mt-3 rounded-xl border border-gray-200 dark:border-white/10 p-4 bg-white dark:bg-white/[0.02]">
-                <div className="flex items-center gap-5">
-                  <div className="shrink-0 w-40 md:w-[44%] h-24 md:h-28 lg:h-32 rounded-lg overflow-hidden border border-gray-100 dark:border-white/10">
+              <div className="mt-3 rounded-xl border border-gray-200 dark:border-white/10 p-3 sm:p-4 bg-white dark:bg-white/[0.02]">
+                <div className="flex flex-col sm:flex-row items-center sm:items-center gap-3 sm:gap-5">
+                  <div className="shrink-0 w-full sm:w-32 md:w-[44%] h-32 sm:h-24 md:h-28 lg:h-32 rounded-lg overflow-hidden border border-gray-100 dark:border-white/10">
                     <img
                       src="/images/raid/raidgamesbanner.webp"
                       alt="Raid Games"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-lg md:text-xl font-extrabold text-gray-900 dark:text-white leading-7">
+                  <div className="min-w-0 flex-1 text-center sm:text-left">
+                    <div className="text-base sm:text-lg md:text-xl font-extrabold text-gray-900 dark:text-white leading-tight sm:leading-7">
                       Use Your Raid Points to Play Games!
                     </div>
-                    <div className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
+                    <div className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1 sm:mt-1">
                       Spend points to win XP bonuses and prizes.
                     </div>
                     <div className="mt-3">
                       <a
                         href="/raidgames"
-                        className="inline-flex items-center justify-center px-5 py-2 rounded-md bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-sm md:text-base font-bold shadow-[0_4px_12px_rgba(168,85,247,0.35)] hover:shadow-[0_6px_16px_rgba(168,85,247,0.45)] transition-all"
+                        className="inline-flex items-center justify-center px-4 sm:px-5 py-2 rounded-md bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs sm:text-sm md:text-base font-bold shadow-[0_4px_12px_rgba(168,85,247,0.35)] hover:shadow-[0_6px_16px_rgba(168,85,247,0.45)] transition-all"
                       >
                         Play Now
                       </a>
@@ -294,7 +294,7 @@ const DailySpinCard: React.FC = () => {
   const r = size / 2;
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] py-8 px-6">
+    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] py-6 px-6">
       {/* Main flex container */}
       <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-6 lg:gap-8 min-h-[280px]">
         
