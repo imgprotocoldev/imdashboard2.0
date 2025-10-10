@@ -33,6 +33,7 @@ import Hub from "./pages/Hub";
 import RaidGames from "./pages/RaidGames";
 // Information page currently unused
 import Raid from "./pages/Raid";
+import Notifications from "./pages/Notifications";
 
 export default function App() {
   return (
@@ -58,6 +59,7 @@ export default function App() {
                     <Route path="hub" element={<Hub />} />
                     <Route path="raidgames" element={<RaidGames />} />
                     <Route path="raid" element={<Raid />} />
+                    <Route path="notifications" element={<Notifications />} />
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />
