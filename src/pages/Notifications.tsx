@@ -1,4 +1,3 @@
-import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import PageMeta from "../components/common/PageMeta";
 
 interface NotificationItem {
@@ -81,7 +80,6 @@ export default function Notifications() {
   return (
     <>
       <PageMeta title="Notifications | IMG Dashboard" description="Stay updated with the latest news and updates from IMG Dashboard" />
-      <PageBreadcrumb title="Notifications" pages={["Notifications"]} />
       
       <div className="flex flex-col gap-6">
         {/* Page Header */}
