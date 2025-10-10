@@ -19,7 +19,7 @@ export default function Notifications() {
       details: 'Welcome to the Infinite Money Glitch Dashboard! We\'re excited to have you here. Explore our features including Daily Spins, Raid Games, and Active Raids to start earning points and climbing the leaderboard. Connect your X account to unlock all features and maximize your rewards.',
       date: 'October 10, 2025',
       category: 'System',
-      icon: './images/notification/imglogoround.png'
+      icon: './images/notification/imglogonotification.webp'
     },
     {
       id: '2',
@@ -28,7 +28,7 @@ export default function Notifications() {
       details: 'We\'ve updated our Raid Games section with standardized pricing! All games now cost just 25 points to play, including Fortune Spin, Scratch Card, Pick a Card, Dice Roll, Slot Machine, and Coin Flip. Each game offers unique rewards and exciting gameplay. Purchase games with your earned points and try your luck for bigger rewards!',
       date: 'October 10, 2025',
       category: 'Games',
-      icon: './images/notification/imglogoround.png'
+      icon: './images/notification/imglogonotification.webp'
     },
     {
       id: '3',
@@ -37,7 +37,7 @@ export default function Notifications() {
       details: 'The Daily Spin feature has been upgraded! You can now earn Points directly from your daily spins instead of XP. Points are more versatile and can be used to purchase games, participate in raids, and unlock exclusive features. Make sure to spin daily to maximize your point earnings!',
       date: 'October 10, 2025',
       category: 'Hub',
-      icon: './images/notification/imglogoround.png'
+      icon: './images/notification/imglogonotification.webp'
     },
     {
       id: '4',
@@ -46,7 +46,7 @@ export default function Notifications() {
       details: 'To ensure authentic participation and prevent abuse, we now require users to connect their X (Twitter) account before joining raids. This helps us verify raid actions (likes, replies, retweets) and ensures fair XP distribution. Visit your profile page to connect your X account and start raiding!',
       date: 'October 9, 2025',
       category: 'Raids',
-      icon: './images/notification/imglogoround.png'
+      icon: './images/notification/imglogonotification.webp'
     },
     {
       id: '5',
@@ -55,7 +55,7 @@ export default function Notifications() {
       details: 'We\'ve fixed the leaderboard to display all users correctly! Previously, only the logged-in user was visible. Now you can see the top players across the platform with their real usernames. The leaderboard updates in real-time as users earn points and XP. Compete with others and climb to the top!',
       date: 'October 9, 2025',
       category: 'System',
-      icon: './images/notification/imglogoround.png'
+      icon: './images/notification/imglogonotification.webp'
     },
     {
       id: '6',
@@ -64,7 +64,7 @@ export default function Notifications() {
       details: 'We\'ve improved the user experience by automatically creating usernames for new signups. Whether you sign up with email, Google, or X (Twitter), your username will be automatically generated and displayed across the platform. You can always customize your username later in your profile settings.',
       date: 'October 8, 2025',
       category: 'Profile',
-      icon: './images/notification/imglogoround.png'
+      icon: './images/notification/imglogonotification.webp'
     },
     {
       id: '7',
@@ -73,7 +73,7 @@ export default function Notifications() {
       details: 'We\'ve transitioned to a unified Points economy! All games, purchases, and rewards now use the same Points currency. This makes it easier to track your progress and spend your earnings across different features. Earn points from raids, daily spins, and games, then use them to unlock more opportunities!',
       date: 'October 7, 2025',
       category: 'Economy',
-      icon: './images/notification/imglogoround.png'
+      icon: './images/notification/imglogonotification.webp'
     }
   ];
 

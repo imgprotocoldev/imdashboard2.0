@@ -87,7 +87,7 @@ export default function NotificationDropdown() {
                 <img
                   width={40}
                   height={40}
-                  src="./images/notification/imglogoround.png"
+                  src="./images/notification/imglogonotification.webp"
                   alt="IMG Logo"
                   className="w-full overflow-hidden rounded-full"
                 />
@@ -120,7 +120,7 @@ export default function NotificationDropdown() {
                 <img
                   width={40}
                   height={40}
-                  src="./images/notification/imglogoround.png"
+                  src="./images/notification/imglogonotification.webp"
                   alt="IMG Logo"
                   className="w-full overflow-hidden rounded-full"
                 />
@@ -152,7 +152,7 @@ export default function NotificationDropdown() {
                 <img
                   width={40}
                   height={40}
-                  src="./images/notification/imglogoround.png"
+                  src="./images/notification/imglogonotification.webp"
                   alt="IMG Logo"
                   className="w-full overflow-hidden rounded-full"
                 />
@@ -184,7 +184,7 @@ export default function NotificationDropdown() {
                 <img
                   width={40}
                   height={40}
-                  src="./images/notification/imglogoround.png"
+                  src="./images/notification/imglogonotification.webp"
                   alt="IMG Logo"
                   className="w-full overflow-hidden rounded-full"
                 />
@@ -217,7 +217,7 @@ export default function NotificationDropdown() {
                 <img
                   width={40}
                   height={40}
-                  src="./images/notification/imglogoround.png"
+                  src="./images/notification/imglogonotification.webp"
                   alt="IMG Logo"
                   className="w-full overflow-hidden rounded-full"
                 />
@@ -249,7 +249,7 @@ export default function NotificationDropdown() {
                 <img
                   width={40}
                   height={40}
-                  src="./images/notification/imglogoround.png"
+                  src="./images/notification/imglogonotification.webp"
                   alt="IMG Logo"
                   className="w-full overflow-hidden rounded-full"
                 />
@@ -281,7 +281,7 @@ export default function NotificationDropdown() {
                 <img
                   width={40}
                   height={40}
-                  src="./images/notification/imglogoround.png"
+                  src="./images/notification/imglogonotification.webp"
                   alt="IMG Logo"
                   className="w-full overflow-hidden rounded-full"
                 />
