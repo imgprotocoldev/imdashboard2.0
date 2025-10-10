@@ -16,28 +16,28 @@ export default function Voting() {
 
   // Sample active voting data
   const activeVote = {
-    id: "vote-001",
-    title: "IMG Protocol Governance Proposal #1",
-    description: "Should we implement a new reward distribution mechanism that allocates 5% of trading volume to community development fund?",
-    image: "/images/voting/governance-proposal-1.webp",
-    endDate: "2025-01-15T23:59:59.000Z",
+    id: "vote-002",
+    title: "Do You Like the New Voting System?",
+    description: "This is the first community vote on the Infinite Money Glitch Dashboard! 🎉\nWe're testing the new voting feature and gathering feedback before rolling out more updates — including raiding games, blog posts, and dashboard improvements.",
+    image: "/images/voting/voting-system.webp",
+    endDate: "2025-10-20T23:59:59.000Z",
     totalVotes: 0,
     options: [
       {
         id: "option-1",
-        text: "Yes - Implement the new distribution mechanism",
+        text: "Yes - It's great",
         votes: 0,
         percentage: 0
       },
       {
         id: "option-2", 
-        text: "No - Keep current distribution mechanism",
+        text: "Ok - Can be improved",
         votes: 0,
         percentage: 0
       },
       {
         id: "option-3",
-        text: "Abstain - No preference",
+        text: "No - Delete now",
         votes: 0,
         percentage: 0
       }
@@ -307,7 +307,7 @@ export default function Voting() {
             desc={`Ends: ${formatDate(activeVote.endDate)}`}
           >
             <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
                 {activeVote.description}
               </p>
             </div>
