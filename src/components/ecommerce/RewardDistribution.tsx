@@ -136,7 +136,7 @@ export default function RewardDistribution() {
         
       </div>
 
-      <div className="flex items-center justify-center gap-3 px-6 py-2 sm:gap-4 sm:py-3">
+      <div className="grid grid-cols-2 gap-3 px-6 py-3 sm:flex sm:items-center sm:justify-center sm:gap-4">
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-1.5 mb-0.5">
             <div className="w-2 h-2 rounded-full bg-blue-500"></div>
@@ -149,7 +149,7 @@ export default function RewardDistribution() {
           </p>
         </div>
 
-        <div className="w-px bg-gray-200 h-5 dark:bg-gray-800"></div>
+        <div className="hidden sm:block w-px bg-gray-200 h-5 dark:bg-gray-800"></div>
 
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-1.5 mb-0.5">
@@ -163,7 +163,7 @@ export default function RewardDistribution() {
           </p>
         </div>
 
-        <div className="w-px bg-gray-200 h-5 dark:bg-gray-800"></div>
+        <div className="hidden sm:block w-px bg-gray-200 h-5 dark:bg-gray-800"></div>
 
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-1.5 mb-0.5">
@@ -177,7 +177,7 @@ export default function RewardDistribution() {
           </p>
         </div>
 
-        <div className="w-px bg-gray-200 h-5 dark:bg-gray-800"></div>
+        <div className="hidden sm:block w-px bg-gray-200 h-5 dark:bg-gray-800"></div>
 
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-1.5 mb-0.5">

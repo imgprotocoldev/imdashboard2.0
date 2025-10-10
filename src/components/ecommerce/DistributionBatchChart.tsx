@@ -75,11 +75,11 @@ export default function DistributionBatchChart() {
       </div>
 
       <div className="max-w-full overflow-x-auto custom-scrollbar">
-        <div className="min-w-[320px] sm:min-w-[650px] xl:min-w-full px-2">
+        <div className="min-w-0 sm:min-w-[650px] xl:min-w-full px-1 sm:px-2">
           <div className="min-h-[180px] flex flex-col justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               {/* Incoming SOL */}
-              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-500/10 rounded-lg">
+              <div className="flex items-center justify-between p-2 sm:p-3 bg-blue-50 dark:bg-blue-500/10 rounded-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
@@ -92,7 +92,7 @@ export default function DistributionBatchChart() {
               </div>
 
               {/* Payment to Holders */}
-              <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-500/10 rounded-lg">
+              <div className="flex items-center justify-between p-2 sm:p-3 bg-green-50 dark:bg-green-500/10 rounded-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
@@ -105,7 +105,7 @@ export default function DistributionBatchChart() {
               </div>
 
               {/* Payment to Infra */}
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
+              <div className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
@@ -118,7 +118,7 @@ export default function DistributionBatchChart() {
               </div>
 
               {/* Pending Rewards */}
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
+              <div className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
@@ -131,7 +131,7 @@ export default function DistributionBatchChart() {
               </div>
 
               {/* Net */}
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
+              <div className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
@@ -144,7 +144,7 @@ export default function DistributionBatchChart() {
               </div>
 
               {/* Transaction Signature */}
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
+              <div className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 dark:bg-gray-500/10 rounded-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
                   <span className="text-xs font-medium text-gray-700 dark:text-gray-300">

@@ -60,7 +60,7 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
       <span class="fi fi-${flagCode}" style="font-size: 16px;"></span>
       <div>
         <strong>${countryName}</strong><br/>
-        ${userCount}
+        <span style="font-size: 14px;">${userCount}</span>
       </div>
     </div>`);
   }, [countryUserData]);
