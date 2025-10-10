@@ -35,12 +35,12 @@ export default function Harvesting() {
           desc="Track IMG token harvesting activities and reward pool distributions"
           className="relative"
         >
-          {/* Monthly Filter in Card Header */}
-          <div className="absolute top-4 right-4">
+          {/* Monthly Filter - Desktop: absolute top-right, Mobile: below header */}
+          <div className="mb-4 lg:mb-0 lg:absolute lg:top-4 lg:right-4">
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              className="w-full lg:w-auto px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             >
               {monthOptions.map((option) => (
                 <option key={option.value} value={option.value}>

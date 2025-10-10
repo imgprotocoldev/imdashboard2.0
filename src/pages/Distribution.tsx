@@ -36,21 +36,21 @@ export default function Distribution() {
           desc="Track SOL reward distributions to holders and their USD values"
           className="relative"
         >
-          {/* Search and Filter Controls */}
-          <div className="absolute top-4 right-4 flex gap-3">
+          {/* Search and Filter Controls - Desktop: absolute top-right, Mobile: below header */}
+          <div className="mb-4 lg:mb-0 lg:absolute lg:top-4 lg:right-4 flex flex-col sm:flex-row gap-3">
             {/* Search Bar */}
             <input
               type="text"
               placeholder="Search Address..."
               value={searchAddress}
               onChange={(e) => setSearchAddress(e.target.value)}
-              className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent w-48"
+              className="w-full sm:w-48 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             />
             {/* Monthly Filter */}
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             >
               {monthOptions.map((option) => (
                 <option key={option.value} value={option.value}>
