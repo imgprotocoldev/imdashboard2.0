@@ -292,13 +292,15 @@ const DailySpinCard: React.FC = () => {
   const r = size / 2;
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] px-5 py-4">
+    <div className="rounded-xl border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.03] px-4 sm:px-5 py-4">
 
-      <div className="mx-auto grid grid-cols-1 md:grid-cols-12 items-center gap-6">
+      <div className="mx-auto flex flex-col lg:grid lg:grid-cols-12 items-center gap-4 lg:gap-6">
         {/* Left: title + button */}
-        <div className="md:col-span-3 w-full text-center md:text-left">
-          <div className="text-4xl md:text-5xl leading-tight font-extrabold bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent mb-4 md:mb-6">Daily Spin</div>
-          <div className="mt-5 md:mt-6 flex md:block items-center justify-center md:justify-start">
+        <div className="lg:col-span-3 xl:col-span-4 w-full text-center lg:text-left">
+          <div className="text-3xl sm:text-4xl lg:text-3xl xl:text-4xl 2xl:text-5xl leading-tight font-extrabold bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent mb-3 lg:mb-4 xl:mb-6">
+            Daily Spin
+          </div>
+          <div className="mt-3 lg:mt-4 xl:mt-6 flex lg:block items-center justify-center lg:justify-start">
             <button
               onClick={onSpin}
               disabled={spinning || !canSpin || !user?.id}
@@ -314,7 +316,7 @@ const DailySpinCard: React.FC = () => {
         </div>
 
         {/* Middle: Wheel container (centered) */}
-        <div className="md:col-span-6 flex items-center justify-center" style={{ minHeight: size + 40 }}>
+        <div className="lg:col-span-5 xl:col-span-4 flex items-center justify-center" style={{ minHeight: size + 40 }}>
           <div className="relative mt-4" style={{ width: size, height: size }}>
         <div
           className="absolute inset-0 rounded-full border border-gray-300 bg-white"
@@ -380,13 +382,13 @@ const DailySpinCard: React.FC = () => {
         </div>
         </div>
         {/* Right: Success message side panel */}
-        <div className="md:col-span-3 mt-4 md:mt-0 flex flex-col items-center md:items-start">
-          <div className="mt-2 min-h-[2.25rem] w-full">
+        <div className="lg:col-span-4 xl:col-span-4 w-full lg:mt-0 flex flex-col items-center lg:items-start">
+          <div className="mt-2 min-h-[2.25rem] w-full max-w-xs lg:max-w-none">
             <div className="relative">
               {/* Glow ring */}
               <div className={`absolute -inset-[1px] rounded-lg blur-md transition-all duration-300 ${winLabel ? 'bg-gradient-to-r from-fuchsia-500/30 via-indigo-500/30 to-cyan-500/30' : 'bg-gradient-to-r from-slate-300/10 to-slate-600/10'}`} aria-hidden />
               {/* Message container */}
-              <div className={`relative w-full rounded-lg px-4 py-2 backdrop-blur-sm border transition-all duration-300 flex items-center ${
+              <div className={`relative w-full rounded-lg px-4 py-2 backdrop-blur-sm border transition-all duration-300 flex items-center justify-center lg:justify-start ${
                 winLabel
                   ? 'bg-white/5 border-white/15 text-white shadow-[0_0_24px_rgba(168,85,247,0.25)]'
                   : 'bg-white/3 dark:bg-white/5 border-white/10 text-gray-300'
