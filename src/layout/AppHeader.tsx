@@ -7,9 +7,7 @@ import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
 
 const AppHeader: React.FC = () => {
-  const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
-
-  const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
+  const { isMobileOpen, toggleSidebar, toggleMobileSidebar, isApplicationMenuOpen, setIsApplicationMenuOpen } = useSidebar();
 
   const handleToggle = () => {
     if (window.innerWidth >= 991) {
@@ -20,7 +18,7 @@ const AppHeader: React.FC = () => {
   };
 
   const toggleApplicationMenu = () => {
-    setApplicationMenuOpen(!isApplicationMenuOpen);
+    setIsApplicationMenuOpen(!isApplicationMenuOpen);
   };
 
   const inputRef = useRef<HTMLInputElement>(null);

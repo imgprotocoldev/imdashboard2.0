@@ -75,7 +75,7 @@ const navItems: NavItem[] = [
 const othersItems: NavItem[] = [];
 
 const AppSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered, isApplicationMenuOpen } = useSidebar();
   const location = useLocation();
 
 
@@ -268,7 +268,7 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
+      className={`fixed flex flex-col px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${
           isExpanded || isMobileOpen
             ? "w-[290px]"
@@ -277,7 +277,8 @@ const AppSidebar: React.FC = () => {
             : "w-[90px]"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
-        lg:translate-x-0`}
+        lg:translate-x-0
+        ${isMobileOpen && isApplicationMenuOpen ? "top-[140px]" : isMobileOpen ? "top-[64px]" : "mt-16 lg:mt-0 top-0"}`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -313,7 +314,7 @@ const AppSidebar: React.FC = () => {
         </div>
       )}
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
-        <nav className="mb-6">
+        <nav className="mb-6 pt-6">
           <div className="flex flex-col gap-4">
             <div>
               {renderMenuItems(navItems, "main")}
