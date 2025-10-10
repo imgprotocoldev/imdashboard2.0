@@ -198,21 +198,21 @@ export default Hub;
 // --- Daily Spin Component (even SVG slices) ---
 const DailySpinCard: React.FC = () => {
   const { user } = useSupabaseAuth();
-  const { addUserPoints } = useRaidProfile();
+  const { addUserPoints, addUserXP } = useRaidProfile();
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [winLabel, setWinLabel] = useState<string | null>(null);
   const [canSpin, setCanSpin] = useState(true);
   
   const prizes = [
-    { label: '10 Points', value: 10, probability: 0.35 },
-    { label: '25 Points', value: 25, probability: 0.25 },
-    { label: '50 Points', value: 50, probability: 0.15 },
-    { label: '75 Points', value: 75, probability: 0.10 },
-    { label: '100 Points', value: 100, probability: 0.07 },
-    { label: '150 Points', value: 150, probability: 0.04 },
-    { label: '200 Points', value: 200, probability: 0.03 },
-    { label: '500 Points', value: 500, probability: 0.01 },
+    { label: '1 Point', value: 1, probability: 0.20 },
+    { label: '2 Points', value: 2, probability: 0.20 },
+    { label: '5 Points', value: 5, probability: 0.24 },
+    { label: '10 Points', value: 10, probability: 0.24 },
+    { label: '25 Points', value: 25, probability: 0.04 },
+    { label: '30 Points', value: 30, probability: 0.04 },
+    { label: '40 Points', value: 40, probability: 0.03 },
+    { label: '50 Points', value: 50, probability: 0.01 },
   ];
 
   // Check if user can spin today
@@ -272,10 +272,12 @@ const DailySpinCard: React.FC = () => {
       setTimeout(async () => {
         setWinLabel(wonPrize.label);
         
-        // Award Points to user
+        // Award Points and XP to user
         if (wonPrize.value > 0) {
           await addUserPoints(wonPrize.value);
         }
+        // Award +5 XP for daily spin
+        await addUserXP(5);
         
         // Mark spin as used for today
         const now = new Date().toISOString();
@@ -381,8 +383,8 @@ const DailySpinCard: React.FC = () => {
               const angle = (360 / prizes.length) * (i + 0.5);
               return (
                 <g key={`t-${i}`} transform={`rotate(${angle} ${r} ${r})`}>
-                  <text x={r} y={r - (size/2 - 34)} textAnchor="middle" fontSize="12" fontWeight={800} fill="#111827">
-                    {prize.label}
+                  <text x={r} y={r - (size/2 - 34)} textAnchor="middle" fontSize="16" fontWeight={900} fill="#000000">
+                    {prize.value}
                   </text>
                 </g>
               );
@@ -393,9 +395,9 @@ const DailySpinCard: React.FC = () => {
             <div className="w-12 h-12 rounded-full bg-black" />
           </div>
         </div>
-        {/* Pointer outside: black arrow (points down) */}
+        {/* Pointer outside: yellow arrow (points down) */}
         <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-          <div className="w-0 h-0 border-l-8 border-r-8 border-t-[16px] border-l-transparent border-r-transparent border-t-black" />
+          <div className="w-0 h-0 border-l-8 border-r-8 border-t-[16px] border-l-transparent border-r-transparent border-t-yellow-400" />
         </div>
         </div>
       </div>

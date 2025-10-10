@@ -119,7 +119,19 @@ export const useRaidProfile = () => {
 
     try {
       await addXP(user.id, xpAmount);
-      // Profile will be updated via real-time subscription
+      
+      // Manually refresh profile to update UI immediately
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error refreshing profile:', error);
+      } else if (data) {
+        setProfile(data);
+      }
     } catch (error) {
       console.error('Error adding XP:', error);
       throw error;
@@ -187,12 +199,19 @@ export const useRaidProfile = () => {
     if (!user?.id || !profile) return false;
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .update({ raid_points: (profile.raid_points || 0) + amount })
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Immediately update local state
+      if (data) {
+        setProfile(data);
+      }
 
       return true;
     } catch (error) {
@@ -211,12 +230,19 @@ export const useRaidProfile = () => {
     }
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .update({ raid_points: profile.raid_points - amount })
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Immediately update local state
+      if (data) {
+        setProfile(data);
+      }
 
       return true;
     } catch (error) {

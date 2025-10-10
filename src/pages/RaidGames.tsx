@@ -10,6 +10,7 @@ const RaidGames: React.FC = () => {
     currentRank, 
     nextRank, 
     addUserPoints,
+    addUserXP,
     spendPoints,
     getProgressToNextRank 
   } = useRaidProfile();
@@ -45,14 +46,11 @@ const RaidGames: React.FC = () => {
     let cumulative = 0;
     
     const prizes = [
-      { points: 10, probability: 35 },
-      { points: 25, probability: 25 },
-      { points: 50, probability: 15 },
-      { points: 75, probability: 10 },
-      { points: 100, probability: 7 },
-      { points: 150, probability: 4 },
-      { points: 200, probability: 3 },
-      { points: 500, probability: 1 },
+      { points: 0, probability: 25 },
+      { points: 5, probability: 25 },
+      { points: 10, probability: 20 },
+      { points: 15, probability: 15 },
+      { points: 25, probability: 15 },
     ];
     
     for (const prize of prizes) {
@@ -61,7 +59,7 @@ const RaidGames: React.FC = () => {
         return prize.points;
       }
     }
-    return 10; // Fallback
+    return 0; // Fallback
   };
   
   const initializeCardPoints = () => {
@@ -138,11 +136,12 @@ const RaidGames: React.FC = () => {
 
   // Prize pool for Spin Wheel and Scratch Card
   const prizes = useMemo(() => [
-    { label: 'No Luck', value: 0, odds: 30 },
-    { label: '+50 Points', value: 50, odds: 20 },
-    { label: '+75 Points', value: 75, odds: 15 },
-    { label: '+100 Points', value: 100, odds: 10 },
-    { label: '+250 Points', value: 250, odds: 5 },
+    { label: 'No Luck', value: 0, odds: 20 },
+    { label: '+2 Points', value: 2, odds: 30 },
+    { label: '+5 Points', value: 5, odds: 25 },
+    { label: '+10 Points', value: 10, odds: 15 },
+    { label: '+15 Points', value: 15, odds: 7 },
+    { label: '+25 Points', value: 25, odds: 3 },
   ], []);
 
   const getRandomPrize = () => {
@@ -156,10 +155,7 @@ const RaidGames: React.FC = () => {
   };
 
   const handleSpin = async () => {
-    if (isSpinning || !raidProfile || (raidProfile.raid_points < 50)) return; // Cost 50 points to spin
-    
-    const success = await spendPoints(50);
-    if (!success) return;
+    if (isSpinning || !purchasedGames.has('fortune-spin')) return;
     
     setIsSpinning(true);
     setSpinResult(null);
@@ -170,6 +166,7 @@ const RaidGames: React.FC = () => {
       if (prize.value > 0) {
         await addUserPoints(prize.value); // Add Points reward to Supabase
       }
+      await addUserXP(10); // Add +10 XP for paid game
       setIsSpinning(false);
       // Reset game after playing
       resetGameAfterPlay('fortune-spin');
@@ -202,10 +199,7 @@ const RaidGames: React.FC = () => {
   }, [isScratching]);
 
   const beginScratch = async () => {
-    if (isScratching || !raidProfile || (raidProfile.raid_points < 30)) return;
-    
-    const success = await spendPoints(30);
-    if (!success) return;
+    if (isScratching || !purchasedGames.has('scratch-card')) return;
     
     setScratchResult(null);
     setScratchCoverCleared(false);
@@ -282,6 +276,7 @@ const RaidGames: React.FC = () => {
       if (prize.value > 0) {
         await addUserPoints(prize.value); // Add Points reward to Supabase
       }
+      await addUserXP(10); // Add +10 XP for paid game
       // end session (keep cover hidden)
       setIsScratching(false);
       // Reset game after playing
@@ -314,6 +309,7 @@ const RaidGames: React.FC = () => {
       if (pointsWon > 0) {
         await addUserPoints(pointsWon); // Add Points reward to Supabase
       }
+      await addUserXP(10); // Add +10 XP for paid game
       
       // Reset after showing result
       setTimeout(() => {
@@ -351,13 +347,30 @@ const RaidGames: React.FC = () => {
       
       // Delay the message to appear after dice stops rolling
       setTimeout(async () => {
-        // Check if player won (compare with the picked number directly)
-        if (roll === num) {
-          setDiceResultMessage(`You won! Rolled ${roll}`);
-          await addUserPoints(500); // Big win for guessing correctly!
+        // Determine prize based on probabilities
+        const random = Math.random() * 100;
+        let pointsWon = 0;
+        
+        if (random <= 45) {
+          pointsWon = 0; // 45% chance
+        } else if (random <= 55) {
+          pointsWon = 5; // 10% chance
+        } else if (random <= 80) {
+          pointsWon = 15; // 25% chance
         } else {
-          setDiceResultMessage(`You rolled ${roll}. Better luck next time!`);
+          pointsWon = 20; // 20% chance
         }
+        
+        if (roll === num) {
+          setDiceResultMessage(`You won! Rolled ${roll} - Earned ${pointsWon} Points`);
+        } else {
+          setDiceResultMessage(`You rolled ${roll}${pointsWon > 0 ? ` - Earned ${pointsWon} Points` : '. Better luck next time!'}`);
+        }
+        
+        if (pointsWon > 0) {
+          await addUserPoints(pointsWon);
+        }
+        await addUserXP(10); // Add +10 XP for paid game
       }, 700);
       
       // Reset after showing result
@@ -382,20 +395,34 @@ const RaidGames: React.FC = () => {
     setIsSpinningSlots(true);
     setSlotResult(null);
 
-    const pointValues = [25, 50, 75, 100, 150, 200, 500]; // Points prizes
-    const finalResult = Math.floor(Math.random() * pointValues.length);
+    const pointValues = [0, 5, 10, 15, 25]; // Points prizes
+    
+    // Determine result based on probabilities: 0(30%), 5(40%), 10(15%), 15(10%), 25(5%)
+    const random = Math.random() * 100;
+    let finalResult = 0;
+    if (random <= 30) {
+      finalResult = 0; // 0 points - 30%
+    } else if (random <= 70) {
+      finalResult = 1; // 5 points - 40%
+    } else if (random <= 85) {
+      finalResult = 2; // 10 points - 15%
+    } else if (random <= 95) {
+      finalResult = 3; // 15 points - 10%
+    } else {
+      finalResult = 4; // 25 points - 5%
+    }
     const tMax = 2000; // 2 seconds animation
-    const height = 560; // 7 items * 80px (h-20)
+    const height = 400; // 5 items * 80px (h-20)
     const targetPosition = finalResult * 80;
 
     // Get the inner div that contains all the Points values
     const innerDiv = slotReelRef.current?.querySelector('div[class*="relative"]') as HTMLElement;
     if (!innerDiv) return;
 
-    // 500 Points is at index 6, which is 6 * 80 = 480px
-    const startPosition = 480; // Start at 500 Points
+    // 25 Points is at index 4, which is 4 * 80 = 320px
+    const startPosition = 320; // Start at 25 Points
     
-    // Reset to starting position (500 Points)
+    // Reset to starting position (25 Points)
     innerDiv.style.transform = `translateY(-${startPosition}px)`;
 
     let start: number | undefined;
@@ -429,11 +456,12 @@ const RaidGames: React.FC = () => {
         
         // Add Points after animation completes
         await addUserPoints(pointValues[finalResult]);
+        await addUserXP(10); // Add +10 XP for paid game
         
         // Reset game after showing result
         setTimeout(() => {
           setSlotResult(null);
-          // Reset position for next spin (back to 500 Points)
+          // Reset position for next spin (back to 25 Points)
           if (innerDiv) {
             innerDiv.style.transform = `translateY(-${startPosition}px)`;
           }
@@ -450,14 +478,10 @@ const RaidGames: React.FC = () => {
   // Coin Flip Game - Helper function to get random Points based on probability
   const getCoinFlipPoints = (): number => {
     const rand = Math.random() * 100;
-    if (rand < 35) return 10;      // 35%
-    if (rand < 60) return 25;      // 25% (35 + 25 = 60)
-    if (rand < 75) return 50;      // 15% (60 + 15 = 75)
-    if (rand < 85) return 75;      // 10% (75 + 10 = 85)
-    if (rand < 92) return 100;     // 7%  (85 + 7 = 92)
-    if (rand < 96) return 150;     // 4%  (92 + 4 = 96)
-    if (rand < 99) return 200;     // 3%  (96 + 3 = 99)
-    return 500;                    // 1%  (99 + 1 = 100)
+    if (rand < 45) return 0;       // 45%
+    if (rand < 55) return 5;       // 10% (45 + 10 = 55)
+    if (rand < 80) return 15;      // 25% (55 + 25 = 80)
+    return 20;                     // 20% (80 + 20 = 100)
   };
 
   // Coin Flip Game
@@ -485,6 +509,7 @@ const RaidGames: React.FC = () => {
           // Player lost
           setCoinWinAmount(0);
         }
+        await addUserXP(10); // Add +10 XP for paid game
         
         setIsFlippingCoin(false);
         
@@ -595,7 +620,7 @@ const RaidGames: React.FC = () => {
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-purple-300 dark:hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] dark:hover:shadow-[0_0_20px_rgba(168,85,247,0.25)] overflow-hidden">
               {/* Cost Tag */}
               <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
-                25 Points
+                5 Points
               </div>
 
               {/* Card Content */}
@@ -633,14 +658,12 @@ const RaidGames: React.FC = () => {
                 onClick={
                   purchasedGames.has('fortune-spin') 
                     ? (isSpinning ? undefined : handleSpin)
-                    : ((raidProfile?.raid_points || 0) >= 25 ? () => purchaseGame('fortune-spin', 25) : undefined)
+                    : ((raidProfile?.raid_points || 0) >= 5 ? () => purchaseGame('fortune-spin', 5) : undefined)
                 }
                 className={`w-full py-4 px-6 font-bold text-base transition-all cursor-pointer ${
                   purchasedGames.has('fortune-spin') 
-                    ? ((raidProfile?.raid_points || 0) >= 25 
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white' 
-                        : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
-                    : ((raidProfile?.raid_points || 0) >= 25 
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white'
+                    : ((raidProfile?.raid_points || 0) >= 5 
                         ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white' 
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
                 } ${isSpinning ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -648,8 +671,8 @@ const RaidGames: React.FC = () => {
                 {isSpinning 
                   ? 'Spinning...' 
                   : purchasedGames.has('fortune-spin') 
-                    ? ((raidProfile?.raid_points || 0) >= 25 ? 'Play Now' : 'Insufficient Points')
-                    : ((raidProfile?.raid_points || 0) >= 25 ? 'Purchase' : 'Insufficient Points')
+                    ? 'Play Now'
+                    : ((raidProfile?.raid_points || 0) >= 5 ? 'Purchase' : 'Insufficient Points')
                 }
               </div>
             </div>
@@ -658,7 +681,7 @@ const RaidGames: React.FC = () => {
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-yellow-300 dark:hover:border-yellow-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(234,179,8,0.15)] dark:hover:shadow-[0_0_20px_rgba(234,179,8,0.25)] overflow-hidden">
               {/* Cost Tag */}
               <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
-                25 Points
+                5 Points
               </div>
 
               {/* Card Content */}
@@ -709,14 +732,12 @@ const RaidGames: React.FC = () => {
                 onClick={
                   purchasedGames.has('scratch-card') 
                     ? (isScratching ? undefined : beginScratch)
-                    : ((raidProfile?.raid_points || 0) >= 25 ? () => purchaseGame('scratch-card', 25) : undefined)
+                    : ((raidProfile?.raid_points || 0) >= 5 ? () => purchaseGame('scratch-card', 5) : undefined)
                 }
                 className={`w-full py-4 px-6 font-bold text-base transition-all cursor-pointer ${
                   purchasedGames.has('scratch-card') 
-                    ? ((raidProfile?.raid_points || 0) >= 25 
-                        ? 'bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white' 
-                        : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
-                    : ((raidProfile?.raid_points || 0) >= 25 
+                    ? 'bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white'
+                    : ((raidProfile?.raid_points || 0) >= 5 
                         ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white' 
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
                 } ${isScratching ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -724,8 +745,8 @@ const RaidGames: React.FC = () => {
                 {isScratching 
                   ? 'Scratching...' 
                   : purchasedGames.has('scratch-card') 
-                    ? ((raidProfile?.raid_points || 0) >= 25 ? 'Play Now' : 'Insufficient Points')
-                    : ((raidProfile?.raid_points || 0) >= 25 ? 'Purchase' : 'Insufficient Points')
+                    ? 'Play Now'
+                    : ((raidProfile?.raid_points || 0) >= 5 ? 'Purchase' : 'Insufficient Points')
                 }
               </div>
             </div>
@@ -734,7 +755,7 @@ const RaidGames: React.FC = () => {
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-red-300 dark:hover:border-red-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(239,68,68,0.15)] dark:hover:shadow-[0_0_20px_rgba(239,68,68,0.25)] overflow-hidden">
               {/* Cost Tag */}
               <div className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-pink-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
-                25 Points
+                5 Points
               </div>
 
               {/* Card Content */}
@@ -845,19 +866,19 @@ const RaidGames: React.FC = () => {
                 onClick={
                   purchasedGames.has('pick-card') 
                     ? undefined
-                    : ((raidProfile?.raid_points || 0) >= 25 ? () => purchaseGame('pick-card', 25) : undefined)
+                    : ((raidProfile?.raid_points || 0) >= 5 ? () => purchaseGame('pick-card', 5) : undefined)
                 }
                 className={`w-full py-4 px-6 font-bold text-base transition-all cursor-pointer ${
                   purchasedGames.has('pick-card') 
                     ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white cursor-default' 
-                    : ((raidProfile?.raid_points || 0) >= 25 
+                    : ((raidProfile?.raid_points || 0) >= 5 
                         ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white' 
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
                 }`}
               >
                 {purchasedGames.has('pick-card') 
                   ? 'Pick a Card Above'
-                    : ((raidProfile?.raid_points || 0) >= 25 ? 'Purchase' : 'Insufficient Points')
+                    : ((raidProfile?.raid_points || 0) >= 5 ? 'Purchase' : 'Insufficient Points')
                 }
               </div>
             </div>
@@ -866,7 +887,7 @@ const RaidGames: React.FC = () => {
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.25)] overflow-hidden">
               {/* Cost Tag */}
               <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
-                25 Points
+                5 Points
               </div>
 
               {/* Card Content */}
@@ -976,19 +997,19 @@ const RaidGames: React.FC = () => {
                 onClick={
                   purchasedGames.has('dice-roll') 
                     ? undefined
-                    : ((raidProfile?.raid_points || 0) >= 25 ? () => purchaseGame('dice-roll', 25) : undefined)
+                    : ((raidProfile?.raid_points || 0) >= 5 ? () => purchaseGame('dice-roll', 5) : undefined)
                 }
                 className={`w-full py-4 px-6 font-bold text-base transition-all cursor-pointer ${
                   purchasedGames.has('dice-roll') 
                     ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white cursor-default' 
-                    : ((raidProfile?.raid_points || 0) >= 25 
+                    : ((raidProfile?.raid_points || 0) >= 5 
                         ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white' 
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
                 }`}
               >
                 {purchasedGames.has('dice-roll') 
                   ? (pickedNumber ? 'Rolling...' : 'Pick Your Number')
-                    : ((raidProfile?.raid_points || 0) >= 25 ? 'Purchase' : 'Insufficient Points')
+                    : ((raidProfile?.raid_points || 0) >= 5 ? 'Purchase' : 'Insufficient Points')
                 }
               </div>
             </div>
@@ -997,7 +1018,7 @@ const RaidGames: React.FC = () => {
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-purple-300 dark:hover:border-purple-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] dark:hover:shadow-[0_0_20px_rgba(168,85,247,0.25)] overflow-hidden">
               {/* Cost Tag */}
               <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
-                25 Points
+                5 Points
               </div>
 
               {/* Card Content */}
@@ -1030,23 +1051,19 @@ const RaidGames: React.FC = () => {
                       {/* Bottom fade overlay - complete block */}
                       <div className="absolute bottom-0 left-0 right-0 h-4 pointer-events-none z-10" style={{ background: 'linear-gradient(to top, rgba(255,255,255,1), transparent)' }}></div>
                       
-                      <div className="relative" style={{ transform: 'translateY(-480px)' }}>
+                      <div className="relative" style={{ transform: 'translateY(-320px)' }}>
                         {/* Duplicate Points values for seamless loop - larger spacing */}
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">0 Points</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">5 Points</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">10 Points</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">15 Points</p>
                         <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">25 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">50 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">75 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">100 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">150 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">200 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">500 Points</p>
                         {/* Duplicate for seamless scrolling */}
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">0 Points</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">5 Points</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">10 Points</p>
+                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">15 Points</p>
                         <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">25 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">50 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">75 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">100 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">150 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">200 Points</p>
-                        <p className="text-3xl font-bold h-20 flex items-center justify-center text-purple-600 dark:text-purple-500">500 Points</p>
                       </div>
                     </div>
                   </div>
@@ -1056,7 +1073,7 @@ const RaidGames: React.FC = () => {
                 <div className="min-h-[2rem] flex items-center justify-center">
                   {slotResult !== null && (
                     <div className="text-base font-bold text-green-600 dark:text-green-400">
-                      Won {[25, 50, 75, 100, 150, 200, 500][slotResult]} Points!
+                      Won {[0, 5, 10, 15, 25][slotResult]} Points!
                     </div>
                   )}
                 </div>
@@ -1067,14 +1084,14 @@ const RaidGames: React.FC = () => {
                 onClick={
                   purchasedGames.has('slot-machine') 
                     ? (isSpinningSlots ? undefined : handleSlotMachine)
-                    : ((raidProfile?.raid_points || 0) >= 25 ? () => purchaseGame('slot-machine', 25) : undefined)
+                    : ((raidProfile?.raid_points || 0) >= 5 ? () => purchaseGame('slot-machine', 5) : undefined)
                 }
                 className={`w-full py-4 px-6 font-bold text-base transition-all cursor-pointer ${
                   purchasedGames.has('slot-machine') 
                     ? (isSpinningSlots 
                         ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white cursor-not-allowed opacity-50'
                         : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white')
-                    : ((raidProfile?.raid_points || 0) >= 25 
+                    : ((raidProfile?.raid_points || 0) >= 5 
                         ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white' 
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
                 }`}
@@ -1083,7 +1100,7 @@ const RaidGames: React.FC = () => {
                   ? 'Spinning...'
                   : purchasedGames.has('slot-machine') 
                     ? 'Spin Now'
-                    : ((raidProfile?.raid_points || 0) >= 25 ? 'Purchase' : 'Insufficient Points')
+                    : ((raidProfile?.raid_points || 0) >= 5 ? 'Purchase' : 'Insufficient Points')
                 }
               </div>
             </div>
@@ -1092,7 +1109,7 @@ const RaidGames: React.FC = () => {
             <div className="relative bg-white dark:bg-white/[0.03] rounded-xl border border-gray-200 dark:border-white/10 text-center flex flex-col min-h-[400px] hover:border-yellow-300 dark:hover:border-yellow-500/50 transition-all duration-300 hover:shadow-[0_0_20px_rgba(234,179,8,0.15)] dark:hover:shadow-[0_0_20px_rgba(234,179,8,0.25)] overflow-hidden">
               {/* Cost Tag */}
               <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg z-10">
-                25 Points
+                5 Points
               </div>
 
               {/* Card Content */}
@@ -1164,19 +1181,19 @@ const RaidGames: React.FC = () => {
                 onClick={
                   purchasedGames.has('coin-flip') 
                     ? undefined
-                    : ((raidProfile?.raid_points || 0) >= 25 ? () => purchaseGame('coin-flip', 25) : undefined)
+                    : ((raidProfile?.raid_points || 0) >= 5 ? () => purchaseGame('coin-flip', 5) : undefined)
                 }
                 className={`w-full py-4 px-6 font-bold text-base transition-all ${
                   purchasedGames.has('coin-flip') 
                     ? 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white cursor-default'
-                    : ((raidProfile?.raid_points || 0) >= 25 
+                    : ((raidProfile?.raid_points || 0) >= 5 
                         ? 'bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white cursor-pointer' 
                         : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed')
                 }`}
               >
                 {purchasedGames.has('coin-flip') 
                   ? 'Pick a Side Above'
-                    : ((raidProfile?.raid_points || 0) >= 25 ? 'Purchase' : 'Insufficient Points')
+                    : ((raidProfile?.raid_points || 0) >= 5 ? 'Purchase' : 'Insufficient Points')
                 }
               </div>
             </div>
