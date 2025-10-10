@@ -319,8 +319,8 @@ export default function Voting() {
             desc="Select your preferred option and submit your vote"
             className="relative"
           >
-            {/* Total Votes in Header */}
-            {!voteLoading && totalVotes > 0 && (
+            {/* Total Votes in Header - Only show after user has voted */}
+            {!voteLoading && totalVotes > 0 && hasVoted && (
               <div className="absolute top-4 right-4">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   Total Votes: <span className="font-semibold text-gray-900 dark:text-white">{totalVotes}</span>
@@ -366,7 +366,7 @@ export default function Voting() {
                         >
                           {option.text}
                         </label>
-                        {!voteLoading && totalVotes > 0 && (
+                        {!voteLoading && totalVotes > 0 && hasVoted && (
                           <div className="mt-1 flex items-center space-x-2">
                             <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                               <div 
