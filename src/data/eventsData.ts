@@ -17,6 +17,34 @@ export type EventItem = {
 
 export const eventsData: EventItem[] = [
   {
+    id: "e17",
+    slug: "solscan-update",
+    title: "Solscan Update",
+    category: "featured",
+    date: new Date("2025-10-10T00:00:00.000Z").toISOString(),
+    image: "/images/events/solscanbanner.webp",
+    excerpt:
+      "We're excited to share that the Infinite Money Glitch ($IMG) team has officially gained full ownership of our Solscan profile and it has been updated!",
+    content: `## ✅ Solscan Ownership & Profile Update Complete
+
+Our verified token page on Solscan has now been fully updated with the latest project details, including links, descriptions, and accurate token information, ensuring complete transparency and credibility for all holders.
+
+Check out the official page here:
+[https://solscan.io/token/znv3FZt2HFAvzYf5LxzVyryh3mBXWuTRRng25gEZAjh](https://solscan.io/token/znv3FZt2HFAvzYf5LxzVyryh3mBXWuTRRng25gEZAjh)
+
+This marks another step forward in strengthening the $IMG ecosystem, improving accessibility for new investors, and showcasing our growing legitimacy across trusted blockchain platforms.
+
+We were previously verified on Solscan, but with this update, the team now has full control to keep all project information current as we continue to evolve and expand.
+
+Another milestone unlocked — more updates coming soon!`,
+    author: {
+      name: "IMG Team",
+      avatar: "/images/logo/imglogoround.webp",
+    },
+    tags: ["Featured", "Solscan", "Update"],
+    popularity: 95,
+  },
+  {
     id: "e16",
     slug: "alphai-listing",
     title: "Alph.ai Listing",
