@@ -608,7 +608,7 @@ const RaidGames: React.FC = () => {
               Use Your Raid Points to Play Games!
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-              Spend your Raid points on exciting games to win more Points and prizes!
+              Earn XP and extra reward points for your profile with every game you play.
             </div>
           </div>
         </ComponentCard>
@@ -717,11 +717,6 @@ const RaidGames: React.FC = () => {
                         onPointerLeave={onPointerUp}
                         onContextMenu={(e)=>{e.preventDefault();}}
                       />
-                      {!isScratching && (
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-700/70 text-lg font-semibold bg-white/0">
-                          Scratch disabled
-                        </div>
-                      )}
                     </>
                   )}
                 </div>
