@@ -18,7 +18,7 @@ export default function Voting() {
   const activeVote = {
     id: "vote-002",
     title: "Do You Like the New Voting System?",
-    description: "This is the first community vote on the Infinite Money Glitch Dashboard! 🎉\nWe're testing the new voting feature and gathering feedback before rolling out more updates — including raiding games, blog posts, and dashboard improvements.",
+    description: "Welcome to the first edition of the Infinite Money Glitch Dashboard Voting System! 🚀\n\nThis is our very first step in building a truly community-driven platform, where every holder has a voice in shaping the future of $IMG. Your feedback helps us refine the dashboard and design new features that benefit everyone.\n\nPlease test the voting system by selecting one of the options. This vote will help us gauge how well the new feature works and how much the community enjoys using it.",
     image: "/images/voting/voting-system.webp",
     endDate: "2025-10-20T23:59:59.000Z",
     totalVotes: 0,
@@ -319,14 +319,6 @@ export default function Voting() {
             desc="Select your preferred option and submit your vote"
             className="relative"
           >
-            {/* Total Votes in Header - Only show after user has voted */}
-            {!voteLoading && totalVotes > 0 && hasVoted && (
-              <div className="absolute top-4 right-4">
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Total Votes: <span className="font-semibold text-gray-900 dark:text-white">{totalVotes}</span>
-                </span>
-              </div>
-            )}
             <div className="space-y-4">
               {voteLoading && (
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -336,7 +328,7 @@ export default function Voting() {
               )}
 
               {/* Voting Options */}
-              <div className="space-y-3">
+              <div className={hasVoted ? "space-y-2" : "space-y-3"}>
                 {activeVote.options.map((option) => {
                   const result = voteResults.find(r => r.option_id === option.id);
                   const voteCount = result?.count || 0;
@@ -367,7 +359,7 @@ export default function Voting() {
                           {option.text}
                         </label>
                         {!voteLoading && totalVotes > 0 && hasVoted && (
-                          <div className="mt-1 flex items-center space-x-2">
+                          <div className="mt-0.5 flex items-center space-x-2">
                             <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                               <div 
                                 className="bg-brand-600 h-1.5 rounded-full transition-all duration-300" 
