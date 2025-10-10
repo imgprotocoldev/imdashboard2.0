@@ -12,7 +12,7 @@ export default function TerminalStatisticsChart() {
     monthly: {
       categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
       harvesting: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
-      distribution: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
+      distribution: [160, 170, 140, 120, 155, 145, 150, 180, 210, 190, 220, 200],
     },
     quarterly: {
       categories: ["Q1", "Q2", "Q3", "Q4"],

@@ -23,7 +23,7 @@ const tableData: Transaction[] = [
   {
     id: 1,
     type: "Signature",
-    amount: "210.95",
+    amount: "15.42",
     status: "Completed",
     timestamp: "2 hours ago",
     hash: "Snapshot 00001",
@@ -31,7 +31,7 @@ const tableData: Transaction[] = [
   {
     id: 2,
     type: "Signature",
-    amount: "23.53",
+    amount: "8.73",
     status: "Completed",
     timestamp: "4 hours ago",
     hash: "Snapshot 00002",
@@ -39,15 +39,15 @@ const tableData: Transaction[] = [
   {
     id: 3,
     type: "Signature",
-    amount: "0.87",
-    status: "Pending",
+    amount: "12.56",
+    status: "Completed",
     timestamp: "6 hours ago",
     hash: "Snapshot 00003",
   },
   {
     id: 4,
     type: "Signature",
-    amount: "-1.95",
+    amount: "6.89",
     status: "Completed",
     timestamp: "8 hours ago",
     hash: "Snapshot 00004",
@@ -55,15 +55,15 @@ const tableData: Transaction[] = [
   {
     id: 5,
     type: "Signature",
-    amount: "198.42",
-    status: "Failed",
+    amount: "18.24",
+    status: "Completed",
     timestamp: "12 hours ago",
     hash: "Snapshot 00005",
   },
   {
     id: 6,
     type: "Signature",
-    amount: "12.34",
+    amount: "3.67",
     status: "Completed",
     timestamp: "just now",
     hash: "Snapshot 00006",
@@ -81,9 +81,12 @@ export default function TerminalRecentOrders() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
+          <a 
+            href="/distribution"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
+          >
             View All
-          </button>
+          </a>
         </div>
       </div>
       <div className="max-w-full overflow-x-auto">

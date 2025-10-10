@@ -160,7 +160,7 @@ export default function TradingVolumeChart() {
             Reward Conversion Flow
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            IMG / SOL sales per transaction
+            Daily IMG/SOL sales per transaction
           </p>
         </div>
         <div className="relative inline-block">
@@ -173,7 +173,10 @@ export default function TradingVolumeChart() {
             className="w-40 p-2"
           >
             <DropdownItem
-              onItemClick={closeDropdown}
+              onItemClick={() => {
+                closeDropdown();
+                window.location.href = '/harvesting';
+              }}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
               View Details
