@@ -493,34 +493,31 @@ const RaidGames: React.FC = () => {
     setCoinResult(null);
     setCoinWinAmount(null);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       // Randomly determine the coin result
       const result: 'heads' | 'tails' = Math.random() < 0.5 ? 'heads' : 'tails';
       setCoinResult(result);
+      setIsFlippingCoin(false);
       
-      // Delay showing the win amount
-      setTimeout(async () => {
-        if (result === choice) {
-          // Player won! Get random Points
-          const pointsWon = getCoinFlipPoints();
-          setCoinWinAmount(pointsWon);
-          await addUserPoints(pointsWon); // Add Points reward to Supabase
-        } else {
-          // Player lost
-          setCoinWinAmount(0);
-        }
-        await addUserXP(10); // Add +10 XP for paid game
-        
-        setIsFlippingCoin(false);
-        
-        // Reset after showing result
-        setTimeout(() => {
-          setCoinChoice(null);
-          setCoinResult(null);
-          setCoinWinAmount(null);
-          resetGameAfterPlay('coin-flip');
-        }, 3000);
-      }, 700);
+      // Calculate points immediately
+      if (result === choice) {
+        // Player won! Get random Points
+        const pointsWon = getCoinFlipPoints();
+        setCoinWinAmount(pointsWon);
+        await addUserPoints(pointsWon); // Add Points reward to Supabase
+      } else {
+        // Player lost
+        setCoinWinAmount(0);
+      }
+      await addUserXP(10); // Add +10 XP for paid game
+      
+      // Reset after showing result
+      setTimeout(() => {
+        setCoinChoice(null);
+        setCoinResult(null);
+        setCoinWinAmount(null);
+        resetGameAfterPlay('coin-flip');
+      }, 3000);
     }, 1500);
   };
 
