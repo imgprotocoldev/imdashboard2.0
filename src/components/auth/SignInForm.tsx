@@ -60,47 +60,6 @@ export default function SignInForm() {
     checkSession();
   }, [navigate, location]);
 
-  // Handle OAuth redirects and session detection
-  useEffect(() => {
-    const handleAuthCallback = async () => {
-      // Check for OAuth code in URL (PKCE flow)
-      const searchParams = new URLSearchParams(window.location.search);
-      const code = searchParams.get('code');
-      
-      if (code) {
-        try {
-          // Supabase automatically exchanges the code for a session with detectSessionInUrl: true
-          // We just need to wait a moment and then check for the session
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
-          const { data: { session }, error } = await supabase.auth.getSession();
-          
-          if (error) {
-            console.error('Session error:', error);
-            setError('Authentication failed. Please try again.');
-            window.history.replaceState({}, document.title, '/signin');
-            return;
-          }
-
-          if (session?.user) {
-            await createUserProfile(session.user);
-            const from = (location.state as any)?.from?.pathname || '/';
-            navigate(from, { replace: true });
-          } else {
-            // Session not ready yet, let the auth state change handler deal with it
-            console.log('Waiting for session to be established...');
-          }
-        } catch (err) {
-          console.error('Auth callback error:', err);
-          setError('Authentication failed. Please try again.');
-          window.history.replaceState({}, document.title, '/signin');
-        }
-      }
-    };
-
-    handleAuthCallback();
-  }, [navigate, location]);
-
   // Handle email/password login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,7 +121,7 @@ export default function SignInForm() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/signin`,
+          redirectTo: 'https://app.imgsolana.com',
         },
       });
 
@@ -191,7 +150,7 @@ export default function SignInForm() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
         options: {
-          redirectTo: `${window.location.origin}/signin`,
+          redirectTo: 'https://app.imgsolana.com',
         },
       });
 
