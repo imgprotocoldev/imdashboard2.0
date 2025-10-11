@@ -20,6 +20,7 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import { AuthProvider } from "./contexts/AuthContext";
+import { SearchProvider } from "./context/SearchContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import Home from "./pages/Dashboard/Home";
 import Terminal from "./pages/Dashboard/Terminal";
@@ -38,9 +39,10 @@ import Notifications from "./pages/Notifications";
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
-        <ScrollToTop />
-        <Routes>
+      <SearchProvider>
+        <Router>
+          <ScrollToTop />
+          <Routes>
           {/* Auth Layout - Public Routes */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
@@ -94,6 +96,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
+      </SearchProvider>
     </AuthProvider>
   );
 }
