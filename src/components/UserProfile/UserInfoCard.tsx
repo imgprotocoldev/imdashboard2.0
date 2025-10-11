@@ -709,11 +709,11 @@ export default function UserInfoCard() {
 
                   <div className="col-span-2">
                     <Label>Avatar</Label>
-                    <div className="grid grid-cols-4 gap-4 mt-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 mt-2">
                       {avatarOptions.map((avatar) => (
                         <div
                           key={avatar.id}
-                          className={`cursor-pointer border-2 rounded-xl p-3 transition-all hover:scale-105 ${
+                          className={`cursor-pointer border-2 rounded-xl p-2 sm:p-3 transition-all hover:scale-105 ${
                             userProfile.avatar === avatar.id
                               ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md'
                               : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
@@ -723,9 +723,9 @@ export default function UserInfoCard() {
                           <img
                             src={avatar.image}
                             alt={avatar.name}
-                            className="w-full h-16 object-cover rounded-lg"
+                            className="w-full h-12 sm:h-14 md:h-16 object-cover rounded-lg"
                           />
-                          <p className="text-xs text-center mt-2 text-gray-600 dark:text-gray-400 font-medium">
+                          <p className="text-xs text-center mt-1.5 sm:mt-2 text-gray-600 dark:text-gray-400 font-medium">
                             {avatar.name}
                           </p>
                   </div>

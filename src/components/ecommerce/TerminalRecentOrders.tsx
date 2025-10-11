@@ -90,7 +90,8 @@ export default function TerminalRecentOrders() {
         </div>
       </div>
       <div className="max-w-full overflow-x-auto">
-        <Table>
+        <div className="min-w-[600px]">
+          <Table>
           {/* Table Header */}
           <TableHeader className="border-gray-100 dark:border-gray-800 border-y">
             <TableRow>
@@ -125,20 +126,20 @@ export default function TerminalRecentOrders() {
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
             {tableData.map((transaction) => (
               <TableRow key={transaction.id} className="">
-                <TableCell className="py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-[40px] w-[40px] overflow-hidden rounded-md flex items-center justify-center">
+                <TableCell className="py-3 w-[200px] sm:w-auto">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="h-[32px] w-[32px] sm:h-[40px] sm:w-[40px] overflow-hidden rounded-md flex items-center justify-center flex-shrink-0">
                       <img 
                         src="./images/solanacoin.webp" 
                         alt="Solana Coin" 
-                        className="h-[40px] w-[40px] object-cover"
+                        className="h-[32px] w-[32px] sm:h-[40px] sm:w-[40px] object-cover"
                       />
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                    <div className="min-w-0">
+                      <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90 truncate">
                         {transaction.type}
                       </p>
-                      <span className="text-gray-500 text-theme-xs dark:text-gray-400 font-mono">
+                      <span className="text-gray-500 text-theme-xs dark:text-gray-400 font-mono truncate block">
                         {transaction.hash}
                       </span>
                     </div>
@@ -168,6 +169,7 @@ export default function TerminalRecentOrders() {
             ))}
           </TableBody>
         </Table>
+        </div>
       </div>
       <div className="border-t border-gray-100 dark:border-gray-800 mt-2" />
       <div className="mt-2 pb-1 text-[13px] text-gray-500 dark:text-gray-400 flex justify-center">

@@ -347,24 +347,27 @@ const RaidGames: React.FC = () => {
       
       // Delay the message to appear after dice stops rolling
       setTimeout(async () => {
-        // Determine prize based on probabilities
-        const random = Math.random() * 100;
         let pointsWon = 0;
         
-        if (random <= 45) {
-          pointsWon = 0; // 45% chance
-        } else if (random <= 55) {
-          pointsWon = 5; // 10% chance
-        } else if (random <= 80) {
-          pointsWon = 15; // 25% chance
-        } else {
-          pointsWon = 20; // 20% chance
-        }
-        
+        // Only give points if the player guessed correctly
         if (roll === num) {
-          setDiceResultMessage(`You won! Rolled ${roll} - Earned ${pointsWon} Points`);
+          // Determine prize based on probabilities when winning
+          const random = Math.random() * 100;
+          
+          if (random <= 45) {
+            pointsWon = 0; // 45% chance - no bonus
+          } else if (random <= 55) {
+            pointsWon = 5; // 10% chance
+          } else if (random <= 80) {
+            pointsWon = 15; // 25% chance
+          } else {
+            pointsWon = 20; // 20% chance
+          }
+          
+          setDiceResultMessage(`You won! Rolled ${roll}${pointsWon > 0 ? ` - Earned ${pointsWon} Points` : '!'}`);
         } else {
-          setDiceResultMessage(`You rolled ${roll}${pointsWon > 0 ? ` - Earned ${pointsWon} Points` : '. Better luck next time!'}`);
+          // Lost - no points
+          setDiceResultMessage(`You rolled ${roll}. Better luck next time!`);
         }
         
         if (pointsWon > 0) {
