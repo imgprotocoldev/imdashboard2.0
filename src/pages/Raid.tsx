@@ -341,54 +341,44 @@ const Raid: React.FC = () => {
       <div className="space-y-6">
         {/* Profile Card */}
         <ComponentCard className="h-fit">
-          <div className="relative">
-            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-brand-500/5 via-transparent to-green-500/5" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            <div className="flex items-center gap-4">
-              <img
-                src={avatarSrc}
-                alt="avatar"
-                className="w-14 h-14 rounded-full object-cover"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = '/images/user/user1.webp';
-                }}
-              />
-              <div>
-                <div className="text-lg font-extrabold text-gray-900 dark:text-white">{displayName}</div>
-                {profile?.x_handle ? (
-                  <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                    <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                    Connected
-                  </div>
-                ) : (
-                  <a
-                    href="/profile"
-                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 underline-offset-2 hover:underline"
-                  >
-                    Connect to X to Raid and earn
-                  </a>
-                )}
-              </div>
+          {/* Profile Stats - Compact Layout matching Hub */}
+          <div className="flex items-center gap-3">
+            <img
+              src={avatarSrc}
+              alt="avatar"
+              className="w-10 h-10 rounded-full object-cover"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/user/user1.webp'; }}
+            />
+            <div>
+              <div className="text-base font-extrabold text-gray-900 dark:text-white leading-5">{displayName}</div>
+              {profile?.x_handle ? (
+                <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+                  <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                  Connected
+                </div>
+              ) : (
+                <a href="/profile" className="text-xs text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 underline-offset-2 hover:underline">Connect to X</a>
+              )}
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
-              <div className="text-xs uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">XP</div>
-              <div className="mt-0.5 text-lg font-bold text-blue-900 dark:text-blue-100">
-                {raidProfile?.current_xp?.toLocaleString() || 0}
+
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+              <div className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">XP</div>
+              <div className="mt-0.5 text-sm font-bold text-blue-900 dark:text-blue-100">
+                {(raidProfile?.current_xp || 0).toLocaleString()}
               </div>
             </div>
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
-              <div className="text-xs uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Points</div>
-              <div className="mt-0.5 text-lg font-bold text-blue-900 dark:text-blue-100">
-                {raidProfile?.raid_points?.toLocaleString() || 0}
+            <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+              <div className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Points</div>
+              <div className="mt-0.5 text-sm font-bold text-blue-900 dark:text-blue-100">
+                {(raidProfile?.raid_points || 0).toLocaleString()}
               </div>
             </div>
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
-              <div className="text-xs uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Rank</div>
-              <div className="mt-0.5 text-lg font-bold text-blue-900 dark:text-blue-100">
-                {currentRank?.rank_name || 'Rookie'}
+            <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+              <div className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Rank</div>
+              <div className="mt-0.5 text-sm font-bold text-blue-900 dark:text-blue-100">
+                {currentRank?.rank_name || 'Unranked'}
               </div>
             </div>
           </div>

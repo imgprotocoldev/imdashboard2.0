@@ -526,54 +526,44 @@ const RaidGames: React.FC = () => {
       <div className="space-y-6">
         {/* Profile Card */}
         <ComponentCard className="h-fit">
-          <div className="relative">
-            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-brand-500/5 via-transparent to-green-500/5" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            <div className="flex items-center gap-4">
-              <img
-                src={avatarSrc}
-                alt="avatar"
-                className="w-14 h-14 rounded-full object-cover"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = '/images/user/user1.webp';
-                }}
-              />
-              <div>
-                <div className="text-lg font-extrabold text-gray-900 dark:text-white">{displayName}</div>
-                {profile?.x_handle ? (
-                  <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-                    <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                    Connected
-                  </div>
-                ) : (
-                  <a
-                    href="/profile"
-                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 underline-offset-2 hover:underline"
-                  >
-                    Connect to X to Raid and earn
-                  </a>
-                )}
-              </div>
+          {/* Profile Stats - Compact Layout matching Hub */}
+          <div className="flex items-center gap-3">
+            <img
+              src={avatarSrc}
+              alt="avatar"
+              className="w-10 h-10 rounded-full object-cover"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/user/user1.webp'; }}
+            />
+            <div>
+              <div className="text-base font-extrabold text-gray-900 dark:text-white leading-5">{displayName}</div>
+              {profile?.x_handle ? (
+                <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+                  <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                  Connected
+                </div>
+              ) : (
+                <a href="/profile" className="text-xs text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 underline-offset-2 hover:underline">Connect to X</a>
+              )}
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
-              <div className="text-xs uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">XP</div>
-              <div className="mt-0.5 text-lg font-bold text-blue-900 dark:text-blue-100">
-                {raidProfile?.current_xp?.toLocaleString() || 0}
+
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+              <div className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">XP</div>
+              <div className="mt-0.5 text-sm font-bold text-blue-900 dark:text-blue-100">
+                {(raidProfile?.current_xp || 0).toLocaleString()}
               </div>
             </div>
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
-              <div className="text-xs uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Points</div>
-              <div className="mt-0.5 text-lg font-bold text-blue-900 dark:text-blue-100">
-                {raidProfile?.raid_points?.toLocaleString() || 0}
+            <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+              <div className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Points</div>
+              <div className="mt-0.5 text-sm font-bold text-blue-900 dark:text-blue-100">
+                {(raidProfile?.raid_points || 0).toLocaleString()}
               </div>
             </div>
-            <div className="relative overflow-hidden rounded-lg py-2 px-4 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
-              <div className="text-xs uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Rank</div>
-              <div className="mt-0.5 text-lg font-bold text-blue-900 dark:text-blue-100">
-                {currentRank?.rank_name || 'Rookie'}
+            <div className="relative overflow-hidden rounded-md py-1.5 px-2 text-center border border-blue-300/30 dark:border-blue-500/30 bg-blue-500/5 dark:bg-blue-500/10">
+              <div className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 tracking-widest">Rank</div>
+              <div className="mt-0.5 text-sm font-bold text-blue-900 dark:text-blue-100">
+                {currentRank?.rank_name || 'Unranked'}
               </div>
             </div>
           </div>
@@ -758,12 +748,12 @@ const RaidGames: React.FC = () => {
                 </div>
 
                 {/* Interactive Cards - 3 Cards Horizontal */}
-                <div className="flex justify-center gap-5 flex-1 items-start pt-4">
+                <div className="flex justify-center gap-2 sm:gap-3 md:gap-5 flex-1 items-start pt-4">
                   {[0, 1, 2].map((index) => (
                     <div
                       key={index}
                       onClick={() => purchasedGames.has('pick-card') && !isPickingCard && handleCardClick(index)}
-                      className={`relative w-32 h-48 cursor-pointer transition-all duration-700 ${
+                      className={`relative w-24 h-36 sm:w-28 sm:h-42 md:w-32 md:h-48 cursor-pointer transition-all duration-700 ${
                         !purchasedGames.has('pick-card') ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'
                       } ${selectedCard === index ? 'scale-110' : ''}`}
                       style={{
@@ -795,10 +785,10 @@ const RaidGames: React.FC = () => {
                         ></div>
                         
                         {/* Playing card symbol and value */}
-                        <div className="text-white text-5xl mb-2" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))' }}>
+                        <div className="text-white text-3xl sm:text-4xl md:text-5xl mb-2" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))' }}>
                           {cardDefinitions[index].symbol}
                         </div>
-                        <div className="text-white text-4xl font-bold" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))' }}>
+                        <div className="text-white text-2xl sm:text-3xl md:text-4xl font-bold" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))' }}>
                           {cardDefinitions[index].value}
                         </div>
 
@@ -833,10 +823,10 @@ const RaidGames: React.FC = () => {
 
                         {/* Points Prize Display */}
                         <div className="text-center">
-                          <div className="text-white text-4xl font-bold mb-1" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))' }}>
+                          <div className="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))' }}>
                             {cardPointValues[index] === 0 ? 'No Luck' : cardPointValues[index] ? `+${cardPointValues[index]} Points` : ''}
                           </div>
-                          <div className="text-white text-sm opacity-80">
+                          <div className="text-white text-xs sm:text-sm opacity-80">
                             {cardPointValues[index] === 0 ? 'Try Again!' : 'You Won!'}
                           </div>
                         </div>
