@@ -204,24 +204,37 @@ export default function SignUpForm() {
       setLoading(true);
       setError('');
       
+      // Check if we're on mobile
+      const isMobile = window.innerWidth <= 768;
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
         options: {
           redirectTo: 'https://app.imgsolana.com',
+          queryParams: {
+            // Add parameters to help with mobile OAuth issues
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+          // Use popup on mobile to avoid app interference
+          ...(isMobile && { skipBrowserRedirect: true }),
         },
       });
 
       if (error) {
         if (error.message.includes('popup_closed_by_user')) {
-          setError('Twitter signup was cancelled. Please try again.');
+          setError('X signup was cancelled. Please try again.');
         } else if (error.message.includes('access_denied')) {
-          setError('Twitter signup access denied. Please try again.');
+          setError('X signup access denied. Please try again.');
+        } else if (error.message.includes('request_token')) {
+          setError('X signup failed: OAuth configuration issue. Please try email/password signup or contact support.');
         } else {
-          setError('Twitter signup failed: ' + error.message);
+          setError('X signup failed: ' + error.message);
         }
       }
     } catch (err) {
-      setError('Twitter signup failed. Please try again.');
+      console.error('Twitter OAuth error:', err);
+      setError('X signup failed. If you have the X app installed, try uninstalling it temporarily or use email/password signup.');
     } finally {
       setLoading(false);
     }

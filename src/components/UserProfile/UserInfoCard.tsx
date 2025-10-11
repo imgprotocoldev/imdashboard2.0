@@ -790,7 +790,7 @@ export default function UserInfoCard() {
                       setNotification({ type: 'success', message: 'Profile deleted successfully.' });
                       setTimeout(async () => {
                         await supabase.auth.signOut();
-                        window.location.href = '/';
+                        window.location.replace('/signin');
                       }, 1500);
 
                     } catch (err) {

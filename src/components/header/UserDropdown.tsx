@@ -19,10 +19,27 @@ export default function UserDropdown() {
   // Handle sign out
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
+      closeDropdown(); // Close dropdown first
+      
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Supabase signout error:', error);
+      }
+      
+      // Clear any local storage/session data
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Force redirect to signin page
       window.location.href = '/signin';
+      
     } catch (error) {
       console.error('Error signing out:', error);
+      // Fallback redirect even if signout fails
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/signin';
     }
   };
 

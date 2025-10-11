@@ -35,10 +35,21 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
   if (!isOpen) return null;
 
+  // Check if className contains positioning classes (fixed, absolute, etc.)
+  const hasCustomPositioning = className && (
+    className.includes('fixed') || 
+    className.includes('absolute') || 
+    className.includes('relative') ||
+    className.includes('static') ||
+    className.includes('sticky')
+  );
+
+  const defaultClasses = 'z-40 absolute right-0 mt-2 rounded-xl border border-gray-200 bg-white shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark';
+  
   return (
     <div
       ref={dropdownRef}
-      className={`z-40 ${className}`}
+      className={hasCustomPositioning ? `z-40 ${className}` : `${defaultClasses} ${className || ''}`}
     >
       {children}
     </div>

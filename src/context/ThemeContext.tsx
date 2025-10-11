@@ -8,6 +8,8 @@ type Theme = "light" | "dark";
 type ThemeContextType = {
   theme: Theme;
   toggleTheme: () => void;
+  setDarkTheme: () => void;
+  setLightTheme: () => void;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -21,7 +23,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     // This code will only run on the client side
     const savedTheme = localStorage.getItem("theme") as Theme | null;
-    const initialTheme = savedTheme || "light"; // Default to light theme
+    // Default to dark theme for new users, but respect saved preferences
+    const initialTheme = savedTheme || "dark"; // Default to dark theme
 
     setTheme(initialTheme);
     setIsInitialized(true);
@@ -42,8 +45,16 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
+  const setDarkTheme = () => {
+    setTheme("dark");
+  };
+
+  const setLightTheme = () => {
+    setTheme("light");
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setDarkTheme, setLightTheme }}>
       {children}
     </ThemeContext.Provider>
   );

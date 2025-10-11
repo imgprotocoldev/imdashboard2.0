@@ -75,7 +75,7 @@ const navItems: NavItem[] = [
 const othersItems: NavItem[] = [];
 
 const AppSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered, isApplicationMenuOpen } = useSidebar();
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered, isApplicationMenuOpen, toggleMobileSidebar } = useSidebar();
   const location = useLocation();
 
 
@@ -187,6 +187,12 @@ const AppSidebar: React.FC = () => {
             nav.path && (
               <Link
                 to={nav.path}
+                onClick={() => {
+                  // Close mobile sidebar when clicking a menu item on mobile
+                  if (isMobileOpen) {
+                    toggleMobileSidebar();
+                  }
+                }}
                 className={`menu-item group ${
                   isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
                 }`}
@@ -224,6 +230,12 @@ const AppSidebar: React.FC = () => {
                   <li key={subItem.name}>
                     <Link
                       to={subItem.path}
+                      onClick={() => {
+                        // Close mobile sidebar when clicking a submenu item on mobile
+                        if (isMobileOpen) {
+                          toggleMobileSidebar();
+                        }
+                      }}
                       className={`menu-dropdown-item ${
                         isActive(subItem.path)
                           ? "menu-dropdown-item-active"
