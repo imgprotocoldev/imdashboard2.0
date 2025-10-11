@@ -204,24 +204,19 @@ export default function SignUpForm() {
       setLoading(true);
       setError('');
       
-      // Check if we're on mobile
-      const isMobile = window.innerWidth <= 768;
-      
+      // Use full redirect flow for both mobile and desktop
+      // This works better than popup mode on mobile
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
         options: {
           redirectTo: 'https://app.imgsolana.com',
-          queryParams: {
-            // Add parameters to help with mobile OAuth issues
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-          // Use popup on mobile to avoid app interference
-          ...(isMobile && { skipBrowserRedirect: true }),
+          // Don't skip browser redirect - let it do a full page redirect
+          skipBrowserRedirect: false,
         },
       });
 
       if (error) {
+        console.error('Twitter OAuth error:', error);
         if (error.message.includes('popup_closed_by_user')) {
           setError('X signup was cancelled. Please try again.');
         } else if (error.message.includes('access_denied')) {
@@ -232,9 +227,10 @@ export default function SignUpForm() {
           setError('X signup failed: ' + error.message);
         }
       }
+      // Note: If successful, the page will redirect, so we won't reach this point
     } catch (err) {
       console.error('Twitter OAuth error:', err);
-      setError('X signup failed. If you have the X app installed, try uninstalling it temporarily or use email/password signup.');
+      setError('X signup failed. Please try again or use email/password signup.');
     } finally {
       setLoading(false);
     }
