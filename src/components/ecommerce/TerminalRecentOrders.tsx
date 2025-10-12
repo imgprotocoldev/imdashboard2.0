@@ -172,7 +172,7 @@ export default function TerminalRecentOrders() {
         </div>
       </div>
       <div className="border-t border-gray-100 dark:border-gray-800 mt-2" />
-      <div className="mt-2 pb-1 text-[13px] text-gray-500 dark:text-gray-400 flex justify-center">
+      <div className="mt-2 pb-1 text-[13px] text-gray-500 dark:text-gray-400 flex justify-center pt-[5px]">
         <a
           href="https://solscan.io/"
           target="_blank"

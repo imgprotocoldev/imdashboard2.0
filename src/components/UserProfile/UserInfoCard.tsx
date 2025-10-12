@@ -4,12 +4,13 @@ import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { useSupabaseAuth } from "../../hooks/useSupabaseAuth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { XHandleManager } from "../../utils/xHandleManager";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
   const { user, supabase } = useSupabaseAuth();
+  const contentRef = useRef<HTMLDivElement>(null);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [userCountry, setUserCountry] = useState("");
   const [userProfile, setUserProfile] = useState({
@@ -337,6 +338,13 @@ export default function UserInfoCard() {
     loadUserProfile();
   }, [user, supabase]);
 
+  // Reset scroll position when modal opens
+  useEffect(() => {
+    if (isOpen && contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+  }, [isOpen]);
+
   // Handle X connection after OAuth redirect
   useEffect(() => {
     const handleXConnection = async () => {
@@ -653,9 +661,9 @@ export default function UserInfoCard() {
         </div>
       </div>
 
-      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[800px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[800px] overflow-y-auto rounded-2xl bg-white dark:bg-gray-900 shadow-2xl">
-          <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4 rounded-t-2xl">
+      <Modal isOpen={isOpen} onClose={closeModal} className="w-full h-full sm:relative sm:max-w-[800px] sm:h-auto sm:m-4 sm:rounded-2xl" showCloseButton={false}>
+        <div ref={contentRef} className="relative w-full h-full sm:max-w-[800px] sm:max-h-[90vh] bg-white dark:bg-gray-900 shadow-2xl overflow-y-auto sm:rounded-2xl">
+          <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4 sm:rounded-t-2xl">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -675,9 +683,9 @@ export default function UserInfoCard() {
               </button>
             </div>
           </div>
-          <div className="p-6">
+          <div className="px-4 sm:px-6 py-6">
           <form className="flex flex-col">
-            <div className="custom-scrollbar max-h-[500px] overflow-y-auto space-y-8 pb-8">
+            <div className="space-y-8 pb-8">
               <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6">
                 <h5 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                   <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
