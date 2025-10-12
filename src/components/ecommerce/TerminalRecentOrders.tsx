@@ -177,7 +177,7 @@ export default function TerminalRecentOrders() {
           href="https://solscan.io/"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline hover:text-gray-700 dark:hover:text-gray-300"
+          className="underline hover:text-gray-700 dark:hover:text-gray-300 py-[5px]"
         >
           View on Solscan
         </a>
