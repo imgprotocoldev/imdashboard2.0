@@ -558,13 +558,13 @@ export default function HarvestingTableOne({ selectedMonth }: HarvestingTableOne
                   </TableCell>
                   <TableCell
                     isHeader
-                    className="px-6 py-4 font-semibold text-gray-500 text-start text-sm dark:text-gray-400 uppercase tracking-wider"
+                    className="px-6 py-4 font-semibold text-gray-500 text-center text-sm dark:text-gray-400 uppercase tracking-wider"
                   >
                     REWARD POOL (SOL)
                   </TableCell>
                   <TableCell
                     isHeader
-                    className="px-6 py-4 font-semibold text-gray-500 text-start text-sm dark:text-gray-400 uppercase tracking-wider"
+                    className="px-6 py-4 font-semibold text-gray-500 text-center text-sm dark:text-gray-400 uppercase tracking-wider"
                   >
                     DISTRIBUTED (SOL)
                   </TableCell>
@@ -596,10 +596,10 @@ export default function HarvestingTableOne({ selectedMonth }: HarvestingTableOne
                     <TableCell className="px-6 py-4 text-gray-900 text-start text-sm dark:text-white/90 font-semibold group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                       {item.imgSold}
                     </TableCell>
-                    <TableCell className="px-6 py-4 text-gray-900 text-start text-sm dark:text-white/90 font-semibold group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                    <TableCell className="px-6 py-4 text-gray-900 text-center text-sm dark:text-white/90 font-semibold group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                       {item.rewardPool}
                     </TableCell>
-                    <TableCell className="px-6 py-4 text-gray-900 text-start text-sm dark:text-white/90 font-semibold group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                    <TableCell className="px-6 py-4 text-gray-900 text-center text-sm dark:text-white/90 font-semibold group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                       {item.distributed}
                     </TableCell>
                   </TableRow>
