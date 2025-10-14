@@ -249,7 +249,7 @@ const ClaimRewardModal: React.FC<ClaimRewardModalProps> = ({
               </p>
             </div>
 
-            {/* Info Box */}
+            {/* Info Box - Processing Time */}
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
               <div className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -257,9 +257,7 @@ const ClaimRewardModal: React.FC<ClaimRewardModalProps> = ({
                 </svg>
                 <div className="text-sm text-blue-700 dark:text-blue-400">
                   <p className="font-semibold mb-1">Processing Time</p>
-                  <p className="mb-2">Your reward will be processed within 24-48 hours. You'll receive an email confirmation once it's sent.</p>
-                  <p className="font-semibold">📧 Check Your Email</p>
-                  <p>Please check your <span className="font-semibold">inbox</span> and <span className="font-semibold">spam/junk folder</span> for the confirmation email from no-reply@imgsolana.com</p>
+                  <p>Your reward will be processed within 24-48 hours. You'll receive an email confirmation once it's sent.</p>
                 </div>
               </div>
             </div>
