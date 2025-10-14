@@ -17,7 +17,9 @@ The Claim Rewards System allows users to redeem their earned Raid Points for rea
 - ✅ **Database Storage**: All claims are stored in the `reward_claims` table
 
 ### Admin Notification
-- 📧 **Email to**: `imgrewards@proton.me`
+- 📧 **Emails sent to** (for redundancy):
+  - `imgrewards@proton.me`
+  - `imgprotocol18@gmail.com`
 - 📝 **Contains**:
   - Reward type and amount
   - Points spent
@@ -124,11 +126,8 @@ serve(async (req) => {
 If automatic emails are not configured, check the browser console for email data:
 
 ```javascript
-console.log('📧 Email to send:', {
-  to: 'imgrewards@proton.me',
-  subject: '🎁 New Reward Claim: SOL Tokens - $5 USD',
-  body: '...'
-})
+console.log('📧 Email to send to imgrewards@proton.me:', { ... })
+console.log('📧 Email to send to imgprotocol18@gmail.com:', { ... })
 ```
 
 You can manually copy this information and send the email.

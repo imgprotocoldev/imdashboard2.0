@@ -46,15 +46,23 @@ const ClaimRewardModal: React.FC<ClaimRewardModalProps> = ({
         .eq('id', user.id)
         .single();
 
-      if (profileError) throw profileError;
+      // Pre-fill the form with fallback for username
+      let displayUsername = '';
+      if (!profileError && profile?.username) {
+        displayUsername = profile.username;
+      } else {
+        // Fallback: use user metadata or email prefix
+        displayUsername = user.user_metadata?.full_name || user.email?.split('@')[0] || 'IMG User';
+      }
 
-      // Pre-fill the form
-      setUsername(profile?.username || '');
+      setUsername(displayUsername);
       setEmail(user.email || '');
       setWalletAddress(profile?.wallet_address || '');
     } catch (err) {
       console.error('Error loading user data:', err);
-      // Still allow manual entry if auto-fill fails
+      // Fallback username even on error
+      const fallbackUsername = user.user_metadata?.full_name || user.email?.split('@')[0] || 'IMG User';
+      setUsername(fallbackUsername);
       setEmail(user.email || '');
     }
   };
@@ -84,11 +92,9 @@ const ClaimRewardModal: React.FC<ClaimRewardModalProps> = ({
       // First, deduct the points
       await onConfirm();
 
-      // Send email notification to admin
-      const emailData = {
-        to: 'imgrewards@proton.me',
-        subject: `🎁 New Reward Claim: ${rewardName} - $${rewardAmount} USD`,
-        body: `
+      // Prepare email notification data
+      const emailSubject = `🎁 New Reward Claim: ${rewardName} - $${rewardAmount} USD`;
+      const emailBody = `
 New Reward Claim Request
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -117,8 +123,10 @@ Claimed At: ${new Date().toLocaleString()}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Please process this reward claim and send the ${rewardName} to the wallet address above.
-        `.trim(),
-      };
+      `.trim();
+
+      // Send to both email addresses for redundancy
+      const adminEmails = ['imgrewards@proton.me', 'imgprotocol18@gmail.com'];
 
       // Store claim request in database
       const { error: dbError } = await supabase
@@ -140,21 +148,33 @@ Please process this reward claim and send the ${rewardName} to the wallet addres
         // Continue even if DB insert fails - the email is more important
       }
 
-      // Send email via Supabase Edge Function (if available) or log for manual processing
-      try {
-        const { error: emailError } = await supabase.functions.invoke('send-email', {
-          body: emailData,
-        });
+      // Send emails to both admin addresses for redundancy
+      console.log('📧 Sending reward claim notification to admin emails...');
+      
+      for (const adminEmail of adminEmails) {
+        const emailData = {
+          to: adminEmail,
+          subject: emailSubject,
+          body: emailBody,
+        };
 
-        if (emailError) {
-          console.error('Email function error:', emailError);
+        try {
+          const { error: emailError } = await supabase.functions.invoke('send-email', {
+            body: emailData,
+          });
+
+          if (emailError) {
+            console.error(`Email function error for ${adminEmail}:`, emailError);
+            // Fallback: Log the email data for manual processing
+            console.log(`📧 Email to send to ${adminEmail}:`, emailData);
+          } else {
+            console.log(`✅ Email sent successfully to ${adminEmail}`);
+          }
+        } catch (emailErr) {
+          console.error(`Email send error for ${adminEmail}:`, emailErr);
           // Fallback: Log the email data for manual processing
-          console.log('📧 Email to send:', emailData);
+          console.log(`📧 Email to send to ${adminEmail}:`, emailData);
         }
-      } catch (emailErr) {
-        console.error('Email send error:', emailErr);
-        // Fallback: Log the email data for manual processing
-        console.log('📧 Email to send:', emailData);
       }
 
       setSuccess(true);
