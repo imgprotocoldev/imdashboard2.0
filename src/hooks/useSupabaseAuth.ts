@@ -33,6 +33,14 @@ export function useSupabaseAuth() {
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('🔵 [Auth] Initial session check:', session ? 'Active' : 'None');
+      if (session?.user) {
+        console.log('🔵 [Auth] User:', {
+          id: session.user.id,
+          email: session.user.email,
+          provider: session.user.app_metadata?.provider
+        });
+      }
       setSession(session);
       setUser(session?.user || null);
       setLoading(false);
@@ -41,7 +49,16 @@ export function useSupabaseAuth() {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔵 [Auth] State changed:', event);
+      console.log('🔵 [Auth] Session:', session ? 'Active' : 'None');
+      if (session?.user) {
+        console.log('🔵 [Auth] User:', {
+          id: session.user.id,
+          email: session.user.email,
+          provider: session.user.app_metadata?.provider
+        });
+      }
       setSession(session);
       setUser(session?.user || null);
       setLoading(false);

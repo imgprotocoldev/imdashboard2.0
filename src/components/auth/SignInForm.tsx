@@ -147,9 +147,12 @@ export default function SignInForm() {
       setLoading(true);
       setError('');
       
+      console.log('🔵 [Twitter OAuth] Initiating sign in...');
+      console.log('🔵 [Twitter OAuth] Redirect URL:', 'https://app.imgsolana.com');
+      
       // Use full redirect flow for both mobile and desktop
       // This works better than popup mode on mobile
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
         options: {
           redirectTo: 'https://app.imgsolana.com',
@@ -158,21 +161,36 @@ export default function SignInForm() {
         },
       });
 
+      console.log('🔵 [Twitter OAuth] Response received:', { 
+        hasData: !!data, 
+        hasError: !!error,
+        provider: data?.provider,
+        url: data?.url 
+      });
+
       if (error) {
-        console.error('Twitter OAuth error:', error);
+        console.error('🔴 [Twitter OAuth] Error:', error);
+        console.error('🔴 [Twitter OAuth] Error details:', {
+          message: error.message,
+          status: error.status,
+          name: error.name
+        });
+        
         if (error.message.includes('popup_closed_by_user')) {
           setError('X login was cancelled. Please try again.');
         } else if (error.message.includes('access_denied')) {
           setError('X login access denied. Please try again.');
         } else if (error.message.includes('request_token')) {
-          setError('X login failed: OAuth configuration issue. Please try email/password login or contact support.');
+          setError('X login failed: OAuth configuration issue. Please check Supabase Twitter provider settings.');
         } else {
           setError('X login failed: ' + error.message);
         }
+      } else if (data?.url) {
+        console.log('✅ [Twitter OAuth] Redirecting to:', data.url);
       }
       // Note: If successful, the page will redirect, so we won't reach this point
     } catch (err) {
-      console.error('Twitter OAuth error:', err);
+      console.error('🔴 [Twitter OAuth] Exception:', err);
       setError('X login failed. Please try again or use email/password login.');
     } finally {
       setLoading(false);
