@@ -3,6 +3,7 @@ import { Modal } from '../ui/modal';
 import Input from '../form/input/InputField';
 import { useSupabaseAuth } from '../../hooks/useSupabaseAuth';
 import { sendRewardClaimNotification } from '../../utils/emailService';
+import { showEmailStatus } from '../../utils/notificationService';
 
 interface ClaimRewardModalProps {
   isOpen: boolean;
@@ -126,6 +127,9 @@ const ClaimRewardModal: React.FC<ClaimRewardModalProps> = ({
         userId: user?.id || 'N/A',
       });
 
+      // Show email status notification
+      showEmailStatus(emailResult.success, emailResult.error);
+      
       if (!emailResult.success) {
         console.error('❌ Failed to send email notification:', emailResult.error);
         // Don't fail the entire claim if email fails

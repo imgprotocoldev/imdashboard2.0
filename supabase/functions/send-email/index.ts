@@ -11,9 +11,12 @@ const corsHeaders = {
 };
 
 interface EmailRequest {
-  to: string | string[];
+  // Support both formats for backward compatibility
+  to?: string | string[];
+  email?: string | string[];
   subject: string;
-  body: string;
+  body?: string;
+  message?: string;
   html?: string;
 }
 
@@ -54,14 +57,20 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { to, subject, body, html }: EmailRequest = await req.json();
+    const requestData = await req.json();
+    
+    // Support both formats: { to, body } and { email, message }
+    const to = requestData.to || requestData.email;
+    const subject = requestData.subject;
+    const body = requestData.body || requestData.message;
+    const html = requestData.html;
 
     // Validate input
     if (!to || !subject || !body) {
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Missing required fields: to, subject, body',
+          error: 'Missing required fields: (to/email), subject, (body/message)',
         }),
         {
           status: 400,
