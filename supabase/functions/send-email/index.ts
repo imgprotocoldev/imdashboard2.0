@@ -80,6 +80,7 @@ serve(async (req) => {
     }
 
     // Prepare email data for Resend
+    // Using verified domain: imgsolana.com
     const emailData = {
       from: 'IMG Dashboard <no-reply@imgsolana.com>',
       to: Array.isArray(to) ? to : [to],
