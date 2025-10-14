@@ -658,13 +658,13 @@ const Raid: React.FC = () => {
                 id: 'sol',
                 name: 'SOL Tokens', 
                 image: '/images/raid/5usdinsol.webp',
-                description: 'Claim SOL tokens as your reward'
+                description: 'Claim SOL as your reward'
               },
               { 
                 id: 'img',
                 name: 'IMG Tokens', 
                 image: '/images/raid/imgprizeclaim.webp',
-                description: 'Claim IMG tokens as your reward'
+                description: 'Claim IMG as your reward'
               },
               { 
                 id: 'burn',

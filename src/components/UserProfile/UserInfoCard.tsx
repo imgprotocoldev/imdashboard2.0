@@ -29,10 +29,10 @@ export default function UserInfoCard() {
 
   // Avatar options
   const avatarOptions = [
-    { id: "user1", name: "User 1", image: "/images/user/user1.webp" },
-    { id: "user2", name: "User 2", image: "/images/user/user2.webp" },
-    { id: "user3", name: "User 3", image: "/images/user/user3.webp" },
-    { id: "user4", name: "User 4", image: "/images/user/user4.webp" }
+    { id: "user1", name: "Image 1", image: "/images/user/user1.webp" },
+    { id: "user2", name: "Image 2", image: "/images/user/user2.webp" },
+    { id: "user3", name: "Image 3", image: "/images/user/user3.webp" },
+    { id: "user4", name: "Image 4", image: "/images/user/user4.webp" }
   ];
 
   // Country options with ISO codes
