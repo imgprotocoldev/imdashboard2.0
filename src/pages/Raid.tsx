@@ -4,6 +4,7 @@ import { useSupabaseAuth } from '../hooks/useSupabaseAuth';
 import { useRaidProfile } from '../hooks/useRaidProfile';
 import { XHandleManager } from '../utils/xHandleManager';
 import Select from '../components/form/Select';
+import ClaimRewardModal from '../components/raid/ClaimRewardModal';
 
 const Raid: React.FC = () => {
   const { user, supabase } = useSupabaseAuth();
@@ -28,6 +29,13 @@ const Raid: React.FC = () => {
     burn: '5',
     usdc: '5'
   });
+  const [claimModalOpen, setClaimModalOpen] = useState(false);
+  const [selectedClaim, setSelectedClaim] = useState<{
+    rewardId: string;
+    rewardName: string;
+    rewardAmount: string;
+    requiredPoints: number;
+  } | null>(null);
   // Custom Raid Card source data (would come from API)
   type RaidItem = {
     id: string;
@@ -786,11 +794,15 @@ const Raid: React.FC = () => {
                           : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                       }`}
                       disabled={!isUnlocked}
-                      onClick={async () => {
+                      onClick={() => {
                         if (isUnlocked) {
-                          await spendPoints(requiredPoints);
-                          alert(`Claimed $${selectedAmount} USD in ${reward.name}!`);
-                          setSelectedRewards(prev => ({ ...prev, [reward.id]: '5' }));
+                          setSelectedClaim({
+                            rewardId: reward.id,
+                            rewardName: reward.name,
+                            rewardAmount: selectedAmount,
+                            requiredPoints: requiredPoints,
+                          });
+                          setClaimModalOpen(true);
                         }
                       }}
                     >
@@ -848,6 +860,25 @@ const Raid: React.FC = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Claim Reward Modal */}
+        {selectedClaim && (
+          <ClaimRewardModal
+            isOpen={claimModalOpen}
+            onClose={() => {
+              setClaimModalOpen(false);
+              setSelectedClaim(null);
+            }}
+            rewardName={selectedClaim.rewardName}
+            rewardAmount={selectedClaim.rewardAmount}
+            requiredPoints={selectedClaim.requiredPoints}
+            onConfirm={async () => {
+              // Deduct points and reset selection
+              await spendPoints(selectedClaim.requiredPoints);
+              setSelectedRewards(prev => ({ ...prev, [selectedClaim.rewardId]: '5' }));
+            }}
+          />
         )}
       </div>
     </>
