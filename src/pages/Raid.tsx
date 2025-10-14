@@ -794,7 +794,7 @@ const Raid: React.FC = () => {
                         }
                       }}
                     >
-                      {isUnlocked ? '🎁 Claim Reward' : '🔒 Locked'}
+                      {isUnlocked ? 'Claim Reward' : 'Locked'}
                     </button>
                   </div>
                   
