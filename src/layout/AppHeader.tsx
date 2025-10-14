@@ -87,7 +87,7 @@ const AppHeader: React.FC = () => {
           <Link to="/" className="lg:hidden">
             <img
               className="dark:hidden max-h-8"
-              src="/images/imgtextlogo.webp"
+              src="/images/imgtextlogodark.webp"
               alt="IMG Protocol"
               style={{ maxWidth: '120px', height: '32px' }}
             />

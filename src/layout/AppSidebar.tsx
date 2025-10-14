@@ -303,7 +303,7 @@ const AppSidebar: React.FC = () => {
               <>
                 <img
                   className="dark:hidden max-h-8"
-                  src="/images/imgtextlogo.webp"
+                  src="/images/imgtextlogodark.webp"
                   alt="IMG Protocol"
                   style={{ maxWidth: '120px', height: '32px' }}
                 />
@@ -315,12 +315,22 @@ const AppSidebar: React.FC = () => {
                 />
               </>
             ) : (
-              <img
-                src="/images/logo/IMGloop.webp"
-                alt="IMG"
-                width={32}
-                height={32}
-              />
+              <>
+                <img
+                  className="dark:hidden"
+                  src="/images/logo/IMGloopdarktheme.webp"
+                  alt="IMG"
+                  width={32}
+                  height={32}
+                />
+                <img
+                  className="hidden dark:block"
+                  src="/images/logo/IMGloop.webp"
+                  alt="IMG"
+                  width={32}
+                  height={32}
+                />
+              </>
             )}
           </Link>
         </div>
