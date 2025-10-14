@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '../ui/modal';
 import Input from '../form/input/InputField';
 import { useSupabaseAuth } from '../../hooks/useSupabaseAuth';
+import { sendRewardClaimNotification } from '../../utils/emailService';
 
 interface ClaimRewardModalProps {
   isOpen: boolean;
@@ -92,42 +93,6 @@ const ClaimRewardModal: React.FC<ClaimRewardModalProps> = ({
       // First, deduct the points
       await onConfirm();
 
-      // Prepare email notification data
-      const emailSubject = `🎁 New Reward Claim: ${rewardName} - $${rewardAmount} USD`;
-      const emailBody = `
-New Reward Claim Request
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-REWARD DETAILS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Reward Type: ${rewardName}
-Amount: $${rewardAmount} USD
-Points Spent: ${requiredPoints.toLocaleString()}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-USER INFORMATION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Username: ${username}
-Email: ${email}
-Wallet Address: ${walletAddress}
-User ID: ${user?.id || 'N/A'}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TIMESTAMP
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Claimed At: ${new Date().toLocaleString()}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Please process this reward claim and send the ${rewardName} to the wallet address above.
-      `.trim();
-
-      // Send to both email addresses for redundancy
-      const adminEmails = ['imgrewards@proton.me', 'imgprotocol18@gmail.com'];
-
       // Store claim request in database
       const { error: dbError } = await supabase
         .from('reward_claims')
@@ -148,33 +113,22 @@ Please process this reward claim and send the ${rewardName} to the wallet addres
         // Continue even if DB insert fails - the email is more important
       }
 
-      // Send emails to both admin addresses for redundancy
+      // Send email notification to admins using the email service
       console.log('📧 Sending reward claim notification to admin emails...');
       
-      for (const adminEmail of adminEmails) {
-        const emailData = {
-          to: adminEmail,
-          subject: emailSubject,
-          body: emailBody,
-        };
+      const emailResult = await sendRewardClaimNotification({
+        rewardName,
+        rewardAmount,
+        requiredPoints,
+        username,
+        email,
+        walletAddress,
+        userId: user?.id || 'N/A',
+      });
 
-        try {
-          const { error: emailError } = await supabase.functions.invoke('send-email', {
-            body: emailData,
-          });
-
-          if (emailError) {
-            console.error(`Email function error for ${adminEmail}:`, emailError);
-            // Fallback: Log the email data for manual processing
-            console.log(`📧 Email to send to ${adminEmail}:`, emailData);
-          } else {
-            console.log(`✅ Email sent successfully to ${adminEmail}`);
-          }
-        } catch (emailErr) {
-          console.error(`Email send error for ${adminEmail}:`, emailErr);
-          // Fallback: Log the email data for manual processing
-          console.log(`📧 Email to send to ${adminEmail}:`, emailData);
-        }
+      if (!emailResult.success) {
+        console.error('❌ Failed to send email notification:', emailResult.error);
+        // Don't fail the entire claim if email fails
       }
 
       setSuccess(true);
